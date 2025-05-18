@@ -1,90 +1,109 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Tactical Dashboard</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        canvas {
-            width: 100% !important;
-            max-width: 700px;
-            height: auto !important;
+{% extends 'base.html' %}
+{% block content %}
+  <h1>Tactical Dashboard</h1>
+
+  <h2>1. Age Distribution of Medalists</h2>
+  <canvas id="ageChart" width="500" height="300"></canvas>
+
+  <h2>2. Top Performing Sports</h2>
+  <canvas id="sportsChart" width="500" height="300"></canvas>
+
+  <h2>3. Teams with Most Gold Medals</h2>
+  <canvas id="goldTeamsChart" width="400" height="400"></canvas>
+
+  <h2>4. Top Medalist Athletes (Gold Medals)</h2>
+  <canvas id="athleteChart" width="500" height="300"></canvas>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    // 1) Age Distribution (line)
+    const ages = {{ medalist_ages | tojson }};
+    const ageFreq = {};
+    ages.forEach(a => ageFreq[a] = (ageFreq[a]||0) + 1);
+    const sortedAges = Object.keys(ageFreq).map(Number).sort((a,b)=>a-b);
+    const ageCounts = sortedAges.map(a=> ageFreq[a]);
+    new Chart(document.getElementById('ageChart'), {
+      type: 'line',
+      data: {
+        labels: sortedAges,
+        datasets: [{
+          label: 'Medalists',
+          data: ageCounts,
+          fill: false,
+          tension: 0.1
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          title: { display: true, text: 'Age Distribution of Medalists' }
+        },
+        scales: {
+          x: { title: { display: true, text: 'Age' } },
+          y: { beginAtZero: true, title: { display: true, text: 'Count' } }
         }
-    </style>
-</head>
-<body>
-    <h1><strong>Tactical Dashboard</strong></h1>
+      }
+    });
 
-    <h2>1. Age Distribution of Medalists</h2>
-    <canvas id="ageChart"></canvas>
+    // 2) Top Performing Sports (horizontal bar)
+    const sports = {{ top_sports_data | tojson }};
+    new Chart(document.getElementById('sportsChart'), {
+      type: 'bar',
+      data: {
+        labels: sports.map(o => o.sport),
+        datasets: [{ label: 'Medals', data: sports.map(o => o.medals) }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        plugins: {
+          title: { display: true, text: 'Top Performing Sports' },
+          legend: { display: false }
+        },
+        scales: {
+          x: { beginAtZero: true },
+          y: { ticks: { autoSkip: false } }
+        }
+      }
+    });
 
-    <h2>2. Top Performing Sports</h2>
-    <canvas id="sportsChart"></canvas>
+    // 3) Teams with Most Gold Medals (doughnut)
+    const goldTeams = {{ gold_teams_data | tojson }};
+    new Chart(document.getElementById('goldTeamsChart'), {
+      type: 'doughnut',
+      data: {
+        labels: goldTeams.map(o => o.team),
+        datasets: [{ data: goldTeams.map(o => o.golds) }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          title: { display: true, text: 'Teams with Most Gold Medals' },
+          legend: { position: 'right' }
+        }
+      }
+    });
 
-    <h2>3. Teams with Most Gold Medals</h2>
-    <canvas id="goldTeamsChart"></canvas>
-
-    <h2>4. Top Medalist Athletes (Gold Medals)</h2>
-    <canvas id="goldAthletesChart"></canvas>
-
-    <script>
-        // 1. Age Distribution Histogram
-        const ageCounts = {};
-        {{ medalist_ages|tojson }}.forEach(age => {
-            ageCounts[age] = (ageCounts[age] || 0) + 1;
-        });
-        const ageLabels = Object.keys(ageCounts).sort((a, b) => a - b);
-        const ageValues = ageLabels.map(age => ageCounts[age]);
-
-        new Chart(document.getElementById('ageChart'), {
-            type: 'bar',
-            data: {
-                labels: ageLabels,
-                datasets: [{
-                    label: 'Number of Medalists',
-                    data: ageValues
-                }]
-            }
-        });
-
-        // 2. Top Performing Sports
-        const sportsData = {{ top_sports_data|tojson }};
-        new Chart(document.getElementById('sportsChart'), {
-            type: 'bar',
-            data: {
-                labels: sportsData.map(d => d.sport),
-                datasets: [{
-                    label: 'Medals',
-                    data: sportsData.map(d => d.medals)
-                }]
-            }
-        });
-
-        // 3. Teams with Most Gold Medals
-        const goldTeamsData = {{ gold_teams_data|tojson }};
-        new Chart(document.getElementById('goldTeamsChart'), {
-            type: 'bar',
-            data: {
-                labels: goldTeamsData.map(d => d.team),
-                datasets: [{
-                    label: 'Gold Medals',
-                    data: goldTeamsData.map(d => d.golds)
-                }]
-            }
-        });
-
-        // 4. Top Medalist Athletes
-        const athleteData = {{ top_athletes_data|tojson }};
-        new Chart(document.getElementById('goldAthletesChart'), {
-            type: 'bar',
-            data: {
-                labels: athleteData.map(d => d.athlete),
-                datasets: [{
-                    label: 'Gold Medals',
-                    data: athleteData.map(d => d.golds)
-                }]
-            }
-        });
-    </script>
-</body>
-</html>
+    // 4) Top Medalist Athletes (horizontal bar)
+    const athletes = {{ top_athletes_data | tojson }};
+    new Chart(document.getElementById('athleteChart'), {
+      type: 'bar',
+      data: {
+        labels: athletes.map(o => o.athlete),
+        datasets: [{ label: 'Gold Medals', data: athletes.map(o => o.golds) }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        plugins: {
+          title: { display: true, text: 'Top Medalist Athletes (Gold Medals)' },
+          legend: { display: false }
+        },
+        scales: {
+          x: { beginAtZero: true },
+          y: { ticks: { autoSkip: false } }
+        }
+      }
+    });
+  </script>
+{% endblock %}

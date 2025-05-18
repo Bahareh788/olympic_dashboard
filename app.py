@@ -89,74 +89,60 @@ def analytic_dashboard():
 
 @app.route('/dashboard/tactical')
 def tactical_dashboard():
-    # 1) Medal count by country & gender
-    medal_count_query = text("""
-        SELECT
-          t.teamname,
-          sm.gender,
-          COUNT(sm.medalid) AS medal_count
-        FROM staging_main sm
-        JOIN team    t ON sm.teamid    = t.teamid
-        WHERE sm.medalid IS NOT NULL
-        GROUP BY t.teamname, sm.gender
-        ORDER BY t.teamname, sm.gender;
-    """)
-    medal_count_data = [
-        {'country': row[0], 'gender': row[1], 'count': row[2]}
-        for row in db.session.execute(medal_count_query)
-    ]
-
-    # 2) Age distribution of medalists (pulled from staging_main.age)
-    medalist_ages_query = text("""
+    # 1. Age Distribution of Medalists
+    age_query = text("""
         SELECT age
         FROM staging_main
         WHERE medalid IS NOT NULL
           AND age IS NOT NULL;
     """)
-    medalist_ages = [r[0] for r in db.session.execute(medalist_ages_query)]
+    medalist_ages = [row[0] for row in db.session.execute(age_query)]
 
-    # 3) Top performing sports by medal count
-    top_sports_query = text("""
-        SELECT
-          s.sportname,
-          COUNT(sm.medalid) AS medals
+    # 2. Top Performing Sports by Medal Count
+    sports_query = text("""
+        SELECT s.sportname, COUNT(sm.medalid) AS medals
         FROM staging_main sm
         JOIN event e ON sm.eventid = e.eventid
-        JOIN sport s ON e.sportid   = s.sportid
+        JOIN sport s ON e.sportid = s.sportid
         WHERE sm.medalid IS NOT NULL
         GROUP BY s.sportname
         ORDER BY medals DESC
         LIMIT 10;
     """)
-    top_sports_data = [
-        {'sport': row[0], 'medals': row[1]}
-        for row in db.session.execute(top_sports_query)
-    ]
+    top_sports_data = [{'sport': row[0], 'medals': row[1]} for row in db.session.execute(sports_query)]
 
-    # 4) Medal efficiency by country (medals per athlete)
-    efficiency_query = text("""
-        SELECT
-          t.teamname,
-          COUNT(sm.medalid)::float
-            / NULLIF(COUNT(DISTINCT sm.athleteid), 0)
-            AS efficiency
-        FROM staging_main sm
-        JOIN team t ON sm.teamid = t.teamid
-        GROUP BY t.teamname
-        ORDER BY efficiency DESC
-        LIMIT 10;
-    """)
-    efficiency_data = [
-        {'country': row[0], 'efficiency': round(row[1], 2)}
-        for row in db.session.execute(efficiency_query)
-    ]
+    # 3. Teams with Most Gold Medals
+    teams_query = text("""
+    SELECT t.teamname, COUNT(*) AS golds
+    FROM staging_main sm
+    JOIN team t ON sm.teamid = t.teamid
+    JOIN medal m ON sm.medalid = m.medalid
+    WHERE m.medaltype = 'Gold'
+    GROUP BY t.teamname
+    ORDER BY golds DESC
+    LIMIT 10;
+   """)
+    gold_teams_data = [{'team': row[0], 'golds': row[1]} for row in db.session.execute(teams_query)]
+
+    # 4. Top Medalist Athletes (by Gold Medals)
+    athlete_query = text("""
+    SELECT a.fullname, COUNT(*) AS golds
+    FROM staging_main sm
+    JOIN athlete a ON sm.athleteid = a.athleteid
+    JOIN medal m ON sm.medalid = m.medalid
+    WHERE m.medaltype = 'Gold'
+    GROUP BY a.fullname
+    ORDER BY golds DESC
+    LIMIT 10;
+""")
+    top_athletes_data = [{'athlete': row[0], 'golds': row[1]} for row in db.session.execute(athlete_query)]
 
     return render_template(
         'tactical_dashboard.html',
-        medal_count_data=medal_count_data,
         medalist_ages=medalist_ages,
         top_sports_data=top_sports_data,
-        efficiency_data=efficiency_data
+        gold_teams_data=gold_teams_data,
+        top_athletes_data=top_athletes_data
     )
 
 if __name__ == '__main__':

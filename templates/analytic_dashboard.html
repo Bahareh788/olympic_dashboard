@@ -1,0 +1,200 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Olympic Analytical Dashboard</h1>
+
+<!-- 1) Choropleth Map -->
+<div id="choroplethMap" style="width:100%; height:350px; margin-bottom:30px;"></div>
+
+<!-- 2) Gender Distribution (Styled Donut) -->
+<h2>Gender Distribution of Athletes</h2>
+<div style="position:relative; width:300px; height:300px; margin-bottom:30px;">
+  <canvas id="genderChart"></canvas>
+  <div style="
+      position:absolute;
+      top:50%; left:50%;
+      transform:translate(-50%,-50%);
+      font-size:1rem;
+      font-weight:500;
+      color:#666;
+      text-align:center;
+      pointer-events:none;
+    ">
+    ATHLETE<br>GENDER
+  </div>
+</div>
+
+<!-- 3) Athlete By Continent (Donut) -->
+<h2>Athlete By Continent</h2>
+<div style="position:relative; width:300px; height:300px; margin-bottom:30px;">
+  <canvas id="athleteContChart"></canvas>
+  <div style="
+      position:absolute;
+      top:50%; left:50%;
+      transform:translate(-50%,-50%);
+      font-size:1rem;
+      font-weight:500;
+      color:#666;
+      text-align:center;
+      pointer-events:none;
+    ">
+    ATHLETES<br>BY CONTINENT
+  </div>
+</div>
+
+<!-- 4) Participation Trend Over Time -->
+<h2>Participation Trend Over Time</h2>
+<div style="width:500px; height:300px; margin-bottom:30px;">
+  <canvas id="trendChart"></canvas>
+</div>
+
+<!-- 5) Medals By Continent (Horizontal Bar) -->
+<h2>Medals By Continent</h2>
+<div style="width:500px; height:300px; margin-bottom:30px;">
+  <canvas id="medalContChart"></canvas>
+</div>
+
+<!-- 6) Top 10 Most Participated Events -->
+<h2>Top 10 Most Participated Events</h2>
+<div style="width:500px; height:300px; margin-bottom:30px;">
+  <canvas id="topEventsChart"></canvas>
+</div>
+
+<!-- Include Plotly, Chart.js & DataLabels plugin -->
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+
+<script>
+  // 1) Choropleth Map
+  const countryData = {{ country_participation_data|tojson }};
+  Plotly.newPlot('choroplethMap', [{
+    type: 'choropleth',
+    locations: countryData.map(d => d.noc),
+    z:         countryData.map(d => d.count),
+    locationmode: 'ISO-3',
+    colorscale:   'Blues',
+    colorbar: { title: 'Athlete Count' }
+  }], {
+    title: 'Participation by Country',
+    geo: { projection: { type: 'robinson' } }
+  });
+
+  // Helper: draw a doughnut with DataLabels
+  function drawDonut(id, labels, data, colors) {
+    new Chart(document.getElementById(id), {
+      type: 'doughnut',
+      data: { labels, datasets: [{ data, backgroundColor: colors }] },
+      options: {
+        cutout: '70%',
+        plugins: {
+          legend: { display: false },
+          datalabels: {
+            formatter: (val, ctx) => {
+              const sum = ctx.chart.data.datasets[0].data.reduce((a,b) => a+b, 0);
+              return (val*100/sum).toFixed(1) + '%';
+            },
+            color: '#333',
+            font: { weight: 'bold', size: 12 }
+          }
+        }
+      },
+      plugins: [ChartDataLabels]
+    });
+  }
+
+  // 2) Gender Distribution
+  const g = {{ gender_data|tojson }};
+  drawDonut(
+    'genderChart',
+    g.map(d=>d.gender),
+    g.map(d=>d.count),
+    ['#3498db','#e74c3c']
+  );
+
+  // 3) Athlete By Continent
+  const cont = {{ continent_data|tojson }};
+  drawDonut(
+    'athleteContChart',
+    cont.map(d=>d.continent),
+    cont.map(d=>d.athletes),
+    ['#e74c3c','#3498db','#9b59b6','#f1c40f','#2ecc71']
+  );
+
+  // 4) Participation Trend (Line)
+  const t = {{ trend_data|tojson }};
+  const years = [...new Set(t.map(d=>d.year))];
+  const summer = years.map(y => {
+    const r = t.find(d=>d.year===y && d.season==='Summer');
+    return r ? r.count : 0;
+  });
+  const winter = years.map(y => {
+    const r = t.find(d=>d.year===y && d.season==='Winter');
+    return r ? r.count : 0;
+  });
+  new Chart(document.getElementById('trendChart'), {
+    type: 'line',
+    data: {
+      labels: years,
+      datasets: [
+        { label:'Summer', data:summer, borderColor:'#f39c12', fill:false },
+        { label:'Winter', data:winter, borderColor:'#2980b9', fill:false }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        title:{ display:true, text:'Participation Trend by Year & Season' }
+      }
+    }
+  });
+
+  // 5) Medals by Continent (Horizontal Bar)
+  new Chart(document.getElementById('medalContChart'), {
+    type: 'bar',
+    data: {
+      labels: cont.map(d=>d.continent),
+      datasets:[{
+        label:'Medals',
+        data: cont.map(d=>d.medals),
+        backgroundColor:'#c0392b'
+      }]
+    },
+    options:{
+      indexAxis:'y',
+      responsive:true,
+      plugins:{
+        legend:{ display:false },
+        title:{ display:true, text:'Medals by Continent' },
+        datalabels:{
+          anchor:'end',
+          align:'right',
+          formatter:v=>v.toLocaleString()
+        }
+      },
+      scales:{ x:{ beginAtZero:true } }
+    },
+    plugins:[ChartDataLabels]
+  });
+
+  // 6) Top 10 Most Participated Events
+  const topEventsArr = {{ top_events_data|tojson }};
+  new Chart(document.getElementById('topEventsChart'), {
+    type:'bar',
+    data:{
+      labels: topEventsArr.map(d=>d.event),
+      datasets:[{
+        label:'Participants',
+        data: topEventsArr.map(d=>d.count),
+        backgroundColor:'#8e44ad'
+      }]
+    },
+    options:{
+      indexAxis:'y',
+      responsive:true,
+      plugins:{
+        title:{ display:true, text:'Top 10 Most Participated Events' }
+      }
+    }
+  });
+</script>
+{% endblock %}

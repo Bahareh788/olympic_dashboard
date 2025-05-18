@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Tactical Dashboard</h1>
+<canvas id="medalChart" width="400" height="200"></canvas>
+<script>
+    const ctx2 = document.getElementById('medalChart');
+    new Chart(ctx2, {
+        type: 'bar',
+        data: {
+            labels: ['USA', 'RUS', 'CHN'],
+            datasets: [{
+                label: 'Medals',
+                data: [100, 85, 65],
+                backgroundColor: ['gold', 'silver', 'brown'],
+            }]
+        }
+    });
+</script>
+{% endblock %}

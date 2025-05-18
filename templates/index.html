@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block content %}
+  <div style="text-align:center; margin-top:50px;">
+    <h1>Welcome to the Olympic Dashboard</h1>
+    <p style="margin:40px 0;">
+      <a href="{{ url_for('analytic_dashboard') }}"
+         style="display:inline-block;padding:15px 30px;margin:0 10px;
+                background:#3498db;color:#fff;text-decoration:none;
+                font-size:1.1rem;border-radius:5px;">
+        Analytical Dashboard
+      </a>
+      <a href="{{ url_for('tactical_dashboard') }}"
+         style="display:inline-block;padding:15px 30px;margin:0 10px;
+                background:#2ecc71;color:#fff;text-decoration:none;
+                font-size:1.1rem;border-radius:5px;">
+        Tactical Dashboard
+      </a>
+    </p>
+  </div>
+{% endblock %}

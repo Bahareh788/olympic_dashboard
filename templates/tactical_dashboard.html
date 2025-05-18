@@ -1,159 +1,90 @@
-{% extends 'base.html' %}
-{% block content %}
-  <h1>Tactical Dashboard</h1>
-
-  <!-- Chart 1: Medal Count by Country & Gender -->
-  <section>
-    <h2>Medal Count by Country &amp; Gender</h2>
-    <canvas id="medalCountChart" width="600" height="300"></canvas>
-  </section>
-
-  <!-- Chart 2: Age Distribution of Medalists -->
-  <section>
-    <h2>Age Distribution of Medalists</h2>
-    <canvas id="ageDistributionChart" width="600" height="300"></canvas>
-  </section>
-
-  <!-- Chart 3: Top Performing Sports by Medal Count -->
-  <section>
-    <h2>Top Performing Sports</h2>
-    <canvas id="topSportsChart" width="600" height="300"></canvas>
-  </section>
-
-  <!-- Chart 4: Medal Efficiency by Country -->
-  <section>
-    <h2>Medal Efficiency by Country</h2>
-    <canvas id="efficiencyChart" width="600" height="300"></canvas>
-  </section>
-
-  <!-- load Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script>
-    // ——— Chart 1: Medal Count by Country & Gender ———
-    (function(){
-      const raw = {{ medal_count_data|tojson }};
-      const countries = [...new Set(raw.map(r=>r.country))];
-      const maleCounts   = countries.map(c => {
-        const rec = raw.find(r=>r.country===c && r.gender==='M');
-        return rec ? rec.count : 0;
-      });
-      const femaleCounts = countries.map(c => {
-        const rec = raw.find(r=>r.country===c && r.gender==='F');
-        return rec ? rec.count : 0;
-      });
-
-      new Chart(
-        document.getElementById('medalCountChart').getContext('2d'),
-        {
-          type: 'bar',
-          data: {
-            labels: countries,
-            datasets: [
-              { label: 'Male',   data: maleCounts },
-              { label: 'Female', data: femaleCounts }
-            ]
-          },
-          options: {
-            responsive: true,
-            scales: {
-              x: { stacked: false },
-              y: { beginAtZero: true }
-            }
-          }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tactical Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        canvas {
+            width: 100% !important;
+            max-width: 700px;
+            height: auto !important;
         }
-      );
-    })();
+    </style>
+</head>
+<body>
+    <h1><strong>Tactical Dashboard</strong></h1>
 
+    <h2>1. Age Distribution of Medalists</h2>
+    <canvas id="ageChart"></canvas>
 
-    // ——— Chart 2: Age Distribution of Medalists ———
-    (function(){
-      const ages = {{ medalist_ages|tojson }};
-      // build a frequency map
-      const freq = {};
-      ages.forEach(a => { freq[a] = (freq[a]||0) + 1; });
-      const ageLabels = Object.keys(freq).sort((a,b)=>a-b);
-      const ageData   = ageLabels.map(a=>freq[a]);
+    <h2>2. Top Performing Sports</h2>
+    <canvas id="sportsChart"></canvas>
 
-      new Chart(
-        document.getElementById('ageDistributionChart').getContext('2d'),
-        {
-          type: 'bar',
-          data: {
-            labels: ageLabels,
-            datasets: [{
-              label: 'Number of Medalists',
-              data: ageData
-            }]
-          },
-          options: {
-            responsive: true,
-            scales: {
-              x: { title: { display: true, text: 'Age' } },
-              y: { beginAtZero: true, title: { display: true, text: 'Count' } }
+    <h2>3. Teams with Most Gold Medals</h2>
+    <canvas id="goldTeamsChart"></canvas>
+
+    <h2>4. Top Medalist Athletes (Gold Medals)</h2>
+    <canvas id="goldAthletesChart"></canvas>
+
+    <script>
+        // 1. Age Distribution Histogram
+        const ageCounts = {};
+        {{ medalist_ages|tojson }}.forEach(age => {
+            ageCounts[age] = (ageCounts[age] || 0) + 1;
+        });
+        const ageLabels = Object.keys(ageCounts).sort((a, b) => a - b);
+        const ageValues = ageLabels.map(age => ageCounts[age]);
+
+        new Chart(document.getElementById('ageChart'), {
+            type: 'bar',
+            data: {
+                labels: ageLabels,
+                datasets: [{
+                    label: 'Number of Medalists',
+                    data: ageValues
+                }]
             }
-          }
-        }
-      );
-    })();
+        });
 
-
-    // ——— Chart 3: Top Performing Sports by Medal Count ———
-    (function(){
-      const sports = {{ top_sports_data|tojson }};
-      const sportLabels = sports.map(s=>s.sport);
-      const sportMedals = sports.map(s=>s.medals);
-
-      new Chart(
-        document.getElementById('topSportsChart').getContext('2d'),
-        {
-          type: 'bar',
-          data: {
-            labels: sportLabels,
-            datasets: [{
-              label: 'Medals',
-              data: sportMedals
-            }]
-          },
-          options: {
-            indexAxis: 'y',
-            responsive: true,
-            scales: {
-              x: { beginAtZero: true },
-              y: { title: { display: true, text: 'Sport' } }
+        // 2. Top Performing Sports
+        const sportsData = {{ top_sports_data|tojson }};
+        new Chart(document.getElementById('sportsChart'), {
+            type: 'bar',
+            data: {
+                labels: sportsData.map(d => d.sport),
+                datasets: [{
+                    label: 'Medals',
+                    data: sportsData.map(d => d.medals)
+                }]
             }
-          }
-        }
-      );
-    })();
+        });
 
-
-    // ——— Chart 4: Medal Efficiency by Country ———
-    (function(){
-      const eff = {{ efficiency_data|tojson }};
-      const effCountries = eff.map(e=>e.country);
-      const effValues    = eff.map(e=>e.efficiency);
-
-      new Chart(
-        document.getElementById('efficiencyChart').getContext('2d'),
-        {
-          type: 'bar',
-          data: {
-            labels: effCountries,
-            datasets: [{
-              label: 'Medals per Athlete',
-              data: effValues
-            }]
-          },
-          options: {
-            indexAxis: 'y',
-            responsive: true,
-            scales: {
-              x: { beginAtZero: true },
-              y: { title: { display: true, text: 'Country' } }
+        // 3. Teams with Most Gold Medals
+        const goldTeamsData = {{ gold_teams_data|tojson }};
+        new Chart(document.getElementById('goldTeamsChart'), {
+            type: 'bar',
+            data: {
+                labels: goldTeamsData.map(d => d.team),
+                datasets: [{
+                    label: 'Gold Medals',
+                    data: goldTeamsData.map(d => d.golds)
+                }]
             }
-          }
-        }
-      );
-    })();
-  </script>
-{% endblock %}
+        });
+
+        // 4. Top Medalist Athletes
+        const athleteData = {{ top_athletes_data|tojson }};
+        new Chart(document.getElementById('goldAthletesChart'), {
+            type: 'bar',
+            data: {
+                labels: athleteData.map(d => d.athlete),
+                datasets: [{
+                    label: 'Gold Medals',
+                    data: athleteData.map(d => d.golds)
+                }]
+            }
+        });
+    </script>
+</body>
+</html>

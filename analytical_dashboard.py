@@ -1,0 +1,264 @@
+import plotly.express as px
+import plotly.graph_objects as go
+import pandas as pd
+from db_utils import execute_query
+
+# Olympic colors
+OLYMPIC_COLORS = {
+    'blue': '#0085C3',
+    'yellow': '#F4C300',
+    'black': '#000000',
+    'green': '#009F3D',
+    'red': '#DF0024'
+}
+
+def create_gender_distribution():
+    query = """
+    SELECT gender, COUNT(DISTINCT athleteid) as count
+    FROM athlete
+    GROUP BY gender
+    """
+    data = execute_query(query)
+    
+    fig = px.pie(
+        data,
+        values='count',
+        names='gender',
+        title='Athlete Count by Gender',
+        labels={'gender': 'Gender', 'count': 'Number of Athletes'},
+        color='gender',
+        color_discrete_map={'M': OLYMPIC_COLORS['blue'], 'F': OLYMPIC_COLORS['red']}
+    )
+    return fig
+
+def create_participation_trend():
+    query = """
+    SELECT og.year as year, COUNT(DISTINCT p.athleteid) as athlete_count
+    FROM olympicgames og
+    JOIN participation p ON og.gamesid = p.gamesid
+    GROUP BY og.year
+    ORDER BY og.year
+    """
+    data = execute_query(query)
+    
+    fig = px.line(
+        data,
+        x='year',
+        y='athlete_count',
+        title='Athlete Participation Over Time',
+        labels={'year': 'Olympic Year', 'athlete_count': 'Number of Athletes'}
+    )
+    fig.update_traces(line_color=OLYMPIC_COLORS['blue'])
+    return fig
+
+def create_top_events():
+    query = """
+    SELECT s.sportname as name, COUNT(DISTINCT p.athleteid) as athlete_count
+    FROM sport s
+    JOIN event e ON s.sportid = e.sportid
+    JOIN participation p ON e.eventid = p.eventid
+    GROUP BY s.sportname
+    ORDER BY athlete_count DESC
+    LIMIT 5
+    """
+    data = execute_query(query)
+    
+    fig = px.bar(
+        data,
+        y='name',
+        x='athlete_count',
+        orientation='h',
+        title='Top 5 Sports by Athlete Participation',
+        labels={'name': 'Sport', 'athlete_count': 'Number of Athletes'},
+        color='athlete_count',
+        color_continuous_scale=[OLYMPIC_COLORS['blue'], OLYMPIC_COLORS['green']]
+    )
+    return fig
+
+def create_sport_distribution():
+    query = """
+    SELECT s.sportname as name, COUNT(DISTINCT e.eventid) as event_count
+    FROM sport s
+    JOIN event e ON s.sportid = e.sportid
+    GROUP BY s.sportname
+    """
+    data = execute_query(query)
+    
+    fig = px.treemap(
+        data,
+        path=['name'],
+        values='event_count',
+        title='Number of Events per Sport',
+        color='event_count',
+        color_continuous_scale=[OLYMPIC_COLORS['blue'], OLYMPIC_COLORS['green']]
+    )
+    return fig
+
+def create_country_map():
+    # First query to check all countries (optional, keep for debugging if needed)
+    # query = """
+    # SELECT
+    #     c.countryname as name,
+    #     c.noc as noc,
+    #     c.region as region
+    # FROM country c
+    # """
+    # all_countries_data = pd.DataFrame(execute_query(query))
+    # print("\nAll countries from country table:\n", all_countries_data)
+    # print("\nFrench Guiana in all_countries_data:\n", all_countries_data[all_countries_data['noc'] == 'GUF'])
+
+    # Main query for the map, joining staging_main with country
+    query = """
+    SELECT
+        c.countryname as name,
+        c.noc as noc,
+        COALESCE(sm_counts.athlete_count, 0) as athlete_count,
+        c.region as region
+    FROM country c
+LEFT JOIN (
+    SELECT
+        noc,
+        COUNT(DISTINCT athleteid) as athlete_count
+    FROM staging_main
+    GROUP BY noc
+) sm_counts ON c.noc = sm_counts.noc;
+    """
+    data = pd.DataFrame(execute_query(query))
+
+    # Strip whitespace from country names
+    data['name'] = data['name'].str.strip()
+
+
+    # Define mapping from database regions to continent names and color scales
+    region_mapping = {
+        'North America': {'continent': 'Americas', 'scale': ['#FFE5E5', '#DF0024']},  # Red
+        'South America': {'continent': 'Americas', 'scale': ['#FFE5E5', '#DF0024']},  # Red
+        'Americas': {'continent': 'Americas', 'scale': ['#FFE5E5', '#DF0024']}, # Add Americas mapping for exact match
+        'Europe': {'continent': 'Europe', 'scale': ['#E5FFE5', '#009F3D']},    # Green
+        'Africa': {'continent': 'Africa', 'scale': ['#CCCCCC', '#000000']},    # Black/Gray
+        'Asia': {'continent': 'Asia', 'scale': ['#FFF9E5', '#F4C300']},      # Yellow
+        'Oceania': {'continent': 'Oceania', 'scale': ['#E5F5FF', '#0085C3']},    # Blue
+        'Mixed': {'continent': 'Other', 'scale': ['#F0F0F0', '#B0F0B0']}, # Map Mixed to Other
+        'Unknown': {'continent': 'Other', 'scale': ['#F0F0F0', '#B0F0B0']}, # Map Unknown to Other
+        None: {'continent': 'Other', 'scale': ['#F0F0F0', '#B0F0B0']} # Map None to Other
+    }
+
+    fig = go.Figure()
+
+    # Get unique regions from data, including None
+    unique_regions_in_data = data['region'].unique()
+
+    # Iterate through the unique regions found in the data
+    for region_value in unique_regions_in_data:
+        # Determine the mapping for this region value, default to 'Other' mapping if not found
+        mapping = region_mapping.get(region_value, region_mapping[None])
+
+        # Filter data for the current region value (handle None specifically)
+        if region_value is None:
+             region_data = data[data['region'].isnull()].copy() # Create a copy to avoid SettingWithCopyWarning
+        else:
+             # Exclude France from Europe and French Guiana from Americas in the main loop
+             if region_value == 'Europe':
+                 region_data = data[(data['region'] == region_value) & (data['name'] != 'France')].copy() # Create a copy
+             elif region_value == 'Americas' or region_value == 'North America' or region_value == 'South America':
+                  region_data = data[(data['region'] == region_value) & (data['name'] != 'French Guiana')].copy() # Create a copy
+             else:
+                 region_data = data[data['region'] == region_value].copy() # Create a copy
+
+        # For countries with no participation data, athlete_count will be 0. Handle this for coloring.
+        region_data['athlete_count'] = region_data['athlete_count'].fillna(0);
+
+        if not region_data.empty:
+            # Add print statement to inspect data for Europe region
+            # if mapping['continent'] == 'Europe':
+                # print("\nData for Europe region before creating trace:\n", region_data)
+
+            fig.add_trace(go.Choropleth(
+                locations=region_data['name'].tolist(), # Use list of country names for locations
+                z=region_data['athlete_count'].tolist(), # Use list of athlete counts for z
+                locationmode='country names', # Change location mode to country names
+                name=mapping['continent'], # Use mapped continent name for legend
+                colorscale=mapping['scale'],
+                showscale=False, # Hide individual trace color scales
+                hoverinfo='location+name+z',
+                hoverlabel=dict(bgcolor='white'),
+                marker=dict(line=dict(color='lightgray', width=0.5))
+            ))
+
+    # Update the layout for a minimal style and title
+    fig.update_geos(
+        showcoastlines=True,
+        coastlinecolor='lightgray',
+        showland=True,
+        landcolor='white',
+        showocean=True,
+        oceancolor='#F8F9FA',
+        showlakes=True,
+        lakecolor='#F8F9FA',
+        showcountries=True,
+        countrycolor='lightgray',
+        showframe=False,
+        projection_type='equirectangular'
+    )
+
+    # Update the layout to match the image's title and show continent legends
+    fig.update_layout(
+        title={'text': 'Athletes Per Country', 'xanchor': 'center', 'yanchor': 'top', 'y': 0.95},
+        margin=dict(l=0, r=0, t=50, b=0),
+        paper_bgcolor='white',
+        plot_bgcolor='white',
+        showlegend=True, # Show continent legends
+        legend=dict(
+            yanchor="top",
+            y=0.99,
+            xanchor="left",
+            x=0.01,
+            bgcolor='rgba(255, 255, 255, 0.8)'
+        ),
+         annotations=[{
+            'text': 'Light → Dark shows fewer to more athletes within each continent',
+            'showarrow': False,
+            'xref': 'paper',
+            'yref': 'paper',
+            'x': 0.5,
+            'y': -0.1,
+            'font': {'size': 12}
+        }]
+    )
+
+    return fig
+
+def create_gender_participation_trend():
+    query = """
+    SELECT
+        og.year as year,
+        a.gender as gender,
+        COUNT(DISTINCT p.athleteid) as athlete_count
+    FROM olympicgames og
+    JOIN participation p ON og.gamesid = p.gamesid
+    JOIN athlete a ON p.athleteid = a.athleteid
+    GROUP BY og.year, a.gender
+    ORDER BY og.year, a.gender
+    """
+    data = execute_query(query)
+    
+    fig = px.line(
+        data,
+        x='year',
+        y='athlete_count',
+        color='gender',
+        title='Gender Participation Evolution Over Time',
+        labels={'year': 'Olympic Year', 'athlete_count': 'Number of Athletes', 'gender': 'Gender'},
+        color_discrete_map={'M': OLYMPIC_COLORS['blue'], 'F': OLYMPIC_COLORS['red']}
+    )
+    return fig
+
+def get_analytical_dashboard():
+    return {
+        'gender_dist': create_gender_distribution(),
+        'participation_trend': create_participation_trend(),
+        'top_events': create_top_events(),
+        'sport_dist': create_sport_distribution(),
+        'country_map': create_country_map(),
+        'gender_participation_trend': create_gender_participation_trend()
+    } 

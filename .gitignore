@@ -1,0 +1,6 @@
+__pycache__/
+venv/
+# Add other patterns as needed, e.g.:
+# *.log
+# *.swp
+# .env 

@@ -26,14 +26,29 @@ tactical_figures = get_tactical_dashboard()
 # Create tabs
 tabs = dbc.Tabs([
     dbc.Tab(label="Analytical Dashboard", children=[
+        # Summary Cards Row
         dbc.Row([
             dbc.Col([
-                dcc.Graph(figure=analytical_figures['gender_dist']),
+                dcc.Graph(figure=analytical_figures['summary_cards'][0], config={'displayModeBar': False}),
+            ], width=3),
+            dbc.Col([
+                dcc.Graph(figure=analytical_figures['summary_cards'][1], config={'displayModeBar': False}),
+            ], width=3),
+            dbc.Col([
+                dcc.Graph(figure=analytical_figures['summary_cards'][2], config={'displayModeBar': False}),
+            ], width=3),
+            dbc.Col([
+                dcc.Graph(figure=analytical_figures['summary_cards'][3], config={'displayModeBar': False}),
+            ], width=3)
+        ], className="mb-4"),
+        dbc.Row([
+            dbc.Col([
+                dcc.Graph(figure=analytical_figures['gender_distribution']),
                 dcc.Graph(figure=analytical_figures['participation_trend'])
             ], width=6),
             dbc.Col([
                 dcc.Graph(figure=analytical_figures['top_events']),
-                dcc.Graph(figure=analytical_figures['sport_dist'])
+                dcc.Graph(figure=analytical_figures['sport_distribution'])
             ], width=6)
         ]),
         dbc.Row([
@@ -49,6 +64,21 @@ tabs = dbc.Tabs([
         ])
     ]),
     dbc.Tab(label="Tactical Dashboard", children=[
+        # Summary Cards Row
+        dbc.Row([
+            dbc.Col([
+                dcc.Graph(figure=tactical_figures['summary_cards'][0], config={'displayModeBar': False}),
+            ], width=3),
+            dbc.Col([
+                dcc.Graph(figure=tactical_figures['summary_cards'][1], config={'displayModeBar': False}),
+            ], width=3),
+            dbc.Col([
+                dcc.Graph(figure=tactical_figures['summary_cards'][2], config={'displayModeBar': False}),
+            ], width=3),
+            dbc.Col([
+                dcc.Graph(figure=tactical_figures['summary_cards'][3], config={'displayModeBar': False}),
+            ], width=3)
+        ], className="mb-4"),
         dbc.Row([
             dbc.Col([
                 dcc.Graph(figure=tactical_figures['medal_by_country_gender']),

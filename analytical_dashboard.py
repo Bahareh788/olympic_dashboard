@@ -2,6 +2,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 import pandas as pd
 from db_utils import execute_query
+from components.analytical_summary_cards import create_analytical_summary_cards
 
 # Olympic colors
 OLYMPIC_COLORS = {
@@ -255,10 +256,11 @@ def create_gender_participation_trend():
 
 def get_analytical_dashboard():
     return {
-        'gender_dist': create_gender_distribution(),
+        'summary_cards': create_analytical_summary_cards(),
+        'gender_distribution': create_gender_distribution(),
         'participation_trend': create_participation_trend(),
         'top_events': create_top_events(),
-        'sport_dist': create_sport_distribution(),
+        'sport_distribution': create_sport_distribution(),
         'country_map': create_country_map(),
         'gender_participation_trend': create_gender_participation_trend()
     } 

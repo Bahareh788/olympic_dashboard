@@ -25,7 +25,7 @@ def create_gender_distribution():
         data,
         values='count',
         names='gender',
-        title='Athlete Count by Gender',
+        title='Total Athletes by Gender',
         labels={'gender': 'Gender', 'count': 'Number of Athletes'},
         color='gender',
         color_discrete_map={'M': OLYMPIC_COLORS['blue'], 'F': OLYMPIC_COLORS['red']}
@@ -46,7 +46,7 @@ def create_participation_trend():
         data,
         x='year',
         y='athlete_count',
-        title='Athlete Participation Over Time',
+        title='Gender Participation Evolution Over Time',
         labels={'year': 'Olympic Year', 'athlete_count': 'Number of Athletes'}
     )
     fig.update_traces(line_color=OLYMPIC_COLORS['blue'])
@@ -69,7 +69,7 @@ def create_top_events():
         y='name',
         x='athlete_count',
         orientation='h',
-        title='Top 5 Sports by Athlete Participation',
+        title='Top 5 Sports by Number of Athletes',
         labels={'name': 'Sport', 'athlete_count': 'Number of Athletes'},
         color='athlete_count',
         color_continuous_scale=[OLYMPIC_COLORS['blue'], OLYMPIC_COLORS['green']]
@@ -89,7 +89,7 @@ def create_sport_distribution():
         data,
         path=['name'],
         values='event_count',
-        title='Number of Events per Sport',
+        title='Events per Sport',
         color='event_count',
         color_continuous_scale=[OLYMPIC_COLORS['blue'], OLYMPIC_COLORS['green']]
     )
@@ -132,13 +132,13 @@ LEFT JOIN (
 
     # Define mapping from database regions to continent names and color scales
     region_mapping = {
-        'North America': {'continent': 'Americas', 'scale': ['#FFE5E5', '#DF0024']},  # Red
-        'South America': {'continent': 'Americas', 'scale': ['#FFE5E5', '#DF0024']},  # Red
-        'Americas': {'continent': 'Americas', 'scale': ['#FFE5E5', '#DF0024']}, # Add Americas mapping for exact match
-        'Europe': {'continent': 'Europe', 'scale': ['#E5FFE5', '#009F3D']},    # Green
-        'Africa': {'continent': 'Africa', 'scale': ['#CCCCCC', '#000000']},    # Black/Gray
-        'Asia': {'continent': 'Asia', 'scale': ['#FFF9E5', '#F4C300']},      # Yellow
-        'Oceania': {'continent': 'Oceania', 'scale': ['#E5F5FF', '#0085C3']},    # Blue
+        'North America': {'continent': 'Americas', 'scale': ['#FFE5E5', OLYMPIC_COLORS['red']]},  # Red
+        'South America': {'continent': 'Americas', 'scale': ['#FFE5E5', OLYMPIC_COLORS['red']]},  # Red
+        'Americas': {'continent': 'Americas', 'scale': ['#FFE5E5', OLYMPIC_COLORS['red']]}, # Add Americas mapping for exact match
+        'Europe': {'continent': 'Europe', 'scale': ['#E5FFE5', OLYMPIC_COLORS['green']]},    # Green
+        'Africa': {'continent': 'Africa', 'scale': ['#CCCCCC', OLYMPIC_COLORS['black']]},    # Black/Gray
+        'Asia': {'continent': 'Asia', 'scale': ['#FFF9E5', OLYMPIC_COLORS['yellow']]},      # Yellow
+        'Oceania': {'continent': 'Oceania', 'scale': ['#E5F5FF', OLYMPIC_COLORS['blue']]},    # Blue
         'Mixed': {'continent': 'Other', 'scale': ['#F0F0F0', '#B0F0B0']}, # Map Mixed to Other
         'Unknown': {'continent': 'Other', 'scale': ['#F0F0F0', '#B0F0B0']}, # Map Unknown to Other
         None: {'continent': 'Other', 'scale': ['#F0F0F0', '#B0F0B0']} # Map None to Other
@@ -177,7 +177,7 @@ LEFT JOIN (
             fig.add_trace(go.Choropleth(
                 locations=region_data['name'].tolist(), # Use list of country names for locations
                 z=region_data['athlete_count'].tolist(), # Use list of athlete counts for z
-                locationmode='country names', # Change location mode to country names
+                locationmode='country names', # Use country names for most countries
                 name=mapping['continent'], # Use mapped continent name for legend
                 colorscale=mapping['scale'],
                 showscale=False, # Hide individual trace color scales
@@ -254,6 +254,41 @@ def create_gender_participation_trend():
     )
     return fig
 
+def create_top_countries_by_medals():
+    query = """
+    SELECT 
+        c.countryname,
+        COUNT(m.medalid) as medal_count
+    FROM country c
+    JOIN team t ON c.noc = t.noc
+    JOIN participation p ON t.teamid = p.teamid
+    JOIN medal m ON p.medalid = m.medalid
+    WHERE m.medaltype != 'None'
+    GROUP BY c.countryname
+    ORDER BY medal_count DESC
+    LIMIT 3
+    """
+    data = execute_query(query)
+    
+    cards = []
+    for index, row in enumerate(data):
+        fig = go.Figure()
+        fig.add_trace(go.Indicator(
+            mode="number",
+            value=row['medal_count'],
+            title={"text": f"{row['countryname']}"},
+            number={'font': {'size': 30}},
+            domain={'row': 0, 'column': 0}
+        ))
+        fig.update_layout(
+            height=100,
+            margin=dict(l=0, r=0, t=30, b=0),
+            paper_bgcolor='white',
+            plot_bgcolor='white'
+        )
+        cards.append(fig)
+    return cards
+
 def get_analytical_dashboard():
     return {
         'summary_cards': create_analytical_summary_cards(),
@@ -262,5 +297,6 @@ def get_analytical_dashboard():
         'top_events': create_top_events(),
         'sport_distribution': create_sport_distribution(),
         'country_map': create_country_map(),
-        'gender_participation_trend': create_gender_participation_trend()
+        'gender_participation_trend': create_gender_participation_trend(),
+        'top_countries_by_medals': create_top_countries_by_medals()
     } 

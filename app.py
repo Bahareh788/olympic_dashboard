@@ -411,6 +411,7 @@ def make_tactical_summary_card(icon, color, card_title, card_value, bgcolor):
     # print(f"Making card - Title: {card_title}, Value: {card_value}")
     
     display_title = card_title
+    display_main_content = ""
     
     # Handle different types of card values
     if isinstance(card_value, dict) and 'name' in card_value and 'count' in card_value:

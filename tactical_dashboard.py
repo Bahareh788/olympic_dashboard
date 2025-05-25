@@ -73,34 +73,79 @@ def create_medalist_age_distribution():
     """
     data = execute_query(query)
     
-    fig = px.line(
-        data,
-        x='age',
-        y='medal_count',
-        title='Age Distribution of Medalists',
-        labels={'age': 'Age', 'medal_count': 'Number of Medals'},
-        hover_data=['medal_count']
-    )
-    fig.update_traces(line_color=OLYMPIC_COLORS['green'])
-    fig.update_layout(
-        font=DEFAULT_FONT,
-        title_font=TITLE_FONT,
-        legend=dict(
-            orientation="h",
-            yanchor="bottom",
-            y=1.02,
-            xanchor="right",
-            x=1,
-            bgcolor="#fff",
-            bordercolor="#eee",
-            borderwidth=1,
-            font=DEFAULT_FONT
+    # Find the peak point
+    peak_age = max(data, key=lambda x: x['medal_count'])
+    
+    # Create the figure using go.Figure for more control
+    fig = go.Figure()
+    
+    # Add the main line with area fill
+    fig.add_trace(go.Scatter(
+        x=[row['age'] for row in data],
+        y=[row['medal_count'] for row in data],
+        mode='lines',
+        name='Medal Count',
+        line=dict(color=OLYMPIC_COLORS['green'], width=3),
+        fill='tozeroy',
+        fillcolor='rgba(0, 159, 61, 0.1)',  # Light green fill
+        hovertemplate='Age: %{x}<br>Medals: %{y:,}<extra></extra>'
+    ))
+    
+    # Add peak point marker
+    fig.add_trace(go.Scatter(
+        x=[peak_age['age']],
+        y=[peak_age['medal_count']],
+        mode='markers+text',
+        marker=dict(
+            color=OLYMPIC_COLORS['red'],
+            size=12,
+            symbol='star',
+            line=dict(color='white', width=2)
         ),
-        margin=dict(l=40, r=20, t=60, b=40),
-        paper_bgcolor="#fff",
-        plot_bgcolor="#fff",
-        height=300
+        text=[f"Peak: {peak_age['medal_count']:,} medals"],
+        textposition="top center",
+        name='Peak Age',
+        hovertemplate='Peak Age: %{x}<br>Medals: %{y:,}<extra></extra>'
+    ))
+    
+    # Update layout with improved styling
+    fig.update_layout(
+        title=dict(
+            text='Age Distribution of Medalists',
+            font=TITLE_FONT,
+            y=0.95
+        ),
+        xaxis=dict(
+            title='Age (years)',
+            showgrid=True,
+            gridcolor='rgba(0,0,0,0.1)',
+            zeroline=True,
+            zerolinecolor='rgba(0,0,0,0.2)',
+            zerolinewidth=1,
+            tickmode='linear',
+            tick0=0,
+            dtick=5,  # Show tick every 5 years
+            range=[min(row['age'] for row in data)-1, max(row['age'] for row in data)+1]
+        ),
+        yaxis=dict(
+            title='Number of Medals',
+            showgrid=True,
+            gridcolor='rgba(0,0,0,0.1)',
+            zeroline=True,
+            zerolinecolor='rgba(0,0,0,0.2)',
+            zerolinewidth=1,
+            tickformat=',',  # Add commas to numbers
+            rangemode='tozero'  # Start y-axis from zero
+        ),
+        font=DEFAULT_FONT,
+        plot_bgcolor='white',
+        paper_bgcolor='white',
+        margin=dict(l=60, r=20, t=80, b=40),
+        height=400,
+        showlegend=False,  # Hide legend since we only have one series
+        hovermode='x unified'  # Show all points at a given x-value
     )
+    
     return fig
 
 def create_top_sports():

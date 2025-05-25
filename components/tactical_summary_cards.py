@@ -137,7 +137,6 @@ def create_gold_medals_pie():
                  hover_data=['gold_count'])
     
     fig.update_traces(
-        textinfo='label+percent',
         textposition='outside',
         textfont_size=11,
         marker=dict(line=dict(color='#fff', width=1)),
@@ -152,12 +151,13 @@ def create_gold_medals_pie():
             yanchor="middle",
             y=0.5,
             xanchor="left",
-            x=1.02,
+            x=1.1,
             bgcolor="#fff",
             bordercolor="#eee",
-            borderwidth=1
+            borderwidth=1,
+            font=DEFAULT_FONT
         ),
-        margin=dict(l=40, r=120, t=60, b=40),
+        margin=dict(l=40, r=150, t=60, b=40),
         paper_bgcolor="#fff",
         plot_bgcolor="#fff",
         height=400,

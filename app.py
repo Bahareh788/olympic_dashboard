@@ -732,7 +732,7 @@ tactical_content_layout = html.Div([
                     "boxShadow": "0 2px 12px rgba(0,0,0,0.10)"
                 }
             )
-        ], width={"size": 8, "sm": 12, "md": 8, "lg": 8}, style={"minWidth": 0}),
+        ], width={"size": 12, "sm": 12, "md": 6, "lg": 6}, style={"minWidth": 0, "flexGrow": 1}),
         dbc.Col([
             dcc.Graph(
                 figure=tactical_figures['medalist_age'],
@@ -746,8 +746,8 @@ tactical_content_layout = html.Div([
                     "boxShadow": "0 2px 12px rgba(0,0,0,0.10)"
                 }
             )
-        ], width={"size": 4, "sm": 12, "md": 4, "lg": 4}, style={"minWidth": 0})
-    ], style={"gap": "2rem"}, className="mb-4", align="center"),
+        ], width={"size": 12, "sm": 12, "md": 6, "lg": 6}, style={"minWidth": 0, "flexGrow": 1})
+    ], style={"gap": "2rem", "display": "flex", "flexWrap": "wrap", "alignItems": "stretch"}, className="mb-4"),
     # Next rows (if any)
     dbc.Row([
         dbc.Col([

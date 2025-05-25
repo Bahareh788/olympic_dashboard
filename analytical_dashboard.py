@@ -301,15 +301,6 @@ LEFT JOIN (
         paper_bgcolor="#fff",
         plot_bgcolor="#fff",
         showlegend=True, # Show continent legends
-        annotations=[{
-            'text': 'Light → Dark shows fewer to more athletes within each continent',
-            'showarrow': False,
-            'xref': 'paper',
-            'yref': 'paper',
-            'x': 0.5,
-            'y': -0.1,
-            'font': {'size': 12, 'color': '#000000'}
-        }]
     )
 
     # Keep or adjust colorscale for data representation as needed in light theme

@@ -82,7 +82,13 @@ def create_top_events():
         title='Top 5 Sports by Number of Athletes',
         labels={'name': 'Sport', 'athlete_count': 'Number of Athletes'},
         color='athlete_count',
-        color_continuous_scale=[OLYMPIC_COLORS['blue'], OLYMPIC_COLORS['green']]
+        color_continuous_scale=[
+            OLYMPIC_COLORS['blue'],
+            OLYMPIC_COLORS['yellow'],
+            OLYMPIC_COLORS['black'],
+            OLYMPIC_COLORS['green'],
+            OLYMPIC_COLORS['red']
+        ]
     )
     fig.update_layout(
         paper_bgcolor='#FFFFFF',
@@ -106,7 +112,7 @@ def create_sport_distribution():
         values='event_count',
         title='Events per Sport',
         color='event_count',
-        color_continuous_scale=[OLYMPIC_COLORS['blue'], OLYMPIC_COLORS['green']]
+        color_continuous_scale=["#b6fcd5", "#009F3D"]
     )
     fig.update_layout(
         paper_bgcolor='#FFFFFF',
@@ -323,6 +329,78 @@ def create_top_countries_by_medals():
         cards.append(fig)
     return cards
 
+def get_continent_metrics():
+    def normalize_continent(region):
+        if region in ('North America', 'South America', 'Americas'):
+            return 'Americas'
+        elif region in ('Europe',):
+            return 'Europe'
+        elif region in ('Africa',):
+            return 'Africa'
+        elif region in ('Asia',):
+            return 'Asia'
+        elif region in ('Oceania',):
+            return 'Oceania'
+        else:
+            return None
+
+    athletes_query = '''
+        SELECT c.region as continent, COUNT(DISTINCT a.athleteid) as total_athletes
+        FROM country c
+        JOIN team t ON c.noc = t.noc
+        JOIN participation p ON t.teamid = p.teamid
+        JOIN athlete a ON p.athleteid = a.athleteid
+        GROUP BY c.region
+    '''
+    athletes = execute_query(athletes_query)
+    athletes_dict = {}
+    for row in athletes:
+        norm = normalize_continent(row['continent'])
+        if norm:
+            athletes_dict[norm] = athletes_dict.get(norm, 0) + row['total_athletes']
+
+    medals_query = '''
+        SELECT c.region as continent, COUNT(m.medalid) as total_medals
+        FROM country c
+        JOIN team t ON c.noc = t.noc
+        JOIN participation p ON t.teamid = p.teamid
+        JOIN medal m ON p.medalid = m.medalid
+        WHERE m.medaltype != 'None'
+        GROUP BY c.region
+    '''
+    medals = execute_query(medals_query)
+    medals_dict = {}
+    for row in medals:
+        norm = normalize_continent(row['continent'])
+        if norm:
+            medals_dict[norm] = medals_dict.get(norm, 0) + row['total_medals']
+
+    main_continents = [
+        ('Europe', 'green'),
+        ('Americas', 'red'),
+        ('Asia', 'yellow'),
+        ('Africa', 'black'),
+        ('Oceania', 'cyan'),
+    ]
+    tactical_colors = {
+        'green':  '#4CAF50',
+        'red':    '#F44336',
+        'yellow': '#FFC107',
+        'black':  '#000000',
+        'cyan':   '#00BCD4',
+    }
+    metrics = []
+    for continent, color_key in main_continents:
+        metrics.append({
+            'continent': continent,
+            'athletes': athletes_dict.get(continent, 0),
+            'medals': medals_dict.get(continent, 0),
+            'color': tactical_colors[color_key],
+            'text_color': '#222' if color_key in ['yellow', 'green'] else '#fff'
+        })
+    metrics = sorted(metrics, key=lambda x: x['athletes'], reverse=True)
+    return metrics
+
 def get_analytical_dashboard():
     return {
         'summary_cards': create_analytical_summary_cards(),
@@ -332,5 +410,6 @@ def get_analytical_dashboard():
         'sport_distribution': create_sport_distribution(),
         'country_map': create_country_map(),
         'gender_participation_trend': create_gender_participation_trend(),
-        'top_countries_by_medals': create_top_countries_by_medals()
+        'top_countries_by_medals': create_top_countries_by_medals(),
+        'continent_metrics': get_continent_metrics()
     } 

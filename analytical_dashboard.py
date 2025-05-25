@@ -30,6 +30,11 @@ def create_gender_distribution():
         color='gender',
         color_discrete_map={'M': OLYMPIC_COLORS['blue'], 'F': OLYMPIC_COLORS['red']}
     )
+    fig.update_layout(
+        paper_bgcolor='#FFFFFF',
+        plot_bgcolor='#FFFFFF',
+        font={'color': '#000000'}
+    )
     return fig
 
 def create_participation_trend():
@@ -50,6 +55,11 @@ def create_participation_trend():
         labels={'year': 'Olympic Year', 'athlete_count': 'Number of Athletes'}
     )
     fig.update_traces(line_color=OLYMPIC_COLORS['blue'])
+    fig.update_layout(
+        paper_bgcolor='#FFFFFF',
+        plot_bgcolor='#FFFFFF',
+        font={'color': '#000000'}
+    )
     return fig
 
 def create_top_events():
@@ -74,6 +84,11 @@ def create_top_events():
         color='athlete_count',
         color_continuous_scale=[OLYMPIC_COLORS['blue'], OLYMPIC_COLORS['green']]
     )
+    fig.update_layout(
+        paper_bgcolor='#FFFFFF',
+        plot_bgcolor='#FFFFFF',
+        font={'color': '#000000'}
+    )
     return fig
 
 def create_sport_distribution():
@@ -92,6 +107,11 @@ def create_sport_distribution():
         title='Events per Sport',
         color='event_count',
         color_continuous_scale=[OLYMPIC_COLORS['blue'], OLYMPIC_COLORS['green']]
+    )
+    fig.update_layout(
+        paper_bgcolor='#FFFFFF',
+        plot_bgcolor='#FFFFFF',
+        font={'color': '#000000'}
     )
     return fig
 
@@ -191,30 +211,31 @@ LEFT JOIN (
         showcoastlines=True,
         coastlinecolor='lightgray',
         showland=True,
-        landcolor='white',
+        landcolor='#F0F0F0',
         showocean=True,
-        oceancolor='#F8F9FA',
+        oceancolor='#E0E0E0',
         showlakes=True,
-        lakecolor='#F8F9FA',
+        lakecolor='#E0E0E0',
         showcountries=True,
         countrycolor='lightgray',
         showframe=False,
         projection_type='equirectangular'
     )
 
-    # Update the layout to match the image's title and show continent legends
+    # Update the layout for light theme
     fig.update_layout(
-        title={'text': 'Athletes Per Country', 'xanchor': 'center', 'yanchor': 'top', 'y': 0.95, 'x': 0.5},
+        title={'text': 'Athletes Per Country', 'xanchor': 'center', 'yanchor': 'top', 'y': 0.95, 'x': 0.5, 'font': {'color': '#000000'}},
         margin=dict(l=0, r=0, t=50, b=0),
-        paper_bgcolor='white',
-        plot_bgcolor='white',
+        paper_bgcolor='#FFFFFF',
+        plot_bgcolor='#FFFFFF',
         showlegend=True, # Show continent legends
         legend=dict(
             yanchor="top",
             y=0.99,
             xanchor="left",
             x=0.01,
-            bgcolor='rgba(255, 255, 255, 0.8)'
+            bgcolor='#FFFFFF',
+            font={'color': '#000000'}
         ),
          annotations=[{
             'text': 'Light → Dark shows fewer to more athletes within each continent',
@@ -223,8 +244,15 @@ LEFT JOIN (
             'yref': 'paper',
             'x': 0.5,
             'y': -0.1,
-            'font': {'size': 12}
+            'font': {'size': 12, 'color': '#000000'}
         }]
+    )
+
+    # Keep or adjust colorscale for data representation as needed in light theme
+    # fig.update_traces(colorscale='Viridis') # Example of a different colorscale
+
+    fig.update_layout(
+        dragmode='zoom'
     )
 
     return fig
@@ -251,6 +279,11 @@ def create_gender_participation_trend():
         title='Gender Participation Evolution Over Time',
         labels={'year': 'Olympic Year', 'athlete_count': 'Number of Athletes', 'gender': 'Gender'},
         color_discrete_map={'M': OLYMPIC_COLORS['blue'], 'F': OLYMPIC_COLORS['red']}
+    )
+    fig.update_layout(
+        paper_bgcolor='#FFFFFF',
+        plot_bgcolor='#FFFFFF',
+        font={'color': '#000000'}
     )
     return fig
 
@@ -283,8 +316,9 @@ def create_top_countries_by_medals():
         fig.update_layout(
             height=100,
             margin=dict(l=0, r=0, t=30, b=0),
-            paper_bgcolor='white',
-            plot_bgcolor='white'
+            paper_bgcolor='#FFFFFF',
+            plot_bgcolor='#FFFFFF',
+            font={'color': '#000000'}
         )
         cards.append(fig)
     return cards

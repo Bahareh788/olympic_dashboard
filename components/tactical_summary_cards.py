@@ -62,8 +62,9 @@ def create_tactical_summary_cards():
     fig1.update_layout(
         height=150,
         margin=dict(l=0, r=0, t=30, b=0),
-        paper_bgcolor='white',
-        plot_bgcolor='white'
+        paper_bgcolor='#FFFFFF',
+        plot_bgcolor='#FFFFFF',
+        font={'color': '#000000'}
     )
     cards.append(fig1)
     
@@ -79,8 +80,9 @@ def create_tactical_summary_cards():
     fig2.update_layout(
         height=150,
         margin=dict(l=0, r=0, t=30, b=0),
-        paper_bgcolor='white',
-        plot_bgcolor='white'
+        paper_bgcolor='#FFFFFF',
+        plot_bgcolor='#FFFFFF',
+        font={'color': '#000000'}
     )
     cards.append(fig2)
     
@@ -96,8 +98,9 @@ def create_tactical_summary_cards():
     fig3.update_layout(
         height=150,
         margin=dict(l=0, r=0, t=30, b=0),
-        paper_bgcolor='white',
-        plot_bgcolor='white'
+        paper_bgcolor='#FFFFFF',
+        plot_bgcolor='#FFFFFF',
+        font={'color': '#000000'}
     )
     cards.append(fig3)
     
@@ -113,8 +116,9 @@ def create_tactical_summary_cards():
     fig4.update_layout(
         height=150,
         margin=dict(l=0, r=0, t=30, b=0),
-        paper_bgcolor='white',
-        plot_bgcolor='white'
+        paper_bgcolor='#FFFFFF',
+        plot_bgcolor='#FFFFFF',
+        font={'color': '#000000'}
     )
     cards.append(fig4)
     

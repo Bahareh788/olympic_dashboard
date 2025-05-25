@@ -9,7 +9,10 @@ OLYMPIC_COLORS = {
     'yellow': '#F4C300',
     'black': '#000000',
     'green': '#009F3D',
-    'red': '#DF0024'
+    'red': '#DF0024',
+    'gold': '#FFD700',
+    'silver': '#C0C0C0',
+    'bronze': '#CD7F32'
 }
 
 def create_medal_by_country_gender():
@@ -34,6 +37,11 @@ def create_medal_by_country_gender():
         labels={'country': 'Country', 'medal_count': 'Number of Medals', 'gender': 'Gender'},
         color_discrete_map={'M': OLYMPIC_COLORS['blue'], 'F': OLYMPIC_COLORS['red']}
     )
+    fig.update_layout(
+        paper_bgcolor='#FFFFFF',
+        plot_bgcolor='#FFFFFF',
+        font={'color': '#000000'}
+    )
     return fig
 
 def create_medalist_age_distribution():
@@ -55,6 +63,11 @@ def create_medalist_age_distribution():
         labels={'age': 'Age', 'medal_count': 'Number of Medals'}
     )
     fig.update_traces(line_color=OLYMPIC_COLORS['green'])
+    fig.update_layout(
+        paper_bgcolor='#FFFFFF',
+        plot_bgcolor='#FFFFFF',
+        font={'color': '#000000'}
+    )
     return fig
 
 def create_top_sports():
@@ -80,6 +93,11 @@ def create_top_sports():
         color='medal_count',
         color_continuous_scale=[OLYMPIC_COLORS['blue'], OLYMPIC_COLORS['yellow']]
     )
+    fig.update_layout(
+        paper_bgcolor='#FFFFFF',
+        plot_bgcolor='#FFFFFF',
+        font={'color': '#000000'}
+    )
     return fig
 
 def create_gold_medal_teams():
@@ -101,7 +119,12 @@ def create_gold_medal_teams():
         names='team',
         title='Teams with Most Gold Medals',
         hole=0.4,
-        color_discrete_sequence=px.colors.qualitative.Set3
+        color_discrete_sequence=[OLYMPIC_COLORS['gold'], OLYMPIC_COLORS['silver'], OLYMPIC_COLORS['bronze'], OLYMPIC_COLORS['blue'], OLYMPIC_COLORS['yellow'], OLYMPIC_COLORS['black'], OLYMPIC_COLORS['green'], OLYMPIC_COLORS['red']]
+    )
+    fig.update_layout(
+        paper_bgcolor='#FFFFFF',
+        plot_bgcolor='#FFFFFF',
+        font={'color': '#000000'}
     )
     return fig
 
@@ -130,6 +153,11 @@ def create_top_athletes():
         color='gold_count',
         color_continuous_scale=[OLYMPIC_COLORS['yellow'], OLYMPIC_COLORS['black']]
     )
+    fig.update_layout(
+        paper_bgcolor='#FFFFFF',
+        plot_bgcolor='#FFFFFF',
+        font={'color': '#000000'}
+    )
     return fig
 
 def create_age_vs_medal_type():
@@ -152,6 +180,11 @@ def create_age_vs_medal_type():
         category_orders={'medaltype': ['Gold', 'Silver', 'Bronze']},
         color='medaltype',
         color_discrete_map={'Gold': OLYMPIC_COLORS['yellow'], 'Silver': '#C0C0C0', 'Bronze': '#CD7F32'}
+    )
+    fig.update_layout(
+        paper_bgcolor='#FFFFFF',
+        plot_bgcolor='#FFFFFF',
+        font={'color': '#000000'}
     )
     return fig
 

@@ -204,7 +204,7 @@ LEFT JOIN (
 
     # Update the layout to match the image's title and show continent legends
     fig.update_layout(
-        title={'text': 'Athletes Per Country', 'xanchor': 'center', 'yanchor': 'top', 'y': 0.95},
+        title={'text': 'Athletes Per Country', 'xanchor': 'center', 'yanchor': 'top', 'y': 0.95, 'x': 0.5},
         margin=dict(l=0, r=0, t=50, b=0),
         paper_bgcolor='white',
         plot_bgcolor='white',

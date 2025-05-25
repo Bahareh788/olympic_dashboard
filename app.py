@@ -531,7 +531,7 @@ dashboard_header = dbc.Row([
             html.Span("/", className="mx-1 text-secondary"),
             html.Span("Dashboard", className="fw-medium")
         ], className="d-flex align-items-center small"),
-        html.H1("Dashboard", className="fw-bold fs-4 mb-0", style={"marginTop": "0.3rem"}),
+        html.H1(id="dashboard-title", className="fw-bold fs-4 mb-0", style={"marginTop": "0.3rem"}),
     ], width=True, className="d-flex flex-column justify-content-center"), # Use width=True for auto-sizing and flex for alignment
 
     # Right section: Search and Icons
@@ -828,6 +828,17 @@ def toggle_sidebar_collapse(n_clicks, is_open, content_style):
             return True, {'marginLeft': '13rem', 'padding': '2rem 1.2rem'}
     return is_open, content_style
 
+@app.callback(
+    Output('dashboard-title', 'children'),
+    [Input('url', 'pathname')]
+)
+def update_dashboard_title(pathname):
+    if pathname == "/tactical":
+        return "Tactical Dashboard"
+    elif pathname == "/analytical":
+        return "Analytical Dashboard"
+    else:
+        return "Analytical Dashboard" # Default
 
 if __name__ == '__main__':
     app.run(debug=True) 

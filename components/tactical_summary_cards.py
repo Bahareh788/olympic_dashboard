@@ -2,14 +2,12 @@ import plotly.graph_objects as go
 from db_utils import execute_query
 
 def create_tactical_summary_cards():
-    # Optimized query for summary statistics
+    # Optimized query for summary statistics with updated medal counts
     query = """
     WITH medal_stats AS (
         SELECT 
-            COUNT(m.medalid) as total_medals,
-            COUNT(CASE WHEN m.medaltype = 'Gold' THEN 1 END) as gold_medals
-        FROM medal m
-        WHERE m.medaltype != 'None'
+            (SELECT COUNT(p.medalid) FROM participation p WHERE p.medalid IS NOT NULL) as total_medals,
+            (SELECT COUNT(p.medalid) FROM participation p JOIN medal m ON p.medalid = m.medalid WHERE m.medaltype = 'Gold') as gold_medals
     ),
     top_country AS (
         SELECT 

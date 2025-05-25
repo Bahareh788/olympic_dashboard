@@ -7,7 +7,7 @@ def create_analytical_summary_cards():
     WITH stats AS (
         SELECT 
             (SELECT COUNT(DISTINCT athleteid) FROM athlete) as total_athletes,
-            (SELECT COUNT(DISTINCT countryid) FROM country) as total_countries,
+            (SELECT COUNT(DISTINCT sportid) FROM sport) as total_sports,
             (SELECT COUNT(DISTINCT eventid) FROM event) as total_events,
             (SELECT MIN(year) FROM olympicgames) as min_year,
             (SELECT MAX(year) FROM olympicgames) as max_year
@@ -36,12 +36,12 @@ def create_analytical_summary_cards():
     )
     cards.append(fig1)
     
-    # Countries Represented Card
+    # Total Number of Sports Card
     fig2 = go.Figure()
     fig2.add_trace(go.Indicator(
         mode="number",
-        value=data['total_countries'],
-        title="Countries Represented",
+        value=data['total_sports'],
+        title="Total Number of Sports",
         number={'font': {'size': 40}},
         domain={'row': 0, 'column': 1}
     ))

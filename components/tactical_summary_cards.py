@@ -1,5 +1,17 @@
+from dash import html
+import plotly.express as px
 import plotly.graph_objects as go
-from db_utils import execute_query
+import pandas as pd
+from sqlalchemy import create_engine, text
+import os
+
+# Database connection
+DATABASE_URL = os.getenv('DATABASE_URL', 'postgresql://postgres:Bahardb1234@localhost:5432/Olympicdb')
+engine = create_engine(DATABASE_URL)
+
+# Font settings
+DEFAULT_FONT = dict(family="Roboto, sans-serif", size=12)
+TITLE_FONT = dict(family="Roboto, sans-serif", size=14, color="#2c3e50")
 
 def create_tactical_summary_cards():
     # Optimized query for summary statistics with updated medal counts
@@ -25,101 +37,175 @@ def create_tactical_summary_cards():
     top_athlete AS (
         SELECT 
             a.fullname,
-            COUNT(CASE WHEN m.medaltype = 'Gold' THEN 1 END) as gold_count
+            COUNT(m.medalid) as medal_count
         FROM medal m
         JOIN participation p ON m.medalid = p.medalid
         JOIN athlete a ON p.athleteid = a.athleteid
-        WHERE m.medaltype = 'Gold'
+        WHERE m.medaltype != 'None'
         GROUP BY a.fullname
-        ORDER BY gold_count DESC
+        ORDER BY medal_count DESC
         LIMIT 1
     )
     SELECT 
         ms.total_medals,
         ms.gold_medals,
         tc.countryname as top_country,
-        tc.medal_count as country_medal_count,
+        tc.medal_count as country_medals,
         ta.fullname as top_athlete,
-        ta.gold_count as athlete_gold_count
+        ta.medal_count as athlete_medals
     FROM medal_stats ms
     CROSS JOIN top_country tc
     CROSS JOIN top_athlete ta
     """
-    data = execute_query(query)[0]
     
-    # Create summary cards using plotly
-    cards = []
+    with engine.connect() as conn:
+        result = conn.execute(text(query))
+        row = result.fetchone()
+        
+    return [
+        {"type": "simple", "value": row.total_medals},
+        {"type": "simple", "value": row.gold_medals},
+        {"type": "complex", "name": row.top_country, "value": row.country_medals},
+        {"type": "complex", "name": row.top_athlete, "value": row.athlete_medals}
+    ]
+
+def create_medal_by_country_gender():
+    query = """
+    SELECT 
+        c.countryname,
+        a.gender,
+        COUNT(m.medalid) as medal_count
+    FROM medal m
+    JOIN participation p ON m.medalid = p.medalid
+    JOIN athlete a ON p.athleteid = a.athleteid
+    JOIN team t ON p.teamid = t.teamid
+    JOIN country c ON t.noc = c.noc
+    WHERE m.medaltype != 'None'
+    GROUP BY c.countryname, a.gender
+    ORDER BY medal_count DESC
+    LIMIT 10
+    """
     
-    # Total Medals Card
-    fig1 = go.Figure()
-    fig1.add_trace(go.Indicator(
-        mode="number",
-        value=data['total_medals'],
-        title="Total Medals",
-        number={'font': {'size': 40}},
-        domain={'row': 0, 'column': 0}
-    ))
-    fig1.update_layout(
-        height=150,
-        margin=dict(l=0, r=0, t=30, b=0),
-        paper_bgcolor='#FFFFFF',
-        plot_bgcolor='#FFFFFF',
-        font={'color': '#000000'}
+    df = pd.read_sql(query, engine)
+    
+    fig = px.bar(df, 
+                 x='countryname', 
+                 y='medal_count',
+                 color='gender',
+                 barmode='group',
+                 title='Medals by Country and Gender',
+                 labels={'countryname': 'Country', 'medal_count': 'Number of Medals', 'gender': 'Gender'})
+    
+    fig.update_layout(
+        font=DEFAULT_FONT,
+        title_font=TITLE_FONT,
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="right",
+            x=1
+        ),
+        margin=dict(l=40, r=20, t=60, b=40),
+        paper_bgcolor="#fff",
+        plot_bgcolor="#fff"
     )
-    cards.append(fig1)
     
-    # Gold Medals Card
-    fig2 = go.Figure()
-    fig2.add_trace(go.Indicator(
-        mode="number",
-        value=data['gold_medals'],
-        title="Gold Medals",
-        number={'font': {'size': 40}},
-        domain={'row': 0, 'column': 1}
-    ))
-    fig2.update_layout(
-        height=150,
-        margin=dict(l=0, r=0, t=30, b=0),
-        paper_bgcolor='#FFFFFF',
-        plot_bgcolor='#FFFFFF',
-        font={'color': '#000000'}
+    return fig
+
+def create_gold_medals_pie():
+    query = """
+    SELECT 
+        c.countryname,
+        COUNT(m.medalid) as gold_count
+    FROM medal m
+    JOIN participation p ON m.medalid = p.medalid
+    JOIN team t ON p.teamid = t.teamid
+    JOIN country c ON t.noc = c.noc
+    WHERE m.medaltype = 'Gold'
+    GROUP BY c.countryname
+    ORDER BY gold_count DESC
+    LIMIT 5
+    """
+    
+    df = pd.read_sql(query, engine)
+    
+    fig = px.pie(df, 
+                 values='gold_count', 
+                 names='countryname',
+                 title='Teams with Most Gold Medals',
+                 hover_data=['gold_count'])
+    
+    fig.update_traces(
+        textinfo='label+percent',
+        textposition='outside',
+        textfont_size=11,
+        marker=dict(line=dict(color='#fff', width=1)),
+        pull=[0.02]*len(df)
     )
-    cards.append(fig2)
     
-    # Top Country Card (show count, name in title)
-    fig3 = go.Figure()
-    fig3.add_trace(go.Indicator(
-        mode="number",
-        value=data['country_medal_count'],
-        title={"text": f"Top Country:<br>{data['top_country']}"},
-        number={'font': {'size': 40}},
-        domain={'row': 0, 'column': 2}
-    ))
-    fig3.update_layout(
-        height=150,
-        margin=dict(l=0, r=0, t=30, b=0),
-        paper_bgcolor='#FFFFFF',
-        plot_bgcolor='#FFFFFF',
-        font={'color': '#000000'}
+    fig.update_layout(
+        font=DEFAULT_FONT,
+        title_font=TITLE_FONT,
+        legend=dict(
+            orientation="v",
+            yanchor="middle",
+            y=0.5,
+            xanchor="left",
+            x=1.02,
+            bgcolor="#fff",
+            bordercolor="#eee",
+            borderwidth=1
+        ),
+        margin=dict(l=40, r=120, t=60, b=40),
+        paper_bgcolor="#fff",
+        plot_bgcolor="#fff",
+        height=400,
+        showlegend=True
     )
-    cards.append(fig3)
     
-    # Top Athlete Card (show count, name in title)
-    fig4 = go.Figure()
-    fig4.add_trace(go.Indicator(
-        mode="number",
-        value=data['athlete_gold_count'],
-        title={"text": f"Top Athlete:<br>{data['top_athlete']}"},
-        number={'font': {'size': 40}},
-        domain={'row': 0, 'column': 3}
-    ))
-    fig4.update_layout(
-        height=150,
-        margin=dict(l=0, r=0, t=30, b=0),
-        paper_bgcolor='#FFFFFF',
-        plot_bgcolor='#FFFFFF',
-        font={'color': '#000000'}
+    return fig
+
+def create_top_athletes():
+    query = """
+    SELECT 
+        a.athletename,
+        c.countryname,
+        COUNT(m.medalid) as medal_count
+    FROM medal m
+    JOIN participation p ON m.medalid = p.medalid
+    JOIN athlete a ON p.athleteid = a.athleteid
+    JOIN team t ON p.teamid = t.teamid
+    JOIN country c ON t.noc = c.noc
+    WHERE m.medaltype != 'None'
+    GROUP BY a.athletename, c.countryname
+    ORDER BY medal_count DESC
+    LIMIT 10
+    """
+    
+    df = pd.read_sql(query, engine)
+    
+    fig = px.bar(df,
+                 x='athletename',
+                 y='medal_count',
+                 color='countryname',
+                 title='Top Athletes by Medal Count',
+                 labels={'athletename': 'Athlete', 'medal_count': 'Number of Medals', 'countryname': 'Country'})
+    
+    fig.update_layout(
+        font=DEFAULT_FONT,
+        title_font=TITLE_FONT,
+        xaxis_tickangle=-45,
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="right",
+            x=1
+        ),
+        margin=dict(l=40, r=20, t=60, b=100),
+        paper_bgcolor="#fff",
+        plot_bgcolor="#fff"
     )
-    cards.append(fig4)
     
-    return cards 
+    return fig

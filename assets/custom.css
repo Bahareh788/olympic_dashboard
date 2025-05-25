@@ -1,0 +1,35 @@
+/* Dashboard Card */
+.dashboard-card {
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  padding: 1.2rem;
+  margin-bottom: 1.5rem;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+.dashboard-card:hover {
+  box-shadow: 0 6px 24px rgba(0,0,0,0.13);
+  transform: translateY(-2px) scale(1.01);
+}
+.dashboard-chart {
+  border-radius: 14px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.07);
+  background: #fff;
+  padding: 0.5rem;
+  font-family: 'Montserrat', 'Roboto', sans-serif;
+  font-size: 14px;
+}
+.dashboard-legend {
+  font-size: 13px;
+  font-family: 'Montserrat', 'Roboto', sans-serif;
+}
+@media (max-width: 900px) {
+  .dashboard-card {
+    padding: 0.7rem;
+    margin-bottom: 1rem;
+  }
+  .dashboard-chart {
+    font-size: 12px;
+    padding: 0.2rem;
+  }
+} 

@@ -13,6 +13,9 @@ OLYMPIC_COLORS = {
     'red': '#DF0024'
 }
 
+DEFAULT_FONT = dict(family='Montserrat, Roboto, sans-serif', size=13, color='#222')
+TITLE_FONT = dict(family='Montserrat, Roboto, sans-serif', size=16, color='#222')
+
 def create_gender_distribution():
     query = """
     SELECT gender, COUNT(DISTINCT athleteid) as count
@@ -31,9 +34,22 @@ def create_gender_distribution():
         color_discrete_map={'M': OLYMPIC_COLORS['blue'], 'F': OLYMPIC_COLORS['red']}
     )
     fig.update_layout(
-        paper_bgcolor='#FFFFFF',
-        plot_bgcolor='#FFFFFF',
-        font={'color': '#000000'}
+        font=DEFAULT_FONT,
+        title_font=TITLE_FONT,
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="right",
+            x=1,
+            bgcolor="#fff",
+            bordercolor="#eee",
+            borderwidth=1
+        ),
+        margin=dict(l=40, r=20, t=60, b=40),
+        paper_bgcolor="#fff",
+        plot_bgcolor="#fff",
+        height=300
     )
     return fig
 
@@ -56,9 +72,22 @@ def create_participation_trend():
     )
     fig.update_traces(line_color=OLYMPIC_COLORS['blue'])
     fig.update_layout(
-        paper_bgcolor='#FFFFFF',
-        plot_bgcolor='#FFFFFF',
-        font={'color': '#000000'}
+        font=DEFAULT_FONT,
+        title_font=TITLE_FONT,
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="right",
+            x=1,
+            bgcolor="#fff",
+            bordercolor="#eee",
+            borderwidth=1
+        ),
+        margin=dict(l=40, r=20, t=60, b=40),
+        paper_bgcolor="#fff",
+        plot_bgcolor="#fff",
+        height=300
     )
     return fig
 
@@ -91,9 +120,22 @@ def create_top_events():
         ]
     )
     fig.update_layout(
-        paper_bgcolor='#FFFFFF',
-        plot_bgcolor='#FFFFFF',
-        font={'color': '#000000'}
+        font=DEFAULT_FONT,
+        title_font=TITLE_FONT,
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="right",
+            x=1,
+            bgcolor="#fff",
+            bordercolor="#eee",
+            borderwidth=1
+        ),
+        margin=dict(l=40, r=20, t=60, b=40),
+        paper_bgcolor="#fff",
+        plot_bgcolor="#fff",
+        height=300
     )
     return fig
 
@@ -115,9 +157,22 @@ def create_sport_distribution():
         color_continuous_scale=["#b6fcd5", "#009F3D"]
     )
     fig.update_layout(
-        paper_bgcolor='#FFFFFF',
-        plot_bgcolor='#FFFFFF',
-        font={'color': '#000000'}
+        font=DEFAULT_FONT,
+        title_font=TITLE_FONT,
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="right",
+            x=1,
+            bgcolor="#fff",
+            bordercolor="#eee",
+            borderwidth=1
+        ),
+        margin=dict(l=40, r=20, t=60, b=40),
+        paper_bgcolor="#fff",
+        plot_bgcolor="#fff",
+        height=300
     )
     return fig
 
@@ -230,20 +285,23 @@ LEFT JOIN (
 
     # Update the layout for light theme
     fig.update_layout(
-        title={'text': 'Athletes Per Country', 'xanchor': 'center', 'yanchor': 'top', 'y': 0.95, 'x': 0.5, 'font': {'color': '#000000'}},
-        margin=dict(l=0, r=0, t=50, b=0),
-        paper_bgcolor='#FFFFFF',
-        plot_bgcolor='#FFFFFF',
-        showlegend=True, # Show continent legends
+        font=DEFAULT_FONT,
+        title_font=TITLE_FONT,
         legend=dict(
-            yanchor="top",
-            y=0.99,
-            xanchor="left",
-            x=0.01,
-            bgcolor='#FFFFFF',
-            font={'color': '#000000'}
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="right",
+            x=1,
+            bgcolor="#fff",
+            bordercolor="#eee",
+            borderwidth=1
         ),
-         annotations=[{
+        margin=dict(l=40, r=20, t=60, b=40),
+        paper_bgcolor="#fff",
+        plot_bgcolor="#fff",
+        showlegend=True, # Show continent legends
+        annotations=[{
             'text': 'Light → Dark shows fewer to more athletes within each continent',
             'showarrow': False,
             'xref': 'paper',
@@ -287,9 +345,22 @@ def create_gender_participation_trend():
         color_discrete_map={'M': OLYMPIC_COLORS['blue'], 'F': OLYMPIC_COLORS['red']}
     )
     fig.update_layout(
-        paper_bgcolor='#FFFFFF',
-        plot_bgcolor='#FFFFFF',
-        font={'color': '#000000'}
+        font=DEFAULT_FONT,
+        title_font=TITLE_FONT,
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="right",
+            x=1,
+            bgcolor="#fff",
+            bordercolor="#eee",
+            borderwidth=1
+        ),
+        margin=dict(l=40, r=20, t=60, b=40),
+        paper_bgcolor="#fff",
+        plot_bgcolor="#fff",
+        height=300
     )
     return fig
 
@@ -320,11 +391,22 @@ def create_top_countries_by_medals():
             domain={'row': 0, 'column': 0}
         ))
         fig.update_layout(
-            height=100,
-            margin=dict(l=0, r=0, t=30, b=0),
-            paper_bgcolor='#FFFFFF',
-            plot_bgcolor='#FFFFFF',
-            font={'color': '#000000'}
+            font=DEFAULT_FONT,
+            title_font=TITLE_FONT,
+            legend=dict(
+                orientation="h",
+                yanchor="bottom",
+                y=1.02,
+                xanchor="right",
+                x=1,
+                bgcolor="#fff",
+                bordercolor="#eee",
+                borderwidth=1
+            ),
+            margin=dict(l=40, r=20, t=60, b=40),
+            paper_bgcolor="#fff",
+            plot_bgcolor="#fff",
+            height=220
         )
         cards.append(fig)
     return cards
@@ -401,6 +483,25 @@ def get_continent_metrics():
     metrics = sorted(metrics, key=lambda x: x['athletes'], reverse=True)
     return metrics
 
+def get_athlete_participation_table():
+    query = '''
+        SELECT 
+            a.fullname AS athlete_name,
+            c.countryname AS country,
+            og.year AS year,
+            s.sportname AS sport,
+            a.gender AS gender
+        FROM athlete a
+        JOIN participation p ON a.athleteid = p.athleteid
+        JOIN team t ON p.teamid = t.teamid
+        JOIN country c ON t.noc = c.noc
+        JOIN olympicgames og ON p.gamesid = og.gamesid
+        JOIN event e ON p.eventid = e.eventid
+        JOIN sport s ON e.sportid = s.sportid
+    '''
+    data = execute_query(query)
+    return data
+
 def get_analytical_dashboard():
     return {
         'summary_cards': create_analytical_summary_cards(),
@@ -411,5 +512,6 @@ def get_analytical_dashboard():
         'country_map': create_country_map(),
         'gender_participation_trend': create_gender_participation_trend(),
         'top_countries_by_medals': create_top_countries_by_medals(),
-        'continent_metrics': get_continent_metrics()
+        'continent_metrics': get_continent_metrics(),
+        'athlete_participation_table': get_athlete_participation_table()
     } 

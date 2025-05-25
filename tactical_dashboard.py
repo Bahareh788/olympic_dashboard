@@ -15,6 +15,9 @@ OLYMPIC_COLORS = {
     'bronze': '#CD7F32'
 }
 
+DEFAULT_FONT = dict(family='Montserrat, Roboto, sans-serif', size=13, color='#222')
+TITLE_FONT = dict(family='Montserrat, Roboto, sans-serif', size=16, color='#222')
+
 def create_medal_by_country_gender():
     query = """
     SELECT c.countryname as country, a.gender as gender, COUNT(m.medalid) as medal_count
@@ -35,12 +38,27 @@ def create_medal_by_country_gender():
         color='gender',
         title='Medals by Country and Gender',
         labels={'country': 'Country', 'medal_count': 'Number of Medals', 'gender': 'Gender'},
-        color_discrete_map={'M': OLYMPIC_COLORS['blue'], 'F': OLYMPIC_COLORS['red']}
+        color_discrete_map={'M': OLYMPIC_COLORS['blue'], 'F': OLYMPIC_COLORS['red']},
+        hover_data=['medal_count', 'gender']
     )
     fig.update_layout(
-        paper_bgcolor='#FFFFFF',
-        plot_bgcolor='#FFFFFF',
-        font={'color': '#000000'}
+        font=DEFAULT_FONT,
+        title_font=TITLE_FONT,
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="right",
+            x=1,
+            bgcolor="#fff",
+            bordercolor="#eee",
+            borderwidth=1,
+            font=DEFAULT_FONT
+        ),
+        margin=dict(l=40, r=20, t=60, b=40),
+        paper_bgcolor="#fff",
+        plot_bgcolor="#fff",
+        height=300
     )
     return fig
 
@@ -60,13 +78,28 @@ def create_medalist_age_distribution():
         x='age',
         y='medal_count',
         title='Age Distribution of Medalists',
-        labels={'age': 'Age', 'medal_count': 'Number of Medals'}
+        labels={'age': 'Age', 'medal_count': 'Number of Medals'},
+        hover_data=['medal_count']
     )
     fig.update_traces(line_color=OLYMPIC_COLORS['green'])
     fig.update_layout(
-        paper_bgcolor='#FFFFFF',
-        plot_bgcolor='#FFFFFF',
-        font={'color': '#000000'}
+        font=DEFAULT_FONT,
+        title_font=TITLE_FONT,
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="right",
+            x=1,
+            bgcolor="#fff",
+            bordercolor="#eee",
+            borderwidth=1,
+            font=DEFAULT_FONT
+        ),
+        margin=dict(l=40, r=20, t=60, b=40),
+        paper_bgcolor="#fff",
+        plot_bgcolor="#fff",
+        height=300
     )
     return fig
 
@@ -91,12 +124,27 @@ def create_top_sports():
         title='Top Performing Sports by Medal Count',
         labels={'name': 'Sport', 'medal_count': 'Number of Medals'},
         color='medal_count',
-        color_continuous_scale=[OLYMPIC_COLORS['blue'], OLYMPIC_COLORS['yellow']]
+        color_continuous_scale=[OLYMPIC_COLORS['blue'], OLYMPIC_COLORS['yellow']],
+        hover_data=['medal_count']
     )
     fig.update_layout(
-        paper_bgcolor='#FFFFFF',
-        plot_bgcolor='#FFFFFF',
-        font={'color': '#000000'}
+        font=DEFAULT_FONT,
+        title_font=TITLE_FONT,
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="right",
+            x=1,
+            bgcolor="#fff",
+            bordercolor="#eee",
+            borderwidth=1,
+            font=DEFAULT_FONT
+        ),
+        margin=dict(l=40, r=20, t=60, b=40),
+        paper_bgcolor="#fff",
+        plot_bgcolor="#fff",
+        height=300
     )
     return fig
 
@@ -112,19 +160,36 @@ def create_gold_medal_teams():
     LIMIT 10
     """
     data = execute_query(query)
-    
+    # Truncate team names for clarity
+    data = [{**row, 'team': row['team'][:16] + ('...' if len(row['team']) > 16 else '')} for row in data]
     fig = px.pie(
         data,
         values='gold_count',
         names='team',
         title='Teams with Most Gold Medals',
-        hole=0.4,
-        color_discrete_sequence=[OLYMPIC_COLORS['gold'], OLYMPIC_COLORS['silver'], OLYMPIC_COLORS['bronze'], OLYMPIC_COLORS['blue'], OLYMPIC_COLORS['yellow'], OLYMPIC_COLORS['black'], OLYMPIC_COLORS['green'], OLYMPIC_COLORS['red']]
+        hole=0.55,
+        color_discrete_sequence=[OLYMPIC_COLORS['gold'], OLYMPIC_COLORS['silver'], OLYMPIC_COLORS['bronze'], OLYMPIC_COLORS['blue'], OLYMPIC_COLORS['yellow'], OLYMPIC_COLORS['black'], OLYMPIC_COLORS['green'], OLYMPIC_COLORS['red']],
+        hover_data=['gold_count']
     )
+    fig.update_traces(textinfo='label', textposition='outside', textfont_size=11, marker=dict(line=dict(color='#fff', width=1)), pull=[0.02]*len(data))
     fig.update_layout(
-        paper_bgcolor='#FFFFFF',
-        plot_bgcolor='#FFFFFF',
-        font={'color': '#000000'}
+        font=DEFAULT_FONT,
+        title_font=TITLE_FONT,
+        legend=dict(
+            orientation="v",
+            yanchor="middle",
+            y=0.5,
+            xanchor="left",
+            x=1.02,
+            bgcolor="#fff",
+            bordercolor="#eee",
+            borderwidth=1,
+            font=DEFAULT_FONT
+        ),
+        margin=dict(l=40, r=20, t=60, b=40, autoexpand=True),
+        paper_bgcolor="#fff",
+        plot_bgcolor="#fff",
+        height=320
     )
     return fig
 
@@ -151,12 +216,27 @@ def create_top_athletes():
         title='Top Athletes by Gold Medals',
         labels={'name': 'Athlete', 'gold_count': 'Number of Gold Medals'},
         color='gold_count',
-        color_continuous_scale=[OLYMPIC_COLORS['yellow'], OLYMPIC_COLORS['black']]
+        color_continuous_scale=[OLYMPIC_COLORS['yellow'], OLYMPIC_COLORS['black']],
+        hover_data=['gold_count']
     )
     fig.update_layout(
-        paper_bgcolor='#FFFFFF',
-        plot_bgcolor='#FFFFFF',
-        font={'color': '#000000'}
+        font=DEFAULT_FONT,
+        title_font=TITLE_FONT,
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="right",
+            x=1,
+            bgcolor="#fff",
+            bordercolor="#eee",
+            borderwidth=1,
+            font=DEFAULT_FONT
+        ),
+        margin=dict(l=40, r=20, t=60, b=40),
+        paper_bgcolor="#fff",
+        plot_bgcolor="#fff",
+        height=300
     )
     return fig
 
@@ -179,14 +259,47 @@ def create_age_vs_medal_type():
         labels={'medaltype': 'Medal Type', 'age': 'Age'},
         category_orders={'medaltype': ['Gold', 'Silver', 'Bronze']},
         color='medaltype',
-        color_discrete_map={'Gold': OLYMPIC_COLORS['yellow'], 'Silver': '#C0C0C0', 'Bronze': '#CD7F32'}
+        color_discrete_map={'Gold': OLYMPIC_COLORS['yellow'], 'Silver': '#C0C0C0', 'Bronze': '#CD7F32'},
+        hover_data=['age']
     )
     fig.update_layout(
-        paper_bgcolor='#FFFFFF',
-        plot_bgcolor='#FFFFFF',
-        font={'color': '#000000'}
+        font=DEFAULT_FONT,
+        title_font=TITLE_FONT,
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="right",
+            x=1,
+            bgcolor="#fff",
+            bordercolor="#eee",
+            borderwidth=1,
+            font=DEFAULT_FONT
+        ),
+        margin=dict(l=40, r=20, t=60, b=40),
+        paper_bgcolor="#fff",
+        plot_bgcolor="#fff",
+        height=300
     )
     return fig
+
+def get_noc_medal_table():
+    query = '''
+        SELECT
+            c.countryname AS team_noc,
+            SUM(CASE WHEN m.medaltype = 'Gold' THEN 1 ELSE 0 END) AS gold,
+            SUM(CASE WHEN m.medaltype = 'Silver' THEN 1 ELSE 0 END) AS silver,
+            SUM(CASE WHEN m.medaltype = 'Bronze' THEN 1 ELSE 0 END) AS bronze
+        FROM country c
+        JOIN team t ON c.noc = t.noc
+        JOIN participation p ON t.teamid = p.teamid
+        JOIN medal m ON p.medalid = m.medalid
+        WHERE m.medaltype != 'None'
+        GROUP BY c.countryname
+        ORDER BY gold DESC, silver DESC, bronze DESC
+    '''
+    data = execute_query(query)
+    return data
 
 def get_tactical_dashboard():
     return {
@@ -196,5 +309,6 @@ def get_tactical_dashboard():
         'top_sports': create_top_sports(),
         'gold_medal_teams': create_gold_medal_teams(),
         'top_athletes': create_top_athletes(),
-        'age_vs_medal_type': create_age_vs_medal_type()
+        'age_vs_medal_type': create_age_vs_medal_type(),
+        'noc_medal_table': get_noc_medal_table()
     } 

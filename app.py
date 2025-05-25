@@ -1,11 +1,12 @@
 import dash
-from dash import html, dcc, Input, Output, State
+from dash import html, dcc, Input, Output, State, dash_table
 import dash_bootstrap_components as dbc
 from analytical_dashboard import get_analytical_dashboard
 from tactical_dashboard import get_tactical_dashboard
 from flask_sqlalchemy import SQLAlchemy
 from flask import Flask
 from db_utils import execute_query
+from dash.dependencies import Input, Output, State
 
 # Initialize Flask app
 server = Flask(__name__)
@@ -14,10 +15,15 @@ server.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(server)
 
 # Initialize Dash app
-app = dash.Dash(__name__, server=server, external_stylesheets=[
-    dbc.themes.BOOTSTRAP,
-    'https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap'
-])
+app = dash.Dash(
+    __name__,
+    server=server,
+    external_stylesheets=[
+        dbc.themes.BOOTSTRAP,
+        'https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap'
+    ],
+    suppress_callback_exceptions=True
+)
 
 # Custom CSS for light theme
 app.index_string = '''
@@ -107,6 +113,13 @@ app.index_string = '''
 # Get dashboard figures
 analyical_figures = get_analytical_dashboard()
 tactical_figures = get_tactical_dashboard()
+
+# Extract unique filter values from athlete participation data
+athlete_participation_data = analyical_figures['athlete_participation_table']
+unique_years = sorted({row['year'] for row in athlete_participation_data})
+unique_genders = sorted({row['gender'] for row in athlete_participation_data})
+unique_sports = sorted({row['sport'] for row in athlete_participation_data})
+unique_countries = sorted({row['country'] for row in athlete_participation_data})
 
 # Helper for summary card layout
 summary_card_data_analytical = [
@@ -219,22 +232,50 @@ sidebar = html.Div(
                 html.Hr(className="my-2", style={'borderColor': 'rgba(0,0,0,.1)'}),
                 html.P("Filters", className="lead", 
                       style={'color': '#00274D', 'fontSize': '1.2rem', 'marginTop': '15px'}),
-                dbc.Nav(
-                    [
-                        html.Div("Year", className="lead", 
-                                style={'color': '#00274D', 'fontSize': '1rem', 'marginBottom': '5px'}),
-                        dcc.Dropdown(
-                            id='year-filter',
-                            options=[{'label': str(i), 'value': i} for i in range(1896, 2021, 2)] + 
-                                   [{'label': 'All', 'value': 'All'}],
-                            value='All',
-                            clearable=False,
-                            style={'marginBottom': '15px', 'borderRadius': '10px'}
-                        ),
-                    ],
-                    vertical=True,
-                    pills=True,
-                ),
+                # Filter Dropdowns
+                html.Div([
+                    # Year Filter
+                    html.Div("Year", className="lead", 
+                           style={'color': '#00274D', 'fontSize': '1rem', 'marginBottom': '5px'}),
+                    dcc.Dropdown(
+                        id='athlete-table-year',
+                        options=[{'label': str(i), 'value': i} for i in range(1896, 2021, 2)] + 
+                               [{'label': 'All', 'value': 'All'}],
+                        value='All',
+                        clearable=False,
+                        style={'marginBottom': '15px', 'borderRadius': '10px'}
+                    ),
+                    # Gender Filter
+                    html.Div("Gender", className="lead", 
+                           style={'color': '#00274D', 'fontSize': '1rem', 'marginBottom': '5px'}),
+                    dcc.Dropdown(
+                        id='athlete-table-gender',
+                        options=[{'label': g, 'value': g} for g in unique_genders],
+                        placeholder='Gender',
+                        clearable=True,
+                        style={'marginBottom': '15px', 'borderRadius': '10px'}
+                    ),
+                    # Sport Filter
+                    html.Div("Sport", className="lead", 
+                           style={'color': '#00274D', 'fontSize': '1rem', 'marginBottom': '5px'}),
+                    dcc.Dropdown(
+                        id='athlete-table-sport',
+                        options=[{'label': s, 'value': s} for s in unique_sports],
+                        placeholder='Sport',
+                        clearable=True,
+                        style={'marginBottom': '15px', 'borderRadius': '10px'}
+                    ),
+                     # Country Filter
+                    html.Div("Country/NOC", className="lead", 
+                           style={'color': '#00274D', 'fontSize': '1rem', 'marginBottom': '5px'}),
+                    dcc.Dropdown(
+                        id='athlete-table-country',
+                        options=[{'label': c, 'value': c} for c in unique_countries],
+                        placeholder='Country/NOC',
+                        clearable=True,
+                        style={'marginBottom': '15px', 'borderRadius': '10px'}
+                    ),
+                ])
             ],
             id="sidebar-collapse",
             is_open=True,
@@ -254,37 +295,94 @@ sidebar = html.Div(
     },
 )
 
-# Define the analytical dashboard content layout
-analyical_content_layout = html.Div([
-    # analyical_summary_cards_row,  # Removed summary cards from the top
-    # Map and Continent Metric Cards Row
-    dbc.Row([
-        dbc.Col([
-            dcc.Graph(figure=analyical_figures['country_map'])
-        ], width=8),
-        dbc.Col([
-            html.Div(continent_metrics_cards)
-        ], width=4)
-    ], className="mb-4", align="center"),
-    # Row 1: Total Athletes by Gender and Gender Participation Evolution Over Time
-    dbc.Row([
-        dbc.Col([
-            dcc.Graph(figure=analyical_figures['gender_distribution']),
-        ], width=6),
-        dbc.Col([
-            dcc.Graph(figure=analyical_figures['gender_participation_trend'])
-        ], width=6)
-    ], className="mb-4"),
-    # Row 2: Events per Sport and Top 5 Events
-    dbc.Row([
-        dbc.Col([
-            dcc.Graph(figure=analyical_figures['sport_distribution']),
-        ], width=6),
-        dbc.Col([
-            dcc.Graph(figure=analyical_figures['top_events']),
-        ], width=6)
-    ])
-])
+# --- Analytical Athlete Participation Table ---
+athlete_participation_data = analyical_figures['athlete_participation_table']
+
+# Extract unique filter values
+unique_years = sorted({row['year'] for row in athlete_participation_data})
+unique_genders = sorted({row['gender'] for row in athlete_participation_data})
+unique_sports = sorted({row['sport'] for row in athlete_participation_data})
+unique_countries = sorted({row['country'] for row in athlete_participation_data})
+
+olympic_palette = ['#0085C3', '#F4C300', '#000000', '#009F3D', '#DF0024']
+
+analyical_athlete_table_layout = html.Div([
+    html.H4("Athlete Participation Table", style={
+        "marginTop": "2rem",
+        "marginBottom": "1rem",
+        "fontWeight": "bold",
+        "fontFamily": "Montserrat, sans-serif",
+        "fontSize": "16px",
+        "color": "#222"
+    }),
+    dash_table.DataTable(
+        id='athlete-participation-table',
+        columns=[
+            {"name": "Athlete Name", "id": "athlete_name"},
+            {"name": "Country", "id": "country"},
+            {"name": "Year", "id": "year", "type": "numeric"},
+            {"name": "Sport", "id": "sport"},
+            {"name": "Gender", "id": "gender"},
+        ],
+        data=athlete_participation_data,
+        page_size=15,
+        filter_action="native",
+        sort_action="native",
+        sort_mode="multi",
+        row_selectable="single",
+        style_table={
+            "maxHeight": "400px",
+            "overflowY": "auto",
+            "minWidth": "100%",
+            "background": "#fff",
+            "borderRadius": "14px",
+            "boxShadow": "0 2px 12px rgba(0,0,0,0.10)",
+            "padding": "1.5rem 1.5rem 1rem 1.5rem"
+        },
+        style_cell={
+            "padding": "0.7rem",
+            "fontSize": "1.1rem",
+            "textAlign": "left",
+            "fontFamily": "Montserrat, Roboto, sans-serif",
+            "background": "#fff"
+        },
+        style_header={
+            "backgroundColor": "#f8f9fa",
+            "fontWeight": "bold",
+            "fontFamily": "Montserrat, Roboto, sans-serif",
+            "fontSize": "1.1rem",
+            "color": "#00274D"
+        },
+        style_data_conditional=[
+            {"if": {"row_index": "odd"}, "backgroundColor": "#f6f8fa"},
+            {"if": {"state": "selected"}, "backgroundColor": olympic_palette[0], "color": "#fff"},
+        ],
+        page_action="native",
+        fixed_rows={"headers": True},
+        style_as_list_view=True,
+    )
+], style={"background": "#fff", "borderRadius": "14px", "boxShadow": "0 2px 12px rgba(0,0,0,0.10)", "padding": "1.5rem 1.5rem 1rem 1.5rem", "marginTop": "2rem", "marginBottom": "2rem"})
+
+@app.callback(
+    Output('athlete-participation-table', 'data'),
+    [
+        Input('athlete-table-year', 'value'),
+        Input('athlete-table-gender', 'value'),
+        Input('athlete-table-sport', 'value'),
+        Input('athlete-table-country', 'value'),
+    ]
+)
+def update_athlete_participation_table(year, gender, sport, country):
+    filtered = athlete_participation_data
+    if year and year != 'All':
+        filtered = [row for row in filtered if row['year'] == year]
+    if gender:
+        filtered = [row for row in filtered if row['gender'] == gender]
+    if sport:
+        filtered = [row for row in filtered if row['sport'] == sport]
+    if country:
+        filtered = [row for row in filtered if row['country'] == country]
+    return filtered
 
 def extract_title_text(fig, prefix):
     title = getattr(getattr(fig.layout, 'title', None), 'text', None)
@@ -292,14 +390,7 @@ def extract_title_text(fig, prefix):
         return f"{prefix}: {title.split('<br>')[1]}"
     return prefix
 
-# Tactical summary cards
-summary_card_data_tactical = [
-    {"icon": "fas fa-medal", "color": "#00BCD4", "bgcolor": "#FFFFFF", "title": "Total Medals", "value": tactical_figures['summary_cards'][0].data[0]['value']},
-    {"icon": "fas fa-trophy", "color": "#F44336", "bgcolor": "#FFFFFF", "title": "Gold Medals", "value": tactical_figures['summary_cards'][1].data[0]['value']},
-    {"icon": "fas fa-flag", "color": "#4CAF50", "bgcolor": "#FFFFFF", "title": extract_title_text(tactical_figures['summary_cards'][2], "Top Country"), "value": tactical_figures['summary_cards'][2].data[0]['value']},
-    {"icon": "fas fa-user", "color": "#FFC107", "bgcolor": "#FFFFFF", "title": extract_title_text(tactical_figures['summary_cards'][3], "Top Athlete"), "value": tactical_figures['summary_cards'][3].data[0]['value']},
-]
-
+# Tactical summary card styles (defined before use)
 tactical_summary_card_styles = [
     {"icon": "fas fa-medal", "color": "#00BCD4", "bgcolor": "#00BCD4", "title": "Total Medals"},
     {"icon": "fas fa-trophy", "color": "#F44336", "bgcolor": "#F44336", "title": "Gold Medals"},
@@ -307,7 +398,28 @@ tactical_summary_card_styles = [
     {"icon": "fas fa-user", "color": "#FFC107", "bgcolor": "#FFC107", "title": "Top Athlete"},
 ]
 
-def make_tactical_summary_card(icon, color, title, value, bgcolor):
+# Tactical summary cards
+summary_card_data_tactical = [
+    {"icon": "fas fa-medal", "color": "#00BCD4", "bgcolor": "#FFFFFF", "title": "Total Medals", "value_data": tactical_figures['summary_cards'][0]['value']},
+    {"icon": "fas fa-trophy", "color": "#F44336", "bgcolor": "#FFFFFF", "title": "Gold Medals", "value_data": tactical_figures['summary_cards'][1]['value']},
+    {"icon": "fas fa-flag", "color": "#4CAF50", "bgcolor": "#FFFFFF", "title": "Top Country", "value_data": {'name': tactical_figures['summary_cards'][2]['name'], 'count': tactical_figures['summary_cards'][2]['value']}},
+    {"icon": "fas fa-user", "color": "#FFC107", "bgcolor": "#FFFFFF", "title": "Top Athlete", "value_data": {'name': tactical_figures['summary_cards'][3]['name'], 'count': tactical_figures['summary_cards'][3]['value']}},
+]
+
+def make_tactical_summary_card(icon, color, card_title, card_value, bgcolor):
+    # Debugging print statement
+    # print(f"Making card - Title: {card_title}, Value: {card_value}")
+    
+    display_title = card_title
+    
+    # Handle different types of card values
+    if isinstance(card_value, dict) and 'name' in card_value and 'count' in card_value:
+        # Complex card (Top Country or Top Athlete)
+        display_main_content = f"{card_value['name']} ({card_value['count']:,})"
+    else:
+        # Simple card (Total Medals or Gold Medals)
+        display_main_content = f"{card_value:,}"
+
     return html.Div([
         html.Div(html.I(className=icon), style={
             "background": color,
@@ -322,8 +434,8 @@ def make_tactical_summary_card(icon, color, title, value, bgcolor):
             "marginRight": "1rem"
         }),
         html.Div([
-            html.Div(title, style={"fontWeight": "bold", "fontSize": "1.1rem", "color": "#fff", "marginBottom": "0.2rem"}),
-            html.Div(f"{value}", style={"fontWeight": "bold", "fontSize": "1.3rem", "color": "#fff"}),
+            html.Div(display_title, style={"fontWeight": "bold", "fontSize": "1.1rem", "color": "#fff", "marginBottom": "0.2rem"}),
+            html.Div(display_main_content, style={"fontWeight": "bold", "fontSize": "1.3rem", "color": "#fff"}),
         ], style={"display": "flex", "flexDirection": "column", "justifyContent": "center"})
     ], style={
         "display": "flex",
@@ -343,43 +455,343 @@ tactical_summary_cards_row = html.Div([
         tactical_summary_card_styles[i]["icon"],
         tactical_summary_card_styles[i]["color"],
         tactical_summary_card_styles[i]["title"],
-        card["value"],
+        card["value_data"],
         tactical_summary_card_styles[i]["bgcolor"]
     )
     for i, card in enumerate(summary_card_data_tactical)
 ], style={"display": "flex", "gap": "1.5rem", "marginBottom": "2rem"})
 
+# Deep dive table for tactical dashboard
+noc_medal_table = tactical_figures['noc_medal_table']
+deep_dive_table = html.Div([
+    html.H4("All NOC by Medals", style={
+        "marginTop": "2rem",
+        "marginBottom": "1rem",
+        "fontWeight": "bold",
+        "fontFamily": "Montserrat, Roboto, sans-serif",
+        "fontSize": "16px",
+        "color": "#222"
+    }),
+    html.Div([
+        dash_table.DataTable(
+            columns=[
+                {"name": "Team/NOC", "id": "team_noc"},
+                {"name": "Gold", "id": "gold", "type": "numeric"},
+                {"name": "Silver", "id": "silver", "type": "numeric"},
+                {"name": "Bronze", "id": "bronze", "type": "numeric"},
+            ],
+            data=noc_medal_table,
+            sort_action="native",
+            style_table={
+                "maxHeight": "400px",
+                "overflowY": "auto",
+                "minWidth": "100%",
+                "background": "#fff",
+                "borderRadius": "14px",
+                "boxShadow": "0 2px 12px rgba(0,0,0,0.10)",
+                "padding": "1.5rem 1.5rem 1rem 1.5rem"
+            },
+            style_cell={
+                "padding": "0.7rem",
+                "fontSize": "1.1rem",
+                "textAlign": "left",
+                "fontFamily": "Montserrat, sans-serif",
+                "background": "#fff"
+            },
+            style_header={
+                "backgroundColor": "#f8f9fa",
+                "fontWeight": "bold",
+                "fontFamily": "Montserrat, sans-serif",
+                "fontSize": "1.1rem",
+                "color": "#00274D"
+            },
+            style_data_conditional=[
+                {"if": {"column_id": "gold"}, "color": "#FFD700", "fontWeight": "bold"},
+                {"if": {"column_id": "silver"}, "color": "#C0C0C0", "fontWeight": "bold"},
+                {"if": {"column_id": "bronze"}, "color": "#CD7F32", "fontWeight": "bold"},
+            ],
+            page_action="none",
+            fixed_rows={"headers": True},
+        )
+    ], style={
+        "background": "#fff",
+        "borderRadius": "14px",
+        "boxShadow": "0 2px 12px rgba(0,0,0,0.10)",
+        "padding": "1.5rem 1.5rem 1rem 1.5rem"
+    })
+], style={"marginTop": "2rem", "marginBottom": "2rem"})
+
+# Move this block up, before analyical_content_layout and tactical_content_layout definitions:
+dashboard_header = dbc.Row([
+    # Left section: Breadcrumb and Title
+    dbc.Col([
+        html.Div([
+            html.I(className="bi bi-house-door me-1"),
+            html.Span("/", className="mx-1 text-secondary"),
+            html.Span("Dashboard", className="fw-medium")
+        ], className="d-flex align-items-center small"),
+        html.H1("Dashboard", className="fw-bold fs-4 mb-0", style={"marginTop": "0.3rem"}),
+    ], width=True, className="d-flex flex-column justify-content-center"), # Use width=True for auto-sizing and flex for alignment
+
+    # Right section: Search and Icons
+    dbc.Col([
+        dbc.InputGroup(
+            [
+                dbc.Input(placeholder="Search", type="text", style={"fontFamily": "Montserrat, Roboto, sans-serif", "fontSize": "0.9rem", "borderRadius": "7px 0 0 7px"}),
+                dbc.Button(html.I(className="bi bi-search"), outline=True, color="secondary", className="border border-start-0 rounded-end-pill", style={"border-color": "#d1d5db", "--bs-border-color": "#d1d5db", "--bs-btn-border-color": "#d1d5db"})
+            ],
+            className="me-3", style={"width": "250px"}
+        ),
+        html.I(className="bi bi-person fs-5 me-3"),
+        html.I(className="bi bi-gear fs-5 me-3"),
+        html.Span([
+            html.I(className="bi bi-bell fs-5"),
+            html.Span("", style={"display": "inline-block", "width": "8px", "height": "8px", "background": "#ff4d4f", "borderRadius": "50%", "position": "relative", "top": "-8px", "right": "8px"})
+        ], className="position-relative"), # Added position-relative for red dot positioning
+    ], width="auto", className="d-flex align-items-center"), # Use width="auto" and flex for alignment
+
+], className="mb-4 border-bottom pb-3 d-flex align-items-center", style={"fontFamily": "Montserrat, Roboto, sans-serif"}) # Added d-flex align-items-center and border-bottom for styling
+
+# Define the analytical dashboard content layout
+analyical_content_layout = html.Div([
+    dashboard_header,
+    # Map and Continent Metric Cards Row - Updated with flexbox layout
+    html.Div([
+        # Map container
+        html.Div([
+            dcc.Graph(
+                figure=analyical_figures['country_map'],
+                style={
+                    "height": "100%",
+                    "minHeight": "500px",
+                    "background": "#fff",
+                    "borderRadius": "14px",
+                    "padding": "1rem",
+                    "boxShadow": "0 2px 12px rgba(0,0,0,0.10)"
+                }
+            )
+        ], style={
+            "flex": "2",
+            "minWidth": "0",  # Prevents flex item from overflowing
+            "marginRight": "2rem"
+        }),
+        # Continent cards container
+        html.Div([
+            html.Div(
+                continent_metrics_cards,
+                style={
+                    "display": "flex",
+                    "flexDirection": "column",
+                    "gap": "1rem",
+                    "height": "100%",
+                    "justifyContent": "space-between"
+                }
+            )
+        ], style={
+            "flex": "1",
+            "minWidth": "300px",
+            "maxWidth": "400px"
+        })
+    ], style={
+        "display": "flex",
+        "gap": "2rem",
+        "marginBottom": "2rem",
+        "flexWrap": "wrap",  # Allows wrapping on smaller screens
+        "alignItems": "stretch"  # Makes both containers same height
+    }),
+    # Rest of the dashboard content
+    # Row 1: Total Athletes by Gender and Gender Participation Evolution Over Time
+    dbc.Row([
+        dbc.Col([
+            dcc.Graph(
+                figure=analyical_figures['gender_distribution'],
+                style={
+                    "height": "440px",
+                    "minHeight": "340px",
+                    "background": "#fff",
+                    "borderRadius": "14px",
+                    "padding": "1rem",
+                    "boxShadow": "0 2px 12px rgba(0,0,0,0.10)"
+                }
+            )
+        ], width={"size": 6, "sm": 12, "md": 6, "lg": 6}, style={"minWidth": 0}),
+        dbc.Col([
+            dcc.Graph(
+                figure=analyical_figures['gender_participation_trend'],
+                style={
+                    "height": "440px",
+                    "minHeight": "340px",
+                    "background": "#fff",
+                    "borderRadius": "14px",
+                    "padding": "1rem",
+                    "boxShadow": "0 2px 12px rgba(0,0,0,0.10)"
+                }
+            )
+        ], width={"size": 6, "sm": 12, "md": 6, "lg": 6}, style={"minWidth": 0})
+    ], className="mb-4"),
+    # Row 2: Events per Sport and Top 5 Events
+    dbc.Row([
+        dbc.Col([
+            dcc.Graph(
+                figure=analyical_figures['sport_distribution'],
+                style={
+                    "height": "440px",
+                    "minHeight": "340px",
+                    "background": "#fff",
+                    "borderRadius": "14px",
+                    "padding": "1rem",
+                    "boxShadow": "0 2px 12px rgba(0,0,0,0.10)"
+                }
+            )
+        ], width={"size": 6, "sm": 12, "md": 6, "lg": 6}, style={"minWidth": 0}),
+        dbc.Col([
+            dcc.Graph(
+                figure=analyical_figures['top_events'],
+                style={
+                    "height": "440px",
+                    "minHeight": "340px",
+                    "background": "#fff",
+                    "borderRadius": "14px",
+                    "padding": "1rem",
+                    "boxShadow": "0 2px 12px rgba(0,0,0,0.10)"
+                }
+            )
+        ], width={"size": 6, "sm": 12, "md": 6, "lg": 6}, style={"minWidth": 0})
+    ]),
+    # Athlete Participation Table
+    analyical_athlete_table_layout
+], style={
+    "maxWidth": "1800px",  # Maximum width for very large screens
+    "margin": "0 auto",    # Center the content
+    "padding": "0 1rem"    # Add some padding on the sides
+})
+
 # Define the tactical dashboard content layout
 tactical_content_layout = html.Div([
+    dashboard_header,
     tactical_summary_cards_row,
-    # Chart Rows
+    # Row 1: Medals by Country and Gender (left), Teams with Most Gold Medals (right) - Updated with flexbox
+    html.Div([
+        # Medals by Country and Gender container
+        html.Div([
+            dcc.Graph(
+                figure=tactical_figures['medal_by_country_gender'],
+                config={"displayModeBar": False},
+                style={
+                    "height": "100%",
+                    "minHeight": "500px",
+                    "background": "#fff",
+                    "borderRadius": "14px",
+                    "padding": "1rem",
+                    "boxShadow": "0 2px 12px rgba(0,0,0,0.10)"
+                }
+            )
+        ], style={
+            "flex": "1.5",
+            "minWidth": "0",  # Prevents flex item from overflowing
+            "marginRight": "2rem"
+        }),
+        # Teams with Most Gold Medals container
+        html.Div([
+            dcc.Graph(
+                figure=tactical_figures['gold_medal_teams'],
+                config={"displayModeBar": False},
+                style={
+                    "height": "100%",
+                    "minHeight": "500px",
+                    "background": "#fff",
+                    "borderRadius": "14px",
+                    "padding": "1rem",
+                    "boxShadow": "0 2px 12px rgba(0,0,0,0.10)"
+                }
+            )
+        ], style={
+            "flex": "1",
+            "minWidth": "300px",
+            "maxWidth": "500px"
+        })
+    ], style={
+        "display": "flex",
+        "gap": "2rem",
+        "marginBottom": "2rem",
+        "flexWrap": "wrap",  # Allows wrapping on smaller screens
+        "alignItems": "stretch"  # Makes both containers same height
+    }),
+    # Row 2: Top Performing Sports by Medal Count (left), Age Distribution of Medalists (right)
     dbc.Row([
         dbc.Col([
-            dcc.Graph(figure=tactical_figures['medal_by_country_gender']),
-            dcc.Graph(figure=tactical_figures['medalist_age'])
-        ], width=6),
+            dcc.Graph(
+                figure=tactical_figures['top_sports'],
+                config={"displayModeBar": False},
+                style={
+                    "height": "440px",
+                    "minHeight": "340px",
+                    "background": "#fff",
+                    "borderRadius": "14px",
+                    "padding": "1rem",
+                    "boxShadow": "0 2px 12px rgba(0,0,0,0.10)"
+                }
+            )
+        ], width={"size": 8, "sm": 12, "md": 8, "lg": 8}, style={"minWidth": 0}),
         dbc.Col([
-            dcc.Graph(figure=tactical_figures['top_sports']),
-            dcc.Graph(figure=tactical_figures['gold_medal_teams'])
-        ], width=6)
+            dcc.Graph(
+                figure=tactical_figures['medalist_age'],
+                config={"displayModeBar": False},
+                style={
+                    "height": "440px",
+                    "minHeight": "340px",
+                    "background": "#fff",
+                    "borderRadius": "14px",
+                    "padding": "1rem",
+                    "boxShadow": "0 2px 12px rgba(0,0,0,0.10)"
+                }
+            )
+        ], width={"size": 4, "sm": 12, "md": 4, "lg": 4}, style={"minWidth": 0})
+    ], style={"gap": "2rem"}, className="mb-4", align="center"),
+    # Next rows (if any)
+    dbc.Row([
+        dbc.Col([
+            dcc.Graph(
+                figure=tactical_figures['top_athletes'],
+                style={
+                    "height": "440px",
+                    "minHeight": "340px",
+                    "background": "#fff",
+                    "borderRadius": "14px",
+                    "padding": "1rem",
+                    "boxShadow": "0 2px 12px rgba(0,0,0,0.10)"
+                }
+            )
+        ], width={"size": 12, "sm": 12, "md": 12, "lg": 12}, style={"minWidth": 0})
     ], className="mb-4"),
     dbc.Row([
         dbc.Col([
-            dcc.Graph(figure=tactical_figures['top_athletes'])
-        ], width=12)
+            dcc.Graph(
+                figure=tactical_figures['age_vs_medal_type'],
+                style={
+                    "height": "440px",
+                    "minHeight": "340px",
+                    "background": "#fff",
+                    "borderRadius": "14px",
+                    "padding": "1rem",
+                    "boxShadow": "0 2px 12px rgba(0,0,0,0.10)"
+                }
+            )
+        ], width={"size": 12, "sm": 12, "md": 12, "lg": 12}, style={"minWidth": 0})
     ], className="mb-4"),
-    dbc.Row([
-        dbc.Col([
-            dcc.Graph(figure=tactical_figures['age_vs_medal_type'])
-        ], width=12)
-    ])
-])
+    # Deep dive table at the bottom
+    deep_dive_table
+], style={
+    "maxWidth": "1800px",  # Maximum width for very large screens
+    "margin": "0 auto",    # Center the content
+    "padding": "0 1rem"    # Add some padding on the sides
+})
 
 # Layout of the main content area
 content = html.Div(id="page-content", 
-                  style={'marginLeft': '15rem', 'padding': '2rem 1rem', 
+                  style={'marginLeft': '13rem', 'padding': '2rem 1.2rem 2rem 1.2rem', 
                         'backgroundColor': '#e9ecef', 'minHeight': '100vh',
-                        'color': '#000000'})
+                        'color': '#000000', 'fontFamily': 'Montserrat, Roboto, sans-serif'})
 
 # Overall App layout
 app.layout = html.Div([
@@ -412,7 +824,7 @@ def toggle_sidebar_collapse(n_clicks, is_open, content_style):
             return False, {'marginLeft': '2rem', 'padding': '2rem 1rem'}
         else:
             # Open sidebar and adjust content margin
-            return True, {'marginLeft': '15rem', 'padding': '2rem 1rem'}
+            return True, {'marginLeft': '13rem', 'padding': '2rem 1.2rem'}
     return is_open, content_style
 
 

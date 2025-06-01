@@ -1,0 +1,23 @@
+body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    background: #f9f9f9;
+}
+nav {
+    background: #333;
+    padding: 10px;
+    color: white;
+}
+nav a {
+    color: white;
+    margin-right: 15px;
+    text-decoration: none;
+}
+canvas {
+    background: white;
+    padding: 10px;
+    margin: 20px 0;
+    border-radius: 10px;
+    display: block;
+    border: 1px solid #ddd;
+}

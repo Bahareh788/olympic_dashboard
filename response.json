@@ -1,0 +1,917 @@
+{
+  "bmi_trend": [
+    {
+      "avg_bmi": "23.4908947368421053",
+      "year": 1896
+    },
+    {
+      "avg_bmi": "23.6660533787620670",
+      "year": 1900
+    },
+    {
+      "avg_bmi": "23.3524980724749422",
+      "year": 1904
+    },
+    {
+      "avg_bmi": "23.7024120023081362",
+      "year": 1906
+    },
+    {
+      "avg_bmi": "23.5068481848184818",
+      "year": 1908
+    },
+    {
+      "avg_bmi": "23.5662004950495050",
+      "year": 1912
+    },
+    {
+      "avg_bmi": "23.7271174543752925",
+      "year": 1920
+    },
+    {
+      "avg_bmi": "23.4747005113221329",
+      "year": 1924
+    },
+    {
+      "avg_bmi": "23.4120401079830312",
+      "year": 1928
+    },
+    {
+      "avg_bmi": "23.9322526469514421",
+      "year": 1932
+    },
+    {
+      "avg_bmi": "23.4773278781038375",
+      "year": 1936
+    },
+    {
+      "avg_bmi": "23.3509713114754098",
+      "year": 1948
+    },
+    {
+      "avg_bmi": "22.9589655909382347",
+      "year": 1952
+    },
+    {
+      "avg_bmi": "23.1983292583537082",
+      "year": 1956
+    },
+    {
+      "avg_bmi": "23.0179935029778018",
+      "year": 1960
+    },
+    {
+      "avg_bmi": "23.0760432489451477",
+      "year": 1964
+    },
+    {
+      "avg_bmi": "22.8661208130546808",
+      "year": 1968
+    },
+    {
+      "avg_bmi": "22.8003553808846894",
+      "year": 1972
+    },
+    {
+      "avg_bmi": "22.7696952961340697",
+      "year": 1976
+    },
+    {
+      "avg_bmi": "22.7686315318339488",
+      "year": 1980
+    },
+    {
+      "avg_bmi": "22.6386727649292371",
+      "year": 1984
+    },
+    {
+      "avg_bmi": "22.6666598528209321",
+      "year": 1988
+    },
+    {
+      "avg_bmi": "22.7796289526594772",
+      "year": 1992
+    },
+    {
+      "avg_bmi": "22.9816392405063291",
+      "year": 1994
+    },
+    {
+      "avg_bmi": "22.6924767779390421",
+      "year": 1996
+    },
+    {
+      "avg_bmi": "23.0878696255201110",
+      "year": 1998
+    },
+    {
+      "avg_bmi": "22.6921308154258013",
+      "year": 2000
+    },
+    {
+      "avg_bmi": "23.1271185203212460",
+      "year": 2002
+    },
+    {
+      "avg_bmi": "22.7744104738525627",
+      "year": 2004
+    },
+    {
+      "avg_bmi": "22.9539319945230488",
+      "year": 2006
+    },
+    {
+      "avg_bmi": "22.7594699308925158",
+      "year": 2008
+    },
+    {
+      "avg_bmi": "22.9389141299409359",
+      "year": 2010
+    },
+    {
+      "avg_bmi": "22.6730859133126935",
+      "year": 2012
+    },
+    {
+      "avg_bmi": "22.9100449805765692",
+      "year": 2014
+    },
+    {
+      "avg_bmi": "22.6799320572764465",
+      "year": 2016
+    }
+  ],
+  "event_specialization": [
+    {
+      "eventname": "Football Men's Football",
+      "medal_count": 1269,
+      "participation_count": 5733,
+      "sportname": "Football"
+    },
+    {
+      "eventname": "Ice Hockey Men's Ice Hockey",
+      "medal_count": 1230,
+      "participation_count": 4762,
+      "sportname": "Ice Hockey"
+    },
+    {
+      "eventname": "Hockey Men's Hockey",
+      "medal_count": 1050,
+      "participation_count": 3958,
+      "sportname": "Hockey"
+    },
+    {
+      "eventname": "Water Polo Men's Water Polo",
+      "medal_count": 866,
+      "participation_count": 3358,
+      "sportname": "Water Polo"
+    },
+    {
+      "eventname": "Basketball Men's Basketball",
+      "medal_count": 687,
+      "participation_count": 3280,
+      "sportname": "Basketball"
+    },
+    {
+      "eventname": "Cycling Men's Road Race, Individual",
+      "medal_count": 77,
+      "participation_count": 2947,
+      "sportname": "Cycling"
+    },
+    {
+      "eventname": "Gymnastics Men's Individual All-Around",
+      "medal_count": 85,
+      "participation_count": 2500,
+      "sportname": "Gymnastics"
+    },
+    {
+      "eventname": "Rowing Men's Coxed Eights",
+      "medal_count": 730,
+      "participation_count": 2423,
+      "sportname": "Rowing"
+    },
+    {
+      "eventname": "Gymnastics Men's Team All-Around",
+      "medal_count": 713,
+      "participation_count": 2411,
+      "sportname": "Gymnastics"
+    },
+    {
+      "eventname": "Handball Men's Handball",
+      "medal_count": 588,
+      "participation_count": 2264,
+      "sportname": "Handball"
+    },
+    {
+      "eventname": "Athletics Men's Marathon",
+      "medal_count": 87,
+      "participation_count": 2093,
+      "sportname": "Athletics"
+    },
+    {
+      "eventname": "Gymnastics Men's Parallel Bars",
+      "medal_count": 75,
+      "participation_count": 2049,
+      "sportname": "Gymnastics"
+    },
+    {
+      "eventname": "Gymnastics Men's Horizontal Bar",
+      "medal_count": 75,
+      "participation_count": 2041,
+      "sportname": "Gymnastics"
+    },
+    {
+      "eventname": "Gymnastics Men's Pommelled Horse",
+      "medal_count": 69,
+      "participation_count": 2031,
+      "sportname": "Gymnastics"
+    },
+    {
+      "eventname": "Gymnastics Men's Rings",
+      "medal_count": 76,
+      "participation_count": 2020,
+      "sportname": "Gymnastics"
+    },
+    {
+      "eventname": "Athletics Men's 100 metres",
+      "medal_count": 88,
+      "participation_count": 1936,
+      "sportname": "Athletics"
+    },
+    {
+      "eventname": "Athletics Men's 4 x 100 metres Relay",
+      "medal_count": 299,
+      "participation_count": 1910,
+      "sportname": "Athletics"
+    },
+    {
+      "eventname": "Gymnastics Men's Floor Exercise",
+      "medal_count": 64,
+      "participation_count": 1880,
+      "sportname": "Gymnastics"
+    },
+    {
+      "eventname": "Gymnastics Men's Horse Vault",
+      "medal_count": 77,
+      "participation_count": 1868,
+      "sportname": "Gymnastics"
+    },
+    {
+      "eventname": "Volleyball Men's Volleyball",
+      "medal_count": 495,
+      "participation_count": 1861,
+      "sportname": "Volleyball"
+    },
+    {
+      "eventname": "Athletics Men's 4 x 400 metres Relay",
+      "medal_count": 323,
+      "participation_count": 1749,
+      "sportname": "Athletics"
+    },
+    {
+      "eventname": "Bobsleigh Men's Four",
+      "medal_count": 232,
+      "participation_count": 1715,
+      "sportname": "Bobsleigh"
+    },
+    {
+      "eventname": "Fencing Men's epee, Team",
+      "medal_count": 388,
+      "participation_count": 1689,
+      "sportname": "Fencing"
+    },
+    {
+      "eventname": "Fencing Men's epee, Individual",
+      "medal_count": 84,
+      "participation_count": 1638,
+      "sportname": "Fencing"
+    },
+    {
+      "eventname": "Alpine Skiing Men's Slalom",
+      "medal_count": 54,
+      "participation_count": 1593,
+      "sportname": "Alpine Skiing"
+    },
+    {
+      "eventname": "Volleyball Women's Volleyball",
+      "medal_count": 474,
+      "participation_count": 1543,
+      "sportname": "Volleyball"
+    },
+    {
+      "eventname": "Swimming Men's 4 x 200 metres Freestyle Relay",
+      "medal_count": 395,
+      "participation_count": 1543,
+      "sportname": "Swimming"
+    },
+    {
+      "eventname": "Gymnastics Women's Individual All-Around",
+      "medal_count": 52,
+      "participation_count": 1539,
+      "sportname": "Gymnastics"
+    },
+    {
+      "eventname": "Alpine Skiing Men's Giant Slalom",
+      "medal_count": 51,
+      "participation_count": 1535,
+      "sportname": "Alpine Skiing"
+    },
+    {
+      "eventname": "Gymnastics Women's Balance Beam",
+      "medal_count": 52,
+      "participation_count": 1531,
+      "sportname": "Gymnastics"
+    },
+    {
+      "eventname": "Gymnastics Women's Uneven Bars",
+      "medal_count": 53,
+      "participation_count": 1530,
+      "sportname": "Gymnastics"
+    },
+    {
+      "eventname": "Gymnastics Women's Floor Exercise",
+      "medal_count": 54,
+      "participation_count": 1527,
+      "sportname": "Gymnastics"
+    },
+    {
+      "eventname": "Athletics Men's 200 metres",
+      "medal_count": 81,
+      "participation_count": 1495,
+      "sportname": "Athletics"
+    },
+    {
+      "eventname": "Gymnastics Women's Team All-Around",
+      "medal_count": 390,
+      "participation_count": 1484,
+      "sportname": "Gymnastics"
+    },
+    {
+      "eventname": "Hockey Women's Hockey",
+      "medal_count": 478,
+      "participation_count": 1459,
+      "sportname": "Hockey"
+    },
+    {
+      "eventname": "Athletics Men's 400 metres",
+      "medal_count": 86,
+      "participation_count": 1417,
+      "sportname": "Athletics"
+    },
+    {
+      "eventname": "Handball Women's Handball",
+      "medal_count": 472,
+      "participation_count": 1401,
+      "sportname": "Handball"
+    },
+    {
+      "eventname": "Cycling Men's Team Pursuit, 4,000 metres",
+      "medal_count": 301,
+      "participation_count": 1365,
+      "sportname": "Cycling"
+    },
+    {
+      "eventname": "Fencing Men's Foil, Individual",
+      "medal_count": 85,
+      "participation_count": 1357,
+      "sportname": "Fencing"
+    },
+    {
+      "eventname": "Fencing Men's Sabre, Team",
+      "medal_count": 384,
+      "participation_count": 1347,
+      "sportname": "Fencing"
+    },
+    {
+      "eventname": "Gymnastics Women's Horse Vault",
+      "medal_count": 52,
+      "participation_count": 1336,
+      "sportname": "Gymnastics"
+    },
+    {
+      "eventname": "Athletics Men's 800 metres",
+      "medal_count": 87,
+      "participation_count": 1321,
+      "sportname": "Athletics"
+    },
+    {
+      "eventname": "Fencing Men's Foil, Team",
+      "medal_count": 341,
+      "participation_count": 1305,
+      "sportname": "Fencing"
+    },
+    {
+      "eventname": "Swimming Men's 100 metres Freestyle",
+      "medal_count": 81,
+      "participation_count": 1295,
+      "sportname": "Swimming"
+    },
+    {
+      "eventname": "Basketball Women's Basketball",
+      "medal_count": 393,
+      "participation_count": 1256,
+      "sportname": "Basketball"
+    },
+    {
+      "eventname": "Swimming Men's 4 x 100 metres Medley Relay",
+      "medal_count": 279,
+      "participation_count": 1242,
+      "sportname": "Swimming"
+    },
+    {
+      "eventname": "Fencing Men's Sabre, Individual",
+      "medal_count": 87,
+      "participation_count": 1230,
+      "sportname": "Fencing"
+    },
+    {
+      "eventname": "Swimming Women's 4 x 100 metres Freestyle Relay",
+      "medal_count": 362,
+      "participation_count": 1225,
+      "sportname": "Swimming"
+    },
+    {
+      "eventname": "Rowing Men's Coxed Fours",
+      "medal_count": 303,
+      "participation_count": 1186,
+      "sportname": "Rowing"
+    },
+    {
+      "eventname": "Athletics Women's 4 x 100 metres Relay",
+      "medal_count": 269,
+      "participation_count": 1174,
+      "sportname": "Athletics"
+    }
+  ],
+  "historical_peaks": [
+    {
+      "description": "Highest participation with 11183 athletes",
+      "event": "Peak Participation",
+      "value": 11183,
+      "year": 1992
+    }
+  ],
+  "kpi_medal_ratio": 0.1522,
+  "medal_efficiency": [
+    {
+      "countryname": "Union of Soviet Socialist Republics",
+      "efficiency": "0.896",
+      "medals": 2639,
+      "participants": 2944
+    },
+    {
+      "countryname": "Taiwan",
+      "efficiency": "0.600",
+      "medals": 6,
+      "participants": 10
+    },
+    {
+      "countryname": "USA",
+      "efficiency": "0.590",
+      "medals": 5310,
+      "participants": 9000
+    },
+    {
+      "countryname": "South African Amateur Athletic",
+      "efficiency": "0.495",
+      "medals": 3660,
+      "participants": 7392
+    },
+    {
+      "countryname": "Russia",
+      "efficiency": "0.456",
+      "medals": 961,
+      "participants": 2107
+    },
+    {
+      "countryname": "Jamaica",
+      "efficiency": "0.449",
+      "medals": 164,
+      "participants": 365
+    },
+    {
+      "countryname": "Norway",
+      "efficiency": "0.442",
+      "medals": 911,
+      "participants": 2059
+    },
+    {
+      "countryname": "Hungary",
+      "efficiency": "0.414",
+      "medals": 1129,
+      "participants": 2726
+    },
+    {
+      "countryname": "Sweden",
+      "efficiency": "0.396",
+      "medals": 1436,
+      "participants": 3624
+    },
+    {
+      "countryname": "Finland",
+      "efficiency": "0.392",
+      "medals": 895,
+      "participants": 2284
+    },
+    {
+      "countryname": "Montenegro",
+      "efficiency": "0.382",
+      "medals": 89,
+      "participants": 233
+    },
+    {
+      "countryname": "China",
+      "efficiency": "0.372",
+      "medals": 991,
+      "participants": 2663
+    },
+    {
+      "countryname": "Romania",
+      "efficiency": "0.365",
+      "medals": 658,
+      "participants": 1801
+    },
+    {
+      "countryname": "Australia",
+      "efficiency": "0.351",
+      "medals": 1337,
+      "participants": 3806
+    },
+    {
+      "countryname": "Yugoslavia",
+      "efficiency": "0.351",
+      "medals": 73,
+      "participants": 208
+    },
+    {
+      "countryname": "Netherlands",
+      "efficiency": "0.343",
+      "medals": 995,
+      "participants": 2904
+    },
+    {
+      "countryname": "Unknown",
+      "efficiency": "0.341",
+      "medals": 3728,
+      "participants": 10934
+    },
+    {
+      "countryname": "Pakistan",
+      "efficiency": "0.331",
+      "medals": 119,
+      "participants": 360
+    },
+    {
+      "countryname": "Croatia",
+      "efficiency": "0.328",
+      "medals": 132,
+      "participants": 403
+    },
+    {
+      "countryname": "Italy",
+      "efficiency": "0.327",
+      "medals": 1568,
+      "participants": 4802
+    }
+  ],
+  "medal_performance": [
+    {
+      "athlete_count": 3552,
+      "bronze": 1244,
+      "countryname": "USA",
+      "gold": 2513,
+      "medal_count": 5310,
+      "silver": 1553
+    },
+    {
+      "athlete_count": 2890,
+      "bronze": 1187,
+      "countryname": "Unknown",
+      "gold": 1200,
+      "medal_count": 3728,
+      "silver": 1341
+    },
+    {
+      "athlete_count": 2485,
+      "bronze": 1222,
+      "countryname": "South African Amateur Athletic",
+      "gold": 1278,
+      "medal_count": 3660,
+      "silver": 1160
+    },
+    {
+      "athlete_count": 1686,
+      "bronze": 733,
+      "countryname": "Union of Soviet Socialist Republics",
+      "gold": 1129,
+      "medal_count": 2639,
+      "silver": 777
+    },
+    {
+      "athlete_count": 1124,
+      "bronze": 589,
+      "countryname": "France",
+      "gold": 460,
+      "medal_count": 1579,
+      "silver": 530
+    },
+    {
+      "athlete_count": 1065,
+      "bronze": 499,
+      "countryname": "Italy",
+      "gold": 553,
+      "medal_count": 1568,
+      "silver": 516
+    },
+    {
+      "athlete_count": 1026,
+      "bronze": 510,
+      "countryname": "Sweden",
+      "gold": 445,
+      "medal_count": 1436,
+      "silver": 481
+    },
+    {
+      "athlete_count": 872,
+      "bronze": 515,
+      "countryname": "Australia",
+      "gold": 364,
+      "medal_count": 1337,
+      "silver": 458
+    },
+    {
+      "athlete_count": 992,
+      "bronze": 415,
+      "countryname": "Newfoundland",
+      "gold": 437,
+      "medal_count": 1272,
+      "silver": 420
+    },
+    {
+      "athlete_count": 695,
+      "bronze": 370,
+      "countryname": "Hungary",
+      "gold": 429,
+      "medal_count": 1129,
+      "silver": 330
+    },
+    {
+      "athlete_count": 690,
+      "bronze": 396,
+      "countryname": "Netherlands",
+      "gold": 275,
+      "medal_count": 995,
+      "silver": 324
+    },
+    {
+      "athlete_count": 666,
+      "bronze": 293,
+      "countryname": "China",
+      "gold": 350,
+      "medal_count": 991,
+      "silver": 348
+    },
+    {
+      "athlete_count": 697,
+      "bronze": 361,
+      "countryname": "Russia",
+      "gold": 309,
+      "medal_count": 961,
+      "silver": 291
+    },
+    {
+      "athlete_count": 653,
+      "bronze": 357,
+      "countryname": "Japan",
+      "gold": 247,
+      "medal_count": 913,
+      "silver": 309
+    },
+    {
+      "athlete_count": 552,
+      "bronze": 279,
+      "countryname": "Norway",
+      "gold": 302,
+      "medal_count": 911,
+      "silver": 330
+    }
+  ],
+  "participation_trend": [
+    {
+      "total_countries": 12,
+      "total_events": 43,
+      "total_participants": 176,
+      "year": 1896
+    },
+    {
+      "total_countries": 32,
+      "total_events": 84,
+      "total_participants": 1169,
+      "year": 1900
+    },
+    {
+      "total_countries": 16,
+      "total_events": 94,
+      "total_participants": 646,
+      "year": 1904
+    },
+    {
+      "total_countries": 23,
+      "total_events": 74,
+      "total_participants": 841,
+      "year": 1906
+    },
+    {
+      "total_countries": 25,
+      "total_events": 105,
+      "total_participants": 1995,
+      "year": 1908
+    },
+    {
+      "total_countries": 30,
+      "total_events": 107,
+      "total_participants": 2409,
+      "year": 1912
+    },
+    {
+      "total_countries": 34,
+      "total_events": 157,
+      "total_participants": 2658,
+      "year": 1920
+    },
+    {
+      "total_countries": 50,
+      "total_events": 145,
+      "total_participants": 3480,
+      "year": 1924
+    },
+    {
+      "total_countries": 52,
+      "total_events": 136,
+      "total_participants": 3665,
+      "year": 1928
+    },
+    {
+      "total_countries": 50,
+      "total_events": 144,
+      "total_participants": 2097,
+      "year": 1932
+    },
+    {
+      "total_countries": 64,
+      "total_events": 164,
+      "total_participants": 5088,
+      "year": 1936
+    },
+    {
+      "total_countries": 76,
+      "total_events": 174,
+      "total_participants": 5015,
+      "year": 1948
+    },
+    {
+      "total_countries": 84,
+      "total_events": 171,
+      "total_participants": 5622,
+      "year": 1952
+    },
+    {
+      "total_countries": 89,
+      "total_events": 169,
+      "total_participants": 4008,
+      "year": 1956
+    },
+    {
+      "total_countries": 99,
+      "total_events": 177,
+      "total_participants": 6017,
+      "year": 1960
+    },
+    {
+      "total_countries": 101,
+      "total_events": 197,
+      "total_participants": 6230,
+      "year": 1964
+    },
+    {
+      "total_countries": 108,
+      "total_events": 207,
+      "total_participants": 6717,
+      "year": 1968
+    },
+    {
+      "total_countries": 116,
+      "total_events": 228,
+      "total_participants": 8122,
+      "year": 1972
+    },
+    {
+      "total_countries": 87,
+      "total_events": 235,
+      "total_participants": 7200,
+      "year": 1976
+    },
+    {
+      "total_countries": 87,
+      "total_events": 241,
+      "total_participants": 6330,
+      "year": 1980
+    },
+    {
+      "total_countries": 136,
+      "total_events": 260,
+      "total_participants": 8067,
+      "year": 1984
+    },
+    {
+      "total_countries": 148,
+      "total_events": 283,
+      "total_participants": 9873,
+      "year": 1988
+    },
+    {
+      "total_countries": 159,
+      "total_events": 314,
+      "total_participants": 11183,
+      "year": 1992
+    },
+    {
+      "total_countries": 67,
+      "total_events": 61,
+      "total_participants": 1738,
+      "year": 1994
+    },
+    {
+      "total_countries": 189,
+      "total_events": 271,
+      "total_participants": 10339,
+      "year": 1996
+    },
+    {
+      "total_countries": 71,
+      "total_events": 68,
+      "total_participants": 2179,
+      "year": 1998
+    },
+    {
+      "total_countries": 190,
+      "total_events": 300,
+      "total_participants": 10647,
+      "year": 2000
+    },
+    {
+      "total_countries": 76,
+      "total_events": 78,
+      "total_participants": 2399,
+      "year": 2002
+    },
+    {
+      "total_countries": 192,
+      "total_events": 301,
+      "total_participants": 10557,
+      "year": 2004
+    },
+    {
+      "total_countries": 81,
+      "total_events": 84,
+      "total_participants": 2494,
+      "year": 2006
+    },
+    {
+      "total_countries": 194,
+      "total_events": 302,
+      "total_participants": 10899,
+      "year": 2008
+    },
+    {
+      "total_countries": 82,
+      "total_events": 86,
+      "total_participants": 2536,
+      "year": 2010
+    },
+    {
+      "total_countries": 195,
+      "total_events": 302,
+      "total_participants": 10517,
+      "year": 2012
+    },
+    {
+      "total_countries": 87,
+      "total_events": 98,
+      "total_participants": 2745,
+      "year": 2014
+    },
+    {
+      "total_countries": 197,
+      "total_events": 306,
+      "total_participants": 11179,
+      "year": 2016
+    }
+  ],
+  "summary": {
+    "avg_efficiency": "0.431",
+    "countries_count": 15,
+    "total_medals": 28429,
+    "total_participants": 186837
+  }
+}

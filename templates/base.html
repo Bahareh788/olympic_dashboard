@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Olympic Dashboard{% endblock %}</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+    
+    <style>
+        :root {
+            --olympic-blue: #0085C3;
+            --olympic-yellow: #FFB81C;
+            --olympic-black: #000000;
+            --olympic-green: #00A651;
+            --olympic-red: #EE334E;
+            --olympic-light-blue: #E8F4FD;
+            --olympic-gray: #F8F9FA;
+            --shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--olympic-light-blue) 0%, #ffffff 100%);
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: linear-gradient(90deg, var(--olympic-blue) 0%, var(--olympic-green) 100%);
+            box-shadow: var(--shadow);
+            padding: 1rem 0;
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+            color: white !important;
+            padding: 0.5rem 0;
+        }
+
+        .nav-link {
+            color: white !important;
+            font-weight: 500;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--olympic-yellow) !important;
+            transform: translateY(-2px);
+        }
+
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin-bottom: 2rem;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+
+        .card-header {
+            background: linear-gradient(45deg, var(--olympic-blue), var(--olympic-green));
+            color: white;
+            font-weight: bold;
+            border-radius: 15px 15px 0 0 !important;
+            padding: 1rem 1.5rem;
+        }
+
+        .dashboard-card {
+            height: 220px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            text-decoration: none;
+            color: white;
+            transition: all 0.3s ease;
+            border-radius: 25px;
+            padding: 1.8rem 1.5rem 1.5rem 1.5rem;
+            margin: 1rem 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .dashboard-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .dashboard-card h2 {
+            font-size: 1.7rem;
+            font-weight: 700;
+            margin-bottom: 0.8rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            z-index: 2;
+            position: relative;
+        }
+
+        .dashboard-card p {
+            font-size: 0.85rem;
+            opacity: 0.95;
+            line-height: 1.25;
+            margin-bottom: auto;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.2);
+            z-index: 2;
+            position: relative;
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            padding: 0 0.3rem;
+            max-height: 3.5rem;
+            overflow: hidden;
+        }
+
+        .dashboard-card .btn {
+            background: rgba(255, 255, 255, 0.25);
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            color: white;
+            padding: 0.5rem 1.2rem;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            margin: 0.25rem;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            z-index: 2;
+            position: relative;
+            white-space: nowrap;
+        }
+
+        .dashboard-card .btn:hover {
+            background: rgba(255, 255, 255, 0.4);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+            border-color: rgba(255, 255, 255, 0.8);
+        }
+
+        .dashboard-card:hover {
+            text-decoration: none;
+            color: white;
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.25);
+        }
+
+        .strategic-card {
+            background: linear-gradient(135deg, #0085C3 0%, #2BB1E4 50%, #00A651 100%);
+        }
+
+        .operational-card {
+            background: linear-gradient(135deg, #00A651 0%, #34D37F 50%, #FFB81C 100%);
+        }
+
+        .analytical-card {
+            background: linear-gradient(135deg, #EE334E 0%, #FF6B84 50%, #FFB81C 100%);
+        }
+
+        .card-buttons {
+            display: flex;
+            gap: 0.6rem;
+            margin-top: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            z-index: 2;
+            position: relative;
+        }
+
+        /* Icon styles for the cards */
+        .card-icon {
+            font-size: 1rem;
+            margin-right: 0.5rem;
+            vertical-align: middle;
+        }
+
+        .filter-container {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+
+        .btn-primary {
+            background: var(--olympic-blue);
+            border-color: var(--olympic-blue);
+            border-radius: 25px;
+            padding: 0.5rem 1.5rem;
+            font-weight: 500;
+        }
+
+        .btn-primary:hover {
+            background: var(--olympic-green);
+            border-color: var(--olympic-green);
+        }
+
+        .form-select, .form-control {
+            border-radius: 10px;
+            border: 2px solid #E9ECEF;
+            padding: 0.75rem;
+        }
+
+        .form-select:focus, .form-control:focus {
+            border-color: var(--olympic-blue);
+            box-shadow: 0 0 0 0.2rem rgba(0, 133, 195, 0.25);
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 2rem 1rem;
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #6c757d;
+            font-weight: 500;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin-bottom: 2rem;
+        }
+
+        .table {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .table th {
+            background: var(--olympic-blue);
+            color: white;
+            border: none;
+            font-weight: 600;
+        }
+
+        .table td {
+            border: none;
+            padding: 1rem;
+        }
+
+        .table-striped tbody tr:nth-of-type(odd) {
+            background-color: rgba(0, 133, 195, 0.05);
+        }
+
+        .olympic-rings {
+            display: inline-flex;
+            gap: 5px;
+            margin-left: 10px;
+        }
+
+        .ring {
+            width: 20px;
+            height: 20px;
+            border: 3px solid;
+            border-radius: 50%;
+        }
+
+        .ring-blue { border-color: var(--olympic-blue); }
+        .ring-yellow { border-color: var(--olympic-yellow); }
+        .ring-black { border-color: var(--olympic-black); }
+        .ring-green { border-color: var(--olympic-green); }
+        .ring-red { border-color: var(--olympic-red); }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .spinner-border {
+            color: var(--olympic-blue);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .dashboard-card {
+                height: 240px;
+                padding: 1.5rem 1.2rem;
+            }
+            
+            .dashboard-card h2 {
+                font-size: 1.5rem;
+            }
+            
+            .dashboard-card p {
+                font-size: 0.8rem;
+            }
+            
+            .card-buttons {
+                flex-direction: column;
+                gap: 0.4rem;
+                margin-top: 0.8rem;
+            }
+            
+            .dashboard-card .btn {
+                padding: 0.6rem 1rem;
+                font-size: 0.75rem;
+            }
+
+            .olympic-intro {
+                margin: -2rem 0 2rem 0;
+            }
+        }
+
+        /* Logo placeholder styling */
+        .logo-placeholder {
+            display: flex;
+            align-items: center;
+            height: 120px;
+        }
+
+        .logo-img {
+            max-height: 120px;
+            max-width: 700px;
+            height: auto;
+            width: auto;
+        }
+
+        /* Main logo styling for homepage */
+        .main-logo-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 350px;
+            margin: -2rem 0 -2rem 0;
+            padding: 0;
+        }
+
+        .main-logo-img {
+            max-height: 350px;
+            max-width: 1700px;
+            height: auto;
+            width: auto;
+            min-height: 200px;
+        }
+
+        /* Bottom Olympic logo styling */
+        .olympic-logo-bottom {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 1rem;
+        }
+
+        .bottom-olympic-logo {
+            max-height: 80px;
+            max-width: 300px;
+            height: auto;
+            width: auto;
+            opacity: 0.8;
+            transition: opacity 0.3s ease;
+        }
+
+        .bottom-olympic-logo:hover {
+            opacity: 1;
+        }
+
+        /* Olympic Highlights & Records Section Styling */
+        .olympic-highlights-section {
+            text-align: center;
+            margin-top: 3rem;
+        }
+
+        .olympic-highlights-section .card-body {
+            padding: 1.5rem;
+        }
+
+        .olympic-highlights-section .stat-card {
+            text-align: center;
+            padding: 1rem 0.5rem;
+        }
+
+        .olympic-highlights-section .stat-number {
+            font-size: 2.2rem;
+            font-weight: bold;
+            margin-bottom: 0.3rem;
+        }
+
+        .olympic-highlights-section .stat-label {
+            font-size: 0.85rem;
+            color: #6c757d;
+            font-weight: 500;
+        }
+
+        .olympic-highlights-section h5 {
+            text-align: center;
+            margin-bottom: 1rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .olympic-highlights-section .list-unstyled {
+            text-align: center;
+            max-width: 350px;
+            margin: 0 auto;
+        }
+
+        .olympic-highlights-section .list-unstyled li {
+            padding: 0.5rem 0.8rem;
+            margin: 0.3rem 0;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            border-left: 3px solid transparent;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .olympic-highlights-section .list-unstyled li:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(3px);
+        }
+
+        .olympic-records-section .list-unstyled li {
+            border-left-color: #FFB81C;
+        }
+
+        .olympic-milestones-section .list-unstyled li {
+            border-left-color: #0085C3;
+        }
+
+        .olympic-highlights-section .fas {
+            margin-right: 0.6rem;
+            width: 18px;
+            text-align: center;
+        }
+
+        .olympic-highlights-section hr {
+            margin: 1.5rem 0;
+        }
+
+        /* Olympic theme text styling */
+        .olympic-intro {
+            text-align: center;
+            margin: -2rem 0 2.5rem 0;
+            padding: 0 2rem;
+        }
+
+        .olympic-intro h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--olympic-blue), var(--olympic-green), var(--olympic-red));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .olympic-intro p {
+            font-size: 1.2rem;
+            color: #666;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .chart-container {
+                height: 300px;
+            }
+            
+            .stat-number {
+                font-size: 2rem;
+            }
+            
+            .card-header {
+                font-size: 1rem;
+            }
+
+            .olympic-intro {
+                margin: -2rem 0 2rem 0;
+            }
+
+            .olympic-highlights-section {
+                margin-top: 2rem;
+            }
+
+            .olympic-highlights-section .card-body {
+                padding: 1rem;
+            }
+
+            .olympic-highlights-section .stat-number {
+                font-size: 1.8rem;
+            }
+
+            .olympic-highlights-section .stat-label {
+                font-size: 0.8rem;
+            }
+
+            .olympic-highlights-section h5 {
+                font-size: 1rem;
+                margin-bottom: 0.8rem;
+            }
+
+            .olympic-highlights-section .list-unstyled li {
+                padding: 0.4rem 0.6rem;
+                font-size: 0.85rem;
+                margin: 0.2rem 0;
+            }
+
+            .olympic-highlights-section hr {
+                margin: 1rem 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    {% if request.endpoint and request.endpoint != 'index' %}
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <div class="logo-placeholder">
+                    <!-- Logo placeholder - replace with your logo -->
+                    <img src="/static/logo.png" alt="Dashboard Logo" class="logo-img">
+                </div>
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/"><i class="fas fa-home"></i> Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/strategic"><i class="fas fa-chart-line"></i> Strategic</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/operational"><i class="fas fa-cogs"></i> Operational</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/analytical"><i class="fas fa-analytics"></i> Analytical</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    {% endif %}
+
+    <div class="container{% if not request.endpoint or request.endpoint == 'index' %}-fluid px-3{% endif %}{% if not request.endpoint or request.endpoint == 'index' %} mt-0{% else %} mt-4{% endif %}">
+        {% block content %}{% endblock %}
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Olympic color palette for charts
+        const olympicColors = {
+            blue: '#0085C3',
+            yellow: '#FFB81C',
+            black: '#000000',
+            green: '#00A651',
+            red: '#EE334E',
+            lightBlue: '#E8F4FD',
+            gray: '#F8F9FA'
+        };
+
+        // Common chart configuration
+        Chart.defaults.font.family = "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif";
+        Chart.defaults.font.size = 12;
+        Chart.defaults.plugins.legend.labels.usePointStyle = true;
+        Chart.defaults.plugins.legend.labels.padding = 20;
+
+        // Show loading spinner
+        function showLoading(elementId) {
+            document.getElementById(elementId).style.display = 'block';
+        }
+
+        // Hide loading spinner
+        function hideLoading(elementId) {
+            document.getElementById(elementId).style.display = 'none';
+        }
+
+        // Format numbers with commas
+        function formatNumber(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
+        // Animate counters
+        function animateCounter(element, target) {
+            let current = 0;
+            const increment = target / 50;
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    element.textContent = formatNumber(target);
+                    clearInterval(timer);
+                } else {
+                    element.textContent = formatNumber(Math.floor(current));
+                }
+            }, 20);
+        }
+    </script>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html> 

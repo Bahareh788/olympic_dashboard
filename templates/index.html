@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+
+{% block title %}Olympic Dashboard - Home{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-12 text-center">
+        <div class="main-logo-placeholder">
+            <img src="/static/main logo.png" alt="Olympic Dashboard Main Logo" class="main-logo-img">
+        </div>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-12">
+        <div class="olympic-intro">
+            <h1>Olympic Games Data Analytics</h1>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-4 col-md-6">
+        <a href="/strategic" class="dashboard-card strategic-card">
+            <h2>Strategic Dashboard</h2>
+            <p>High-level insights and medal analytics for strategic decision making</p>
+            <div class="card-buttons">
+                <button class="btn">
+                    <i class="fas fa-trophy card-icon"></i>Medals
+                </button>
+                <button class="btn">
+                    <i class="fas fa-globe card-icon"></i>Countries
+                </button>
+            </div>
+        </a>
+    </div>
+
+    <div class="col-lg-4 col-md-6">
+        <a href="/operational" class="dashboard-card operational-card">
+            <h2>Operational Dashboard</h2>
+            <p>Current operations, events management, and athlete performance tracking</p>
+            <div class="card-buttons">
+                <button class="btn">
+                    <i class="fas fa-running card-icon"></i>Events
+                </button>
+                <button class="btn">
+                    <i class="fas fa-users card-icon"></i>Athletes
+                </button>
+            </div>
+        </a>
+    </div>
+
+    <div class="col-lg-4 col-md-6">
+        <a href="/analytical" class="dashboard-card analytical-card">
+            <h2>Analytical Dashboard</h2>
+            <p>Deep data analysis, demographics, and predictive insights</p>
+            <div class="card-buttons">
+                <button class="btn">
+                    <i class="fas fa-chart-pie card-icon"></i>Data
+                </button>
+                <button class="btn">
+                    <i class="fas fa-brain card-icon"></i>Insights
+                </button>
+            </div>
+        </a>
+    </div>
+</div>
+
+<div class="row mt-5">
+    <div class="col-12">
+        <div class="card olympic-highlights-section">
+            <div class="card-header">
+                <h4 class="mb-0"><i class="fas fa-star"></i> Olympic Highlights & Records</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="stat-card">
+                            <div class="stat-number text-primary" id="mostMedals">121</div>
+                            <div class="stat-label">Most Medals (USA - Tokyo 2020)</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-card">
+                            <div class="stat-number text-success" id="longestCareer">40+</div>
+                            <div class="stat-label">Longest Olympic Career (Years)</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-card">
+                            <div class="stat-number text-danger" id="phelpsRecord">28</div>
+                            <div class="stat-label">Michael Phelps Total Medals</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <hr class="my-4">
+                
+                <div class="row">
+                    <div class="col-md-6 olympic-records-section">
+                        <h5><i class="fas fa-trophy text-warning"></i> Olympic Records</h5>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-medal text-warning"></i> Most Gold Medals: Michael Phelps (23)</li>
+                            <li><i class="fas fa-stopwatch text-info"></i> Fastest 100m: Usain Bolt (9.63s)</li>
+                            <li><i class="fas fa-flag text-success"></i> Most Participating Nations: 206</li>
+                            <li><i class="fas fa-calendar text-primary"></i> Longest Gap: 12 Years (1916, 1940, 1944)</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6 olympic-milestones-section">
+                        <h5><i class="fas fa-history text-primary"></i> Olympic Milestones</h5>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-clock text-info"></i> First Modern Olympics: 1896 Athens</li>
+                            <li><i class="fas fa-venus text-danger"></i> Women First Competed: 1900 Paris</li>
+                            <li><i class="fas fa-globe text-success"></i> Most Recent Host: Paris 2024</li>
+                            <li><i class="fas fa-fire text-warning"></i> Olympic Flame Tradition: Since 1928</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12 text-center">
+        <div class="card bg-light">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="fas fa-quote-left text-muted"></i>
+                    Celebrating Olympic Excellence Through Data
+                    <i class="fas fa-quote-right text-muted"></i>
+                </h5>
+                <p class="card-text text-muted">
+                    "The Olympic Games are a quadrennial celebration of human achievement, 
+                    bringing together the world's finest athletes in the spirit of competition and unity."
+                </p>
+                <div class="olympic-logo-bottom">
+                    <img src="/static/olympic_logo.png" alt="Olympic Logo" class="bottom-olympic-logo">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Animate the statistics on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        const stats = document.querySelectorAll('.stat-number');
+        stats.forEach(stat => {
+            const text = stat.textContent;
+            const number = parseInt(text.replace(/\D/g, ''));
+            if (number) {
+                stat.textContent = '0';
+                animateCounter(stat, number);
+            }
+        });
+    });
+</script>
+{% endblock %} 

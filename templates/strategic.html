@@ -1,0 +1,1203 @@
+{% extends "base.html" %}
+
+{% block title %}Strategic Dashboard - Olympic Analytics{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Dashboard Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="display-6 text-olympic-blue fw-bold mb-1">
+                        <i class="fa-solid fa-chart-line me-2"></i>Strategic Dashboard
+                    </h1>
+                    <p class="text-muted mb-0">High-level Olympic insights and strategic analytics</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-olympic-blue" onclick="exportData()">
+                        <i class="fa-solid fa-download me-1"></i>Export Data
+                    </button>
+                    <button class="btn btn-olympic-blue" onclick="refreshDashboard()">
+                        <i class="fa-solid fa-sync-alt me-1"></i>Refresh
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters Row -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body py-3">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <label class="form-label fw-semibold text-olympic-blue">Olympic Year</label>
+                            <select class="form-select" id="yearFilter">
+                                <option value="">All Years</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-semibold text-olympic-blue">Country</label>
+                            <select class="form-select" id="countryFilter">
+                                <option value="">All Countries</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-semibold text-olympic-blue">Sport</label>
+                            <select class="form-select" id="sportFilter">
+                                <option value="">All Sports</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 d-flex align-items-end">
+                            <button class="btn btn-olympic-blue w-100" onclick="applyFilters()">
+                                <i class="fa-solid fa-filter me-2"></i>Apply Filters
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- KPI Cards Row -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100 kpi-card" style="background: linear-gradient(135deg, #0085C3 0%, #00A651 100%);">
+                <div class="card-body text-white">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="card-title text-white-50 mb-1">Medal Ratio</h6>
+                            <h2 class="mb-0 fw-bold counter" id="medalRatio" data-target="0">0</h2>
+                            <small class="text-white-75">medals per participant</small>
+                        </div>
+                        <div class="bg-white bg-opacity-20 rounded p-2">
+                            <i class="fa-solid fa-medal fa-2x text-white"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100 kpi-card" style="background: linear-gradient(135deg, #FFB81C 0%, #EE334E 100%);">
+                <div class="card-body text-white">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="card-title text-white-50 mb-1">Total Athletes</h6>
+                            <h2 class="mb-0 fw-bold counter" data-target="0" id="totalAthletes">0</h2>
+                            <small class="text-white-75">across all editions</small>
+                        </div>
+                        <div class="bg-white bg-opacity-20 rounded p-2">
+                            <i class="fa-solid fa-users fa-2x text-white"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100 kpi-card" style="background: linear-gradient(135deg, #EE334E 0%, #000000 100%);">
+                <div class="card-body text-white">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="card-title text-white-50 mb-1">Total Medals</h6>
+                            <h2 class="mb-0 fw-bold counter" data-target="0" id="totalMedals">0</h2>
+                            <small class="text-white-75">awarded</small>
+                        </div>
+                        <div class="bg-white bg-opacity-20 rounded p-2">
+                            <i class="fa-solid fa-trophy fa-2x text-white"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100 kpi-card" style="background: linear-gradient(135deg, #00A651 0%, #0085C3 100%);">
+                <div class="card-body text-white">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="card-title text-white-50 mb-1">Avg Efficiency</h6>
+                            <h2 class="mb-0 fw-bold counter" data-target="0" id="avgEfficiency">0</h2>
+                            <small class="text-white-75">medals per 100 athletes</small>
+                        </div>
+                        <div class="bg-white bg-opacity-20 rounded p-2">
+                            <i class="fa-solid fa-chart-pie fa-2x text-white"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row 1 -->
+    <div class="row mb-4">
+        <!-- Total Participation Over Time - Spline Chart -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-transparent border-0 py-3">
+                    <h5 class="card-title text-light-contrast mb-0">
+                        <i class="fa-solid fa-chart-line me-2"></i>Total Participation Over Time
+                    </h5>
+                    <small class="text-subtitle">Participation trends across Olympic editions</small>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="participationChart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Historical Participation Peaks - Timeline -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-transparent border-0 py-3">
+                    <h5 class="card-title text-light-contrast mb-0">
+                        <i class="fa-solid fa-timeline me-2"></i>Historical Peaks
+                    </h5>
+                    <small class="text-subtitle">Key participation milestones</small>
+                </div>
+                <div class="card-body">
+                    <div id="timelineContainer" class="timeline-container">
+                        <div class="timeline-item">
+                            <div class="timeline-marker bg-olympic-blue"></div>
+                            <div class="timeline-content">
+                                <div class="timeline-year text-olympic-blue fw-bold">Loading...</div>
+                                <div class="timeline-event">Analyzing historical data</div>
+                                <div class="timeline-description text-muted">Please wait</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row 2 -->
+    <div class="row mb-4">
+        <!-- Country Medal Performance - Horizontal Bar Chart -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-transparent border-0 py-3">
+                    <h5 class="card-title text-light-contrast mb-0">
+                        <i class="fa-solid fa-flag me-2"></i>Country Medal Performance
+                    </h5>
+                    <small class="text-subtitle">Medal distribution by country</small>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="medalChart" width="400" height="300"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Average BMI Over Editions - Line Chart -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-transparent border-0 py-3">
+                    <h5 class="card-title text-light-contrast mb-0">
+                        <i class="fa-solid fa-heartbeat me-2"></i>Average BMI Over Editions
+                    </h5>
+                    <small class="text-subtitle">Athlete physical trends over time</small>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="bmiChart" width="400" height="300"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row 3 -->
+    <div class="row mb-4">
+        <!-- Country Medal Efficiency - Heatmap -->
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-transparent border-0 py-3">
+                    <h5 class="card-title text-light-contrast mb-0">
+                        <i class="fa-solid fa-fire me-2"></i>Country Medal Efficiency
+                    </h5>
+                    <small class="text-subtitle">Medals per participant ratio</small>
+                </div>
+                <div class="card-body">
+                    <div id="efficiencyHeatmap" class="heatmap-container"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Event Specialization Profile - Sunburst Chart -->
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-transparent border-0 py-3">
+                    <h5 class="card-title text-light-contrast mb-0">
+                        <i class="fa-solid fa-sun me-2"></i>Event Specialization
+                    </h5>
+                    <small class="text-subtitle">Sport and event breakdown</small>
+                </div>
+                <div class="card-body">
+                    <div id="sunburstChart" class="sunburst-container"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Loading Overlay -->
+<div id="loadingOverlay" class="loading-overlay">
+    <div class="loading-spinner">
+        <div class="olympic-rings">
+            <div class="ring ring-blue"></div>
+            <div class="ring ring-yellow"></div>
+            <div class="ring ring-black"></div>
+            <div class="ring ring-green"></div>
+            <div class="ring ring-red"></div>
+        </div>
+        <p class="mt-3 text-olympic-blue fw-semibold">Loading Strategic Analytics...</p>
+    </div>
+</div>
+
+<style>
+/* Olympic Color Scheme */
+.text-olympic-blue { color: #0085C3 !important; }
+.text-olympic-yellow { color: #FFB81C !important; }
+.text-olympic-black { color: #000000 !important; }
+.text-olympic-green { color: #00A651 !important; }
+.text-olympic-red { color: #EE334E !important; }
+
+/* Light text for better contrast against dark backgrounds */
+.text-light-contrast { 
+    color: rgba(255, 255, 255, 0.9) !important; 
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.text-subtitle { 
+    color: rgba(255, 255, 255, 0.8) !important; 
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.btn-olympic-blue {
+    background-color: #0085C3;
+    border-color: #0085C3;
+    color: white;
+}
+
+.btn-olympic-blue:hover {
+    background-color: #006a9e;
+    border-color: #006a9e;
+    color: white;
+}
+
+.btn-outline-olympic-blue {
+    color: #0085C3;
+    border-color: #0085C3;
+}
+
+.btn-outline-olympic-blue:hover {
+    background-color: #0085C3;
+    border-color: #0085C3;
+    color: white;
+}
+
+/* KPI Cards */
+.kpi-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.kpi-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15) !important;
+}
+
+/* KPI Icon containers */
+.kpi-card .bg-white {
+    min-width: 50px;
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.kpi-card .fa-solid {
+    color: rgba(255, 255, 255, 0.95) !important;
+    font-size: 1.5rem !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.kpi-card .fa-2x {
+    font-size: 2rem !important;
+}
+
+/* Chart Containers */
+.chart-container {
+    position: relative;
+    height: 300px;
+    width: 100%;
+}
+
+/* Timeline Styles */
+.timeline-container {
+    position: relative;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.timeline-item {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.timeline-marker {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    margin-right: 15px;
+    margin-top: 5px;
+    position: relative;
+    z-index: 2;
+    border: 2px solid white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.timeline-marker::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 12px;
+    width: 2px;
+    height: 40px;
+    background-color: #dee2e6;
+    transform: translateX(-50%);
+}
+
+.timeline-item:last-child .timeline-marker::after {
+    display: none;
+}
+
+.timeline-content {
+    flex: 1;
+}
+
+.timeline-year {
+    font-size: 1.1rem;
+    margin-bottom: 2px;
+}
+
+.timeline-event {
+    font-weight: 500;
+    margin-bottom: 2px;
+}
+
+.timeline-description {
+    font-size: 0.9rem;
+}
+
+/* Heatmap Styles */
+.heatmap-container {
+    height: 300px;
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    overflow-y: auto;
+}
+
+.heatmap-cell {
+    flex: 1 1 120px;
+    min-height: 40px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    margin-bottom: 5px;
+    position: relative;
+}
+
+.heatmap-cell:hover {
+    transform: scale(1.05);
+}
+
+.heatmap-cell .country-name {
+    text-align: center;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+}
+
+.heatmap-cell .efficiency-value {
+    position: absolute;
+    bottom: 2px;
+    right: 4px;
+    font-size: 0.7rem;
+    background: rgba(0,0,0,0.3);
+    padding: 1px 3px;
+    border-radius: 2px;
+}
+
+/* Sunburst Styles */
+.sunburst-container {
+    height: 300px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 10px;
+}
+
+.sunburst-container .chart-container {
+    height: 250px;
+    width: 100%;
+    max-width: 250px;
+    position: relative;
+}
+
+/* Loading Overlay */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    backdrop-filter: blur(5px);
+}
+
+.loading-spinner {
+    text-align: center;
+}
+
+/* Olympic Rings Animation */
+.olympic-rings {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.ring {
+    width: 30px;
+    height: 30px;
+    border: 3px solid;
+    border-radius: 50%;
+    animation: ringPulse 2s ease-in-out infinite;
+}
+
+.ring-blue { border-color: #0085C3; animation-delay: 0s; }
+.ring-yellow { border-color: #FFB81C; animation-delay: 0.2s; }
+.ring-black { border-color: #000000; animation-delay: 0.4s; }
+.ring-green { border-color: #00A651; animation-delay: 0.6s; }
+.ring-red { border-color: #EE334E; animation-delay: 0.8s; }
+
+@keyframes ringPulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.2); opacity: 0.7; }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .chart-container {
+        height: 250px;
+    }
+    
+    .heatmap-container {
+        height: 250px;
+    }
+    
+    .sunburst-container {
+        height: 250px;
+    }
+}
+</style>
+
+<script>
+let strategicData = {};
+let charts = {};
+
+// Olympic Color Palette
+const olympicColors = {
+    blue: '#0085C3',
+    yellow: '#FFB81C',
+    black: '#000000',
+    green: '#00A651',
+    red: '#EE334E',
+    light_blue: '#4DA6D9',
+    light_yellow: '#FFD700',
+    light_green: '#32CD32',
+    light_red: '#FF6B6B'
+};
+
+$(document).ready(function() {
+    loadFilters();
+    loadStrategicData();
+});
+
+function showLoading() {
+    $('#loadingOverlay').fadeIn(300);
+}
+
+function hideLoading() {
+    $('#loadingOverlay').fadeOut(300);
+}
+
+function loadFilters() {
+    $.get('/api/filters', function(data) {
+        // Populate year filter
+        data.years.forEach(year => {
+            $('#yearFilter').append(`<option value="${year}">${year}</option>`);
+        });
+        
+        // Populate country filter
+        data.countries.forEach(country => {
+            $('#countryFilter').append(`<option value="${country}">${country}</option>`);
+        });
+        
+        // Populate sport filter
+        data.sports.forEach(sport => {
+            $('#sportFilter').append(`<option value="${sport}">${sport}</option>`);
+        });
+    });
+}
+
+function applyFilters() {
+    loadStrategicData();
+}
+
+function loadStrategicData() {
+    showLoading();
+    
+    const params = {
+        year: $('#yearFilter').val(),
+        country: $('#countryFilter').val()
+    };
+    
+    console.log('Loading strategic data with params:', params);
+    
+    $.get('/api/strategic-data', params, function(data) {
+        console.log('Strategic data received:', data);
+        strategicData = data;
+        updateKPIs(data.summary);
+        createParticipationChart(data.participation_trend);
+        console.log('About to create medal chart with:', data.medal_performance);
+        createMedalChart(data.medal_performance);
+        createBMIChart(data.bmi_trend);
+        createEfficiencyHeatmap(data.medal_efficiency);
+        createSunburstChart(data.event_specialization);
+        updateTimeline(data.historical_peaks);
+        hideLoading();
+    }).fail(function(xhr, status, error) {
+        console.error('Error loading strategic data:', error, xhr.responseText);
+        hideLoading();
+        alert('Error loading strategic data');
+    });
+}
+
+function updateKPIs(summary) {
+    console.log('Updating KPIs with summary:', summary);
+    console.log('Medal ratio from data:', strategicData.kpi_medal_ratio);
+    
+    // Animate counters with correct values
+    animateCounter('#totalAthletes', summary.total_participants);
+    animateCounter('#totalMedals', summary.total_medals);
+    animateCounter('#avgEfficiency', summary.avg_efficiency, true); // Already calculated as percentage
+    
+    // Update medal ratio (first KPI card)
+    animateCounter('#medalRatio', strategicData.kpi_medal_ratio, false, 4);
+}
+
+function animateCounter(selector, target, isPercentage = false, decimals = 0) {
+    const element = $(selector);
+    const start = 0;
+    const duration = 2000;
+    const startTime = performance.now();
+    
+    function updateCounter(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const current = start + (target - start) * easeOutExpo(progress);
+        
+        let value = current.toFixed(decimals);
+        if (isPercentage) value += '%';
+        
+        element.text(value);
+        
+        if (progress < 1) {
+            requestAnimationFrame(updateCounter);
+        }
+    }
+    
+    requestAnimationFrame(updateCounter);
+}
+
+function easeOutExpo(t) {
+    return t === 1 ? 1 : 1 - Math.pow(2, -10 * t);
+}
+
+function createParticipationChart(data) {
+    const ctx = document.getElementById('participationChart').getContext('2d');
+    
+    if (charts.participation) {
+        charts.participation.destroy();
+    }
+    
+    charts.participation = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: data.map(d => d.year),
+            datasets: [{
+                label: 'Total Participants',
+                data: data.map(d => d.total_participants),
+                borderColor: olympicColors.blue,
+                backgroundColor: olympicColors.blue + '20',
+                borderWidth: 3,
+                fill: true,
+                tension: 0.4,
+                pointBackgroundColor: olympicColors.blue,
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2,
+                pointRadius: 6,
+                pointHoverRadius: 8
+            }, {
+                label: 'Countries',
+                data: data.map(d => d.total_countries),
+                borderColor: olympicColors.green,
+                backgroundColor: olympicColors.green + '20',
+                borderWidth: 2,
+                fill: false,
+                tension: 0.4,
+                pointBackgroundColor: olympicColors.green,
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2,
+                pointRadius: 4,
+                pointHoverRadius: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                    labels: {
+                        usePointStyle: true,
+                        padding: 20
+                    }
+                },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false,
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    titleColor: '#fff',
+                    bodyColor: '#fff',
+                    borderColor: olympicColors.blue,
+                    borderWidth: 1,
+                    cornerRadius: 8,
+                    displayColors: true
+                }
+            },
+            scales: {
+                x: {
+                    display: true,
+                    title: {
+                        display: true,
+                        text: 'Olympic Year',
+                        color: olympicColors.blue,
+                        font: {
+                            weight: 'bold'
+                        }
+                    }
+                },
+                y: {
+                    display: true,
+                    title: {
+                        display: true,
+                        text: 'Count',
+                        color: olympicColors.blue,
+                        font: {
+                            weight: 'bold'
+                        }
+                    }
+                }
+            },
+            interaction: {
+                mode: 'nearest',
+                axis: 'x',
+                intersect: false
+            },
+            animation: {
+                duration: 2000,
+                easing: 'easeInOutQuart'
+            }
+        }
+    });
+}
+
+function createMedalChart(data) {
+    console.log('Creating medal chart with data:', data);
+    const ctx = document.getElementById('medalChart').getContext('2d');
+    console.log('Canvas context:', ctx);
+    
+    if (charts.medals) {
+        charts.medals.destroy();
+    }
+    
+    console.log('Medal chart data structure:', {
+        labels: data.map(d => d.countryname),
+        goldData: data.map(d => d.gold),
+        silverData: data.map(d => d.silver),
+        bronzeData: data.map(d => d.bronze)
+    });
+    
+    charts.medals = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: data.map(d => d.countryname),
+            datasets: [{
+                label: 'Gold',
+                data: data.map(d => d.gold),
+                backgroundColor: olympicColors.yellow,
+                borderColor: olympicColors.yellow,
+                borderWidth: 1
+            }, {
+                label: 'Silver',
+                data: data.map(d => d.silver),
+                backgroundColor: '#C0C0C0',
+                borderColor: '#C0C0C0',
+                borderWidth: 1
+            }, {
+                label: 'Bronze',
+                data: data.map(d => d.bronze),
+                backgroundColor: '#CD7F32',
+                borderColor: '#CD7F32',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                    labels: {
+                        usePointStyle: true,
+                        padding: 20
+                    }
+                },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false,
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    titleColor: '#fff',
+                    bodyColor: '#fff',
+                    borderColor: olympicColors.blue,
+                    borderWidth: 1,
+                    cornerRadius: 8
+                }
+            },
+            scales: {
+                x: {
+                    stacked: true,
+                    title: {
+                        display: true,
+                        text: 'Medal Count',
+                        color: olympicColors.blue,
+                        font: {
+                            weight: 'bold'
+                        }
+                    }
+                },
+                y: {
+                    stacked: true,
+                    title: {
+                        display: true,
+                        text: 'Country',
+                        color: olympicColors.blue,
+                        font: {
+                            weight: 'bold'
+                        }
+                    }
+                }
+            },
+            animation: {
+                duration: 2000,
+                easing: 'easeInOutQuart'
+            }
+        }
+    });
+    
+    console.log('Medal chart created:', charts.medals);
+}
+
+function createBMIChart(data) {
+    const ctx = document.getElementById('bmiChart').getContext('2d');
+    
+    if (charts.bmi) {
+        charts.bmi.destroy();
+    }
+    
+    charts.bmi = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: data.map(d => d.year),
+            datasets: [{
+                label: 'Average BMI',
+                data: data.map(d => d.avg_bmi),
+                borderColor: olympicColors.red,
+                backgroundColor: olympicColors.red + '20',
+                borderWidth: 3,
+                fill: true,
+                tension: 0.4,
+                pointBackgroundColor: olympicColors.red,
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2,
+                pointRadius: 6,
+                pointHoverRadius: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    titleColor: '#fff',
+                    bodyColor: '#fff',
+                    borderColor: olympicColors.red,
+                    borderWidth: 1,
+                    cornerRadius: 8,
+                    callbacks: {
+                        label: function(context) {
+                            return `BMI: ${context.parsed.y.toFixed(1)}`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Olympic Year',
+                        color: olympicColors.blue,
+                        font: {
+                            weight: 'bold'
+                        }
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Average BMI',
+                        color: olympicColors.blue,
+                        font: {
+                            weight: 'bold'
+                        }
+                    },
+                    min: 20,
+                    max: 26
+                }
+            },
+            animation: {
+                duration: 2000,
+                easing: 'easeInOutQuart'
+            }
+        }
+    });
+}
+
+function createEfficiencyHeatmap(data) {
+    console.log('Creating efficiency heatmap with data:', data);
+    const container = $('#efficiencyHeatmap');
+    container.empty();
+    
+    if (!data || data.length === 0) {
+        container.html('<div class="text-center text-muted p-4">No efficiency data available</div>');
+        return;
+    }
+    
+    const maxEfficiency = Math.max(...data.map(d => d.efficiency));
+    console.log('Max efficiency:', maxEfficiency);
+    
+    data.forEach((country, index) => {
+        console.log(`Country ${index}:`, country);
+        const intensity = country.efficiency / maxEfficiency;
+        const color = getHeatmapColor(intensity);
+        
+        const cell = $(`
+            <div class="heatmap-cell" style="background-color: ${color};">
+                <div>
+                    <div class="country-name">${country.countryname}</div>
+                    <div class="efficiency-value">${(country.efficiency * 100).toFixed(1)}%</div>
+                </div>
+            </div>
+        `);
+        
+        cell.attr('title', `${country.countryname}: ${country.medals} medals from ${country.participants} participants (${(country.efficiency * 100).toFixed(1)}% efficiency)`);
+        container.append(cell);
+    });
+    
+    console.log(`Created ${data.length} heatmap cells`);
+}
+
+function getHeatmapColor(intensity) {
+    // Create gradient from light blue to dark red
+    const colors = [
+        { r: 173, g: 216, b: 230 }, // Light blue
+        { r: 0, g: 133, b: 195 },   // Olympic blue
+        { r: 255, g: 184, b: 28 },  // Olympic yellow
+        { r: 238, g: 51, b: 78 }    // Olympic red
+    ];
+    
+    const scaledIntensity = intensity * (colors.length - 1);
+    const index = Math.floor(scaledIntensity);
+    const remainder = scaledIntensity - index;
+    
+    if (index >= colors.length - 1) {
+        return `rgb(${colors[colors.length - 1].r}, ${colors[colors.length - 1].g}, ${colors[colors.length - 1].b})`;
+    }
+    
+    const color1 = colors[index];
+    const color2 = colors[index + 1];
+    
+    const r = Math.round(color1.r + (color2.r - color1.r) * remainder);
+    const g = Math.round(color1.g + (color2.g - color1.g) * remainder);
+    const b = Math.round(color1.b + (color2.b - color1.b) * remainder);
+    
+    return `rgb(${r}, ${g}, ${b})`;
+}
+
+function createSunburstChart(data) {
+    console.log('Creating sunburst chart with data:', data);
+    const container = $('#sunburstChart');
+    container.empty();
+    
+    // Group data by sport and count events
+    const sportGroups = {};
+    data.forEach(item => {
+        if (!sportGroups[item.sportname]) {
+            sportGroups[item.sportname] = {
+                events: 0,
+                totalParticipation: 0
+            };
+        }
+        sportGroups[item.sportname].events += 1;
+        sportGroups[item.sportname].totalParticipation += item.participation_count;
+    });
+    
+    console.log('Sport groups:', sportGroups);
+    
+    // Create sport summary and get top 8 sports for better visibility
+    const sportSummary = Object.keys(sportGroups).map(sportName => ({
+        name: sportName,
+        events: sportGroups[sportName].events,
+        totalParticipation: sportGroups[sportName].totalParticipation
+    })).sort((a, b) => b.events - a.events);  // Sort by event count
+    
+    const topSports = sportSummary.slice(0, 8);
+    console.log('Top sports for chart:', topSports);
+    
+    // Create canvas for Chart.js
+    const canvasHtml = `
+        <div class="chart-container mb-3">
+            <canvas id="sportBreakdownChart" width="300" height="300"></canvas>
+        </div>
+        <div class="text-center">
+            <small class="text-muted">Sport and Event Distribution</small>
+        </div>
+    `;
+    
+    container.html(canvasHtml);
+    
+    // Create Chart.js donut chart
+    const ctx = document.getElementById('sportBreakdownChart').getContext('2d');
+    
+    // Destroy existing chart if it exists
+    if (charts.sunburst) {
+        charts.sunburst.destroy();
+    }
+    
+    const chartColors = [
+        olympicColors.blue,
+        olympicColors.green, 
+        olympicColors.red,
+        olympicColors.yellow,
+        '#FF6B6B',
+        '#4ECDC4',
+        '#45B7D1',
+        '#96CEB4'
+    ];
+    
+    charts.sunburst = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: topSports.map(sport => sport.name),
+            datasets: [{
+                data: topSports.map(sport => sport.events),
+                backgroundColor: chartColors.slice(0, topSports.length),
+                borderColor: '#ffffff',
+                borderWidth: 2,
+                hoverBorderWidth: 3
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            aspectRatio: 1,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        boxWidth: 12,
+                        padding: 8,
+                        font: {
+                            size: 10
+                        },
+                        generateLabels: function(chart) {
+                            const data = chart.data;
+                            if (data.labels.length && data.datasets.length) {
+                                return data.labels.map((label, i) => {
+                                    const sport = topSports[i];
+                                    return {
+                                        text: `${label}: ${sport.events} events`,
+                                        fillStyle: data.datasets[0].backgroundColor[i],
+                                        strokeStyle: data.datasets[0].borderColor,
+                                        lineWidth: data.datasets[0].borderWidth,
+                                        hidden: false,
+                                        index: i
+                                    };
+                                });
+                            }
+                            return [];
+                        }
+                    }
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    titleColor: '#fff',
+                    bodyColor: '#fff',
+                    borderColor: olympicColors.blue,
+                    borderWidth: 1,
+                    cornerRadius: 8,
+                    callbacks: {
+                        label: function(context) {
+                            const sport = topSports[context.dataIndex];
+                            const percentage = ((sport.events / topSports.reduce((sum, s) => sum + s.events, 0)) * 100).toFixed(1);
+                            return [
+                                `${sport.name}: ${sport.events} events (${percentage}%)`,
+                                `Participation: ${sport.totalParticipation.toLocaleString()}`
+                            ];
+                        }
+                    }
+                }
+            },
+            cutout: '50%',
+            animation: {
+                duration: 2000,
+                easing: 'easeInOutQuart'
+            }
+        }
+    });
+    
+    console.log('Sport breakdown chart created successfully');
+}
+
+function updateTimeline(peaks) {
+    const container = $('#timelineContainer');
+    container.empty();
+    
+    if (peaks && peaks.length > 0) {
+        peaks.forEach((peak, index) => {
+            // Choose icon based on event type
+            let icon = 'fa-solid fa-star';
+            let iconColor = 'text-olympic-blue';
+            
+            if (peak.event.includes('Peak Participation')) {
+                icon = 'fa-solid fa-users';
+                iconColor = 'text-olympic-blue';
+            } else if (peak.event.includes('Countries')) {
+                icon = 'fa-solid fa-globe';
+                iconColor = 'text-olympic-green';
+            } else if (peak.event.includes('Events')) {
+                icon = 'fa-solid fa-calendar-alt';
+                iconColor = 'text-olympic-yellow';
+            } else if (peak.event.includes('First Modern')) {
+                icon = 'fa-solid fa-flag-checkered';
+                iconColor = 'text-olympic-red';
+            } else if (peak.event.includes('Expansion')) {
+                icon = 'fa-solid fa-chart-line';
+                iconColor = 'text-success';
+            }
+            
+            const item = $(`
+                <div class="timeline-item">
+                    <div class="timeline-marker bg-olympic-blue d-flex align-items-center justify-content-center">
+                        <i class="${icon} ${iconColor}" style="font-size: 8px;"></i>
+                    </div>
+                    <div class="timeline-content">
+                        <div class="timeline-year text-olympic-blue fw-bold">${peak.year}</div>
+                        <div class="timeline-event fw-semibold">${peak.event}</div>
+                        <div class="timeline-description text-muted">${peak.description}</div>
+                        ${peak.value ? `<div class="timeline-value mt-1"><small class="badge bg-light text-dark">${peak.value.toLocaleString()}</small></div>` : ''}
+                    </div>
+                </div>
+            `);
+            container.append(item);
+        });
+    } else {
+        container.html(`
+            <div class="timeline-item">
+                <div class="timeline-marker bg-secondary d-flex align-items-center justify-content-center">
+                    <i class="fa-solid fa-exclamation-triangle text-warning" style="font-size: 8px;"></i>
+                </div>
+                <div class="timeline-content">
+                    <div class="timeline-year text-muted fw-bold">No Data</div>
+                    <div class="timeline-event">No significant peaks found</div>
+                    <div class="timeline-description text-muted">Try adjusting filters</div>
+                </div>
+            </div>
+        `);
+    }
+}
+
+function refreshDashboard() {
+    loadStrategicData();
+}
+
+function exportData() {
+    if (strategicData) {
+        const dataStr = JSON.stringify(strategicData, null, 2);
+        const dataBlob = new Blob([dataStr], {type: 'application/json'});
+        const url = URL.createObjectURL(dataBlob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'strategic_dashboard_data.json';
+        link.click();
+        URL.revokeObjectURL(url);
+    }
+}
+
+// Add resize handler for responsive charts
+window.addEventListener('resize', function() {
+    Object.values(charts).forEach(chart => {
+        if (chart && typeof chart.resize === 'function') {
+            chart.resize();
+        }
+    });
+});
+</script>
+{% endblock %} 

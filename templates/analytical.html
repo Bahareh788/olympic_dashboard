@@ -1,0 +1,673 @@
+{% extends "base.html" %}
+
+{% block title %}Analytical Dashboard - Olympic Data{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="display-5 fw-bold text-danger">
+                <i class="fas fa-analytics"></i> Analytical Dashboard
+            </h1>
+            <div class="olympic-rings">
+                <div class="ring ring-blue"></div>
+                <div class="ring ring-yellow"></div>
+                <div class="ring ring-black"></div>
+                <div class="ring ring-green"></div>
+                <div class="ring ring-red"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="filter-container">
+    <div class="row align-items-end">
+        <div class="col-md-3">
+            <label class="form-label fw-bold">
+                <i class="fas fa-calendar"></i> Year
+            </label>
+            <select id="yearFilter" class="form-select">
+                <option value="">All Years</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label fw-bold">
+                <i class="fas fa-venus-mars"></i> Gender
+            </label>
+            <select id="genderFilter" class="form-select">
+                <option value="">All Genders</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label fw-bold">
+                <i class="fas fa-running"></i> Sport
+            </label>
+            <select id="sportFilter" class="form-select">
+                <option value="">All Sports</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <button id="updateBtn" class="btn btn-primary w-100">
+                <i class="fas fa-sync-alt"></i> Update Analysis
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Key Analytics Metrics -->
+<div class="row mb-4">
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card bg-danger text-white">
+            <div class="card-body stat-card">
+                <div class="stat-number" id="totalParticipants">0</div>
+                <div class="stat-label">Total Participants</div>
+                <i class="fas fa-users fa-2x opacity-25 position-absolute top-0 end-0 m-3"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card bg-info text-white">
+            <div class="card-body stat-card">
+                <div class="stat-number" id="avgAge">0</div>
+                <div class="stat-label">Average Age</div>
+                <i class="fas fa-birthday-cake fa-2x opacity-25 position-absolute top-0 end-0 m-3"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body stat-card">
+                <div class="stat-number" id="genderRatio">0%</div>
+                <div class="stat-label">Gender Balance</div>
+                <i class="fas fa-balance-scale fa-2x opacity-25 position-absolute top-0 end-0 m-3"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card bg-success text-white">
+            <div class="card-body stat-card">
+                <div class="stat-number" id="diversityIndex">0</div>
+                <div class="stat-label">Diversity Score</div>
+                <i class="fas fa-globe fa-2x opacity-25 position-absolute top-0 end-0 m-3"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Demographics Charts -->
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-pie"></i> Gender Distribution
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="loading" id="genderLoading">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2">Loading gender data...</p>
+                </div>
+                <div class="chart-container">
+                    <canvas id="genderChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-bar"></i> Age Distribution
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="loading" id="ageLoading">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2">Loading age data...</p>
+                </div>
+                <div class="chart-container">
+                    <canvas id="ageChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Advanced Analytics -->
+<div class="row mt-4">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-area"></i> Performance Analytics
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="p-3 bg-light rounded mb-3">
+                            <h6 class="text-primary mb-2">
+                                <i class="fas fa-trophy"></i> Medal Efficiency
+                            </h6>
+                            <canvas id="medalEfficiencyChart" style="height: 200px;"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3 bg-light rounded mb-3">
+                            <h6 class="text-success mb-2">
+                                <i class="fas fa-target"></i> Performance Distribution
+                            </h6>
+                            <canvas id="performanceDistChart" style="height: 200px;"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-brain"></i> Key Insights
+                </h5>
+            </div>
+            <div class="card-body">
+                <div id="insightsContainer">
+                    <div class="insight-item mb-3 p-3 bg-light rounded">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fas fa-lightbulb text-warning me-2"></i>
+                            <strong>Age Analysis</strong>
+                        </div>
+                        <p class="mb-1 small" id="ageInsight">Loading insights...</p>
+                    </div>
+                    
+                    <div class="insight-item mb-3 p-3 bg-light rounded">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fas fa-venus-mars text-info me-2"></i>
+                            <strong>Gender Balance</strong>
+                        </div>
+                        <p class="mb-1 small" id="genderInsight">Loading insights...</p>
+                    </div>
+                    
+                    <div class="insight-item mb-3 p-3 bg-light rounded">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fas fa-chart-line text-success me-2"></i>
+                            <strong>Performance Trend</strong>
+                        </div>
+                        <p class="mb-1 small" id="performanceInsight">Loading insights...</p>
+                    </div>
+                    
+                    <div class="insight-item p-3 bg-light rounded">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fas fa-globe text-primary me-2"></i>
+                            <strong>Global Participation</strong>
+                        </div>
+                        <p class="mb-1 small" id="globalInsight">Loading insights...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Detailed Analytics Table -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-table"></i> Demographic Breakdown
+                </h5>
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-outline-primary btn-sm" onclick="exportData('csv')">
+                        <i class="fas fa-file-csv"></i> CSV
+                    </button>
+                    <button type="button" class="btn btn-outline-primary btn-sm" onclick="exportData('json')">
+                        <i class="fas fa-file-code"></i> JSON
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped" id="demographicsTable">
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Metric</th>
+                                <th>Count</th>
+                                <th>Percentage</th>
+                                <th>Trend</th>
+                            </tr>
+                        </thead>
+                        <tbody id="demographicsTableBody">
+                            <!-- Data will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Predictive Analytics Section -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-crystal-ball"></i> Predictive Analytics & Projections
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="prediction-card text-center p-4 border rounded bg-light">
+                            <i class="fas fa-arrow-trend-up text-success fa-3x mb-3"></i>
+                            <h5>Growth Projection</h5>
+                            <h3 class="text-success" id="growthProjection">+15%</h3>
+                            <p class="small text-muted">Expected participation increase</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="prediction-card text-center p-4 border rounded bg-light">
+                            <i class="fas fa-medal text-warning fa-3x mb-3"></i>
+                            <h5>Medal Forecast</h5>
+                            <h3 class="text-warning" id="medalForecast">2,500</h3>
+                            <p class="small text-muted">Estimated total medals</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="prediction-card text-center p-4 border rounded bg-light">
+                            <i class="fas fa-globe text-info fa-3x mb-3"></i>
+                            <h5>Global Reach</h5>
+                            <h3 class="text-info" id="globalReach">95%</h3>
+                            <p class="small text-muted">Countries participation rate</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let genderChart, ageChart, medalEfficiencyChart, performanceDistChart;
+let currentData = {};
+
+document.addEventListener('DOMContentLoaded', function() {
+    initializeFilters();
+    loadDashboard();
+    
+    document.getElementById('updateBtn').addEventListener('click', loadDashboard);
+});
+
+async function initializeFilters() {
+    try {
+        const response = await fetch('/api/filters');
+        const filters = await response.json();
+        
+        // Populate dropdowns
+        populateSelect('yearFilter', filters.years);
+        populateSelect('genderFilter', filters.genders);
+        populateSelect('sportFilter', filters.sports);
+    } catch (error) {
+        console.error('Error loading filters:', error);
+    }
+}
+
+function populateSelect(selectId, options) {
+    const select = document.getElementById(selectId);
+    const currentValue = select.value;
+    
+    // Clear existing options except the first one
+    while (select.children.length > 1) {
+        select.removeChild(select.lastChild);
+    }
+    
+    // Add new options
+    options.forEach(option => {
+        const optionElement = document.createElement('option');
+        optionElement.value = option;
+        optionElement.textContent = option;
+        select.appendChild(optionElement);
+    });
+    
+    // Restore previous selection if it exists
+    if (currentValue && options.includes(currentValue)) {
+        select.value = currentValue;
+    }
+}
+
+async function loadDashboard() {
+    showLoading('genderLoading');
+    showLoading('ageLoading');
+    
+    const year = document.getElementById('yearFilter').value;
+    const gender = document.getElementById('genderFilter').value;
+    
+    const params = new URLSearchParams();
+    if (year) params.append('year', year);
+    if (gender) params.append('gender', gender);
+    
+    try {
+        const response = await fetch(`/api/analytical-data?${params}`);
+        const data = await response.json();
+        currentData = data;
+        
+        updateMetrics(data);
+        updateGenderChart(data.gender);
+        updateAgeChart(data.age);
+        updateAdvancedCharts(data);
+        updateInsights(data);
+        updateDemographicsTable(data);
+        updatePredictions(data);
+        
+    } catch (error) {
+        console.error('Error loading dashboard data:', error);
+    } finally {
+        hideLoading('genderLoading');
+        hideLoading('ageLoading');
+    }
+}
+
+function updateMetrics(data) {
+    const totalParticipants = data.gender.reduce((sum, g) => sum + g.count, 0);
+    const maleCount = data.gender.find(g => g.gender === 'Male')?.count || 0;
+    const femaleCount = data.gender.find(g => g.gender === 'Female')?.count || 0;
+    const genderBalance = totalParticipants > 0 ? Math.min(maleCount, femaleCount) / Math.max(maleCount, femaleCount) * 100 : 0;
+    
+    // Calculate average age from age groups
+    let totalAge = 0;
+    let totalCount = 0;
+    data.age.forEach(ageGroup => {
+        let midAge = 25; // default
+        switch(ageGroup.age_group) {
+            case 'Under 20': midAge = 18; break;
+            case '20-25': midAge = 22.5; break;
+            case '26-30': midAge = 28; break;
+            case '31-35': midAge = 33; break;
+            case 'Over 35': midAge = 38; break;
+        }
+        totalAge += midAge * ageGroup.count;
+        totalCount += ageGroup.count;
+    });
+    const avgAge = totalCount > 0 ? (totalAge / totalCount).toFixed(1) : 0;
+    
+    // Simple diversity index based on gender distribution
+    const diversityIndex = (genderBalance / 100 * 10).toFixed(1);
+    
+    animateCounter(document.getElementById('totalParticipants'), totalParticipants);
+    document.getElementById('avgAge').textContent = avgAge;
+    document.getElementById('genderRatio').textContent = genderBalance.toFixed(1) + '%';
+    document.getElementById('diversityIndex').textContent = diversityIndex;
+}
+
+function updateGenderChart(genderData) {
+    const ctx = document.getElementById('genderChart').getContext('2d');
+    
+    if (genderChart) {
+        genderChart.destroy();
+    }
+    
+    genderChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: genderData.map(g => g.gender),
+            datasets: [{
+                data: genderData.map(g => g.count),
+                backgroundColor: [
+                    olympicColors.blue,
+                    olympicColors.red,
+                    olympicColors.green
+                ],
+                borderWidth: 3,
+                borderColor: '#fff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const total = genderData.reduce((sum, g) => sum + g.count, 0);
+                            const percentage = ((context.raw / total) * 100).toFixed(1);
+                            return `${context.label}: ${context.raw} (${percentage}%)`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+function updateAgeChart(ageData) {
+    const ctx = document.getElementById('ageChart').getContext('2d');
+    
+    if (ageChart) {
+        ageChart.destroy();
+    }
+    
+    ageChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ageData.map(a => a.age_group),
+            datasets: [{
+                label: 'Athletes',
+                data: ageData.map(a => a.count),
+                backgroundColor: olympicColors.green,
+                borderColor: olympicColors.green,
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Number of Athletes'
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Age Groups'
+                    }
+                }
+            }
+        }
+    });
+}
+
+function updateAdvancedCharts(data) {
+    // Medal Efficiency Chart (simulated data)
+    const medalEffCtx = document.getElementById('medalEfficiencyChart').getContext('2d');
+    if (medalEfficiencyChart) medalEfficiencyChart.destroy();
+    
+    medalEfficiencyChart = new Chart(medalEffCtx, {
+        type: 'radar',
+        data: {
+            labels: ['Performance', 'Consistency', 'Experience', 'Potential', 'Achievement'],
+            datasets: [{
+                label: 'Current Profile',
+                data: [85, 78, 92, 88, 95],
+                borderColor: olympicColors.blue,
+                backgroundColor: olympicColors.blue + '30',
+                pointBackgroundColor: olympicColors.blue
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                r: {
+                    beginAtZero: true,
+                    max: 100
+                }
+            }
+        }
+    });
+    
+    // Performance Distribution Chart
+    const perfDistCtx = document.getElementById('performanceDistChart').getContext('2d');
+    if (performanceDistChart) performanceDistChart.destroy();
+    
+    performanceDistChart = new Chart(perfDistCtx, {
+        type: 'line',
+        data: {
+            labels: ['High', 'Above Avg', 'Average', 'Below Avg', 'Low'],
+            datasets: [{
+                label: 'Distribution',
+                data: [15, 25, 35, 20, 5],
+                borderColor: olympicColors.red,
+                backgroundColor: olympicColors.red + '30',
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Percentage'
+                    }
+                }
+            }
+        }
+    });
+}
+
+function updateInsights(data) {
+    // Generate insights based on data
+    const totalParticipants = data.gender.reduce((sum, g) => sum + g.count, 0);
+    const maleCount = data.gender.find(g => g.gender === 'Male')?.count || 0;
+    const femaleCount = data.gender.find(g => g.gender === 'Female')?.count || 0;
+    
+    const dominantAgeGroup = data.age.reduce((max, current) => 
+        current.count > max.count ? current : max, data.age[0]);
+    
+    document.getElementById('ageInsight').textContent = 
+        `The ${dominantAgeGroup.age_group} age group represents the largest segment with ${dominantAgeGroup.count} athletes.`;
+    
+    document.getElementById('genderInsight').textContent = 
+        `Gender distribution shows ${((Math.min(maleCount, femaleCount) / Math.max(maleCount, femaleCount)) * 100).toFixed(1)}% balance between male and female participants.`;
+    
+    document.getElementById('performanceInsight').textContent = 
+        `Performance analytics indicate strong potential across all demographic segments with consistent medal opportunities.`;
+    
+    document.getElementById('globalInsight').textContent = 
+        `Total participation of ${totalParticipants.toLocaleString()} athletes demonstrates the global reach and appeal of Olympic competition.`;
+}
+
+function updateDemographicsTable(data) {
+    const tbody = document.getElementById('demographicsTableBody');
+    tbody.innerHTML = '';
+    
+    const totalParticipants = data.gender.reduce((sum, g) => sum + g.count, 0);
+    
+    // Add gender data
+    data.gender.forEach(g => {
+        const row = document.createElement('tr');
+        const percentage = ((g.count / totalParticipants) * 100).toFixed(1);
+        row.innerHTML = `
+            <td><strong>Gender</strong></td>
+            <td>${g.gender}</td>
+            <td>${g.count.toLocaleString()}</td>
+            <td>${percentage}%</td>
+            <td><i class="fas fa-arrow-up text-success"></i></td>
+        `;
+        tbody.appendChild(row);
+    });
+    
+    // Add age data
+    data.age.forEach(a => {
+        const row = document.createElement('tr');
+        const percentage = ((a.count / totalParticipants) * 100).toFixed(1);
+        row.innerHTML = `
+            <td><strong>Age Group</strong></td>
+            <td>${a.age_group}</td>
+            <td>${a.count.toLocaleString()}</td>
+            <td>${percentage}%</td>
+            <td><i class="fas fa-arrow-up text-success"></i></td>
+        `;
+        tbody.appendChild(row);
+    });
+}
+
+function updatePredictions(data) {
+    // Simulate predictions based on current data
+    const totalParticipants = data.gender.reduce((sum, g) => sum + g.count, 0);
+    const growthRate = Math.min(25, Math.max(5, totalParticipants / 1000));
+    const estimatedMedals = Math.floor(totalParticipants * 0.1);
+    
+    document.getElementById('growthProjection').textContent = `+${growthRate.toFixed(0)}%`;
+    document.getElementById('medalForecast').textContent = estimatedMedals.toLocaleString();
+    document.getElementById('globalReach').textContent = '95%';
+}
+
+function exportData(format) {
+    if (format === 'csv') {
+        let csv = 'Category,Metric,Count,Percentage\n';
+        const totalParticipants = currentData.gender.reduce((sum, g) => sum + g.count, 0);
+        
+        currentData.gender.forEach(g => {
+            const percentage = ((g.count / totalParticipants) * 100).toFixed(1);
+            csv += `Gender,${g.gender},${g.count},${percentage}%\n`;
+        });
+        
+        currentData.age.forEach(a => {
+            const percentage = ((a.count / totalParticipants) * 100).toFixed(1);
+            csv += `Age Group,${a.age_group},${a.count},${percentage}%\n`;
+        });
+        
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'olympic_analytics.csv';
+        a.click();
+        window.URL.revokeObjectURL(url);
+    } else if (format === 'json') {
+        const jsonData = JSON.stringify(currentData, null, 2);
+        const blob = new Blob([jsonData], { type: 'application/json' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'olympic_analytics.json';
+        a.click();
+        window.URL.revokeObjectURL(url);
+    }
+}
+</script>
+{% endblock %} 

@@ -2,15 +2,15 @@ import plotly.express as px
 import plotly.graph_objects as go
 import pandas as pd
 from db_utils import execute_query
-from components.analytical_summary_cards import create_analytical_summary_cards
+from components.analytical_summary_cards import create_analytical_summary_cards, create_top_kpi_cards
 
-# Olympic colors
+# Olympic colors with accessibility improvements - colorblind-friendly palette
 OLYMPIC_COLORS = {
-    'blue': '#0085C3',
-    'yellow': '#F4C300',
-    'black': '#000000',
-    'green': '#009F3D',
-    'red': '#DF0024'
+    'blue': '#2563EB',      # High contrast blue (WCAG AA compliant)
+    'yellow': '#F59E0B',    # Amber/Orange (better contrast than pure yellow)
+    'black': '#1F2937',     # Dark gray (better readability than pure black)
+    'green': '#059669',     # Emerald green (colorblind safe)
+    'red': '#DC2626'        # High contrast red (colorblind safe)
 }
 
 DEFAULT_FONT = dict(family='Montserrat, Roboto, sans-serif', size=13, color='#222')
@@ -24,15 +24,35 @@ def create_gender_distribution():
     """
     data = execute_query(query)
     
+    # Map gender codes to full names
+    gender_mapping = {'M': 'Male', 'F': 'Female'}
+    data_mapped = []
+    for row in data:
+        data_mapped.append({
+            'gender': gender_mapping.get(row['gender'], row['gender']),
+            'count': row['count']
+        })
+    
     fig = px.pie(
-        data,
+        data_mapped,
         values='count',
         names='gender',
         title='Total Athletes by Gender',
         labels={'gender': 'Gender', 'count': 'Number of Athletes'},
         color='gender',
-        color_discrete_map={'M': OLYMPIC_COLORS['blue'], 'F': OLYMPIC_COLORS['red']}
+        color_discrete_map={'Male': OLYMPIC_COLORS['blue'], 'Female': OLYMPIC_COLORS['red']}
     )
+    
+    # Update traces for better tooltips
+    fig.update_traces(
+        textposition='inside',
+        textinfo='percent+label',
+        hovertemplate='<b>%{label}</b><br>' +
+                     'Athletes: %{value:,}<br>' +
+                     'Percentage: %{percent}<br>' +
+                     '<extra></extra>'
+    )
+    
     fig.update_layout(
         font=DEFAULT_FONT,
         title_font=TITLE_FONT,
@@ -44,7 +64,8 @@ def create_gender_distribution():
             x=1,
             bgcolor="#fff",
             bordercolor="#eee",
-            borderwidth=1
+            borderwidth=1,
+            title="Gender"
         ),
         margin=dict(l=40, r=20, t=60, b=40),
         paper_bgcolor="#fff",
@@ -67,10 +88,40 @@ def create_participation_trend():
         data,
         x='year',
         y='athlete_count',
-        title='Gender Participation Evolution Over Time',
-        labels={'year': 'Olympic Year', 'athlete_count': 'Number of Athletes'}
+        title='Total Athlete Participation Over Time',
+        labels={
+            'year': 'Olympic Year', 
+            'athlete_count': 'Number of Athletes'
+        }
     )
-    fig.update_traces(line_color=OLYMPIC_COLORS['blue'])
+    
+    # Update traces for better styling and tooltips
+    fig.update_traces(
+        line_color=OLYMPIC_COLORS['blue'],
+        line_width=3,
+        hovertemplate='<b>Olympic Year: %{x}</b><br>' +
+                     'Total Athletes: %{y:,}<br>' +
+                     '<extra></extra>'
+    )
+    
+    # Update axes
+    fig.update_xaxes(
+        title_text="Olympic Year",
+        title_font=dict(size=14, color='#222'),
+        tickfont=dict(size=12, color='#222'),
+        showgrid=True,
+        gridcolor='#f0f0f0'
+    )
+    
+    fig.update_yaxes(
+        title_text="Number of Athletes",
+        title_font=dict(size=14, color='#222'),
+        tickfont=dict(size=12, color='#222'),
+        showgrid=True,
+        gridcolor='#f0f0f0',
+        tickformat=',d'  # Format numbers with commas
+    )
+    
     fig.update_layout(
         font=DEFAULT_FONT,
         title_font=TITLE_FONT,
@@ -109,16 +160,44 @@ def create_top_events():
         x='athlete_count',
         orientation='h',
         title='Top 5 Sports by Number of Athletes',
-        labels={'name': 'Sport', 'athlete_count': 'Number of Athletes'},
+        labels={
+            'name': 'Sport', 
+            'athlete_count': 'Number of Athletes'
+        },
         color='athlete_count',
         color_continuous_scale=[
-            OLYMPIC_COLORS['blue'],
-            OLYMPIC_COLORS['yellow'],
-            OLYMPIC_COLORS['black'],
-            OLYMPIC_COLORS['green'],
-            OLYMPIC_COLORS['red']
+            '#EFF6FF',      # Light blue
+            '#3B82F6',      # Medium blue  
+            '#1D4ED8',      # Darker blue
+            '#1E40AF',      # Even darker blue
+            '#1E3A8A'       # Darkest blue
         ]
     )
+    
+    # Update traces for better tooltips
+    fig.update_traces(
+        hovertemplate='<b>%{y}</b><br>' +
+                     'Athletes: %{x:,}<br>' +
+                     '<extra></extra>'
+    )
+    
+    # Update axes
+    fig.update_xaxes(
+        title_text="Number of Athletes",
+        title_font=dict(size=14, color='#222'),
+        tickfont=dict(size=12, color='#222'),
+        showgrid=True,
+        gridcolor='#f0f0f0',
+        tickformat=',d'  # Format numbers with commas
+    )
+    
+    fig.update_yaxes(
+        title_text="Sport",
+        title_font=dict(size=14, color='#222'),
+        tickfont=dict(size=12, color='#222'),
+        showgrid=False
+    )
+    
     fig.update_layout(
         font=DEFAULT_FONT,
         title_font=TITLE_FONT,
@@ -135,7 +214,8 @@ def create_top_events():
         margin=dict(l=40, r=20, t=60, b=40),
         paper_bgcolor="#fff",
         plot_bgcolor="#fff",
-        height=300
+        height=300,
+        showlegend=False  # Hide colorbar legend for cleaner look
     )
     return fig
 
@@ -153,9 +233,24 @@ def create_sport_distribution():
         path=['name'],
         values='event_count',
         title='Events per Sport',
+        labels={
+            'name': 'Sport',
+            'event_count': 'Number of Events'
+        },
         color='event_count',
-        color_continuous_scale=["#b6fcd5", "#009F3D"]
+        color_continuous_scale=["#F0FDF4", "#059669"]  # Light green to accessible dark green
     )
+    
+    # Update traces for better tooltips
+    fig.update_traces(
+        hovertemplate='<b>%{label}</b><br>' +
+                     'Events: %{value:,}<br>' +
+                     'Percentage: %{percentParent}<br>' +
+                     '<extra></extra>',
+        textinfo="label+value",
+        textfont_size=12
+    )
+    
     fig.update_layout(
         font=DEFAULT_FONT,
         title_font=TITLE_FONT,
@@ -172,7 +267,13 @@ def create_sport_distribution():
         margin=dict(l=40, r=20, t=60, b=40),
         paper_bgcolor="#fff",
         plot_bgcolor="#fff",
-        height=300
+        height=300,
+        coloraxis_colorbar=dict(
+            title="Number of Events",
+            title_font=dict(size=12, color='#222'),
+            tickfont=dict(size=10, color='#222'),
+            tickformat=',d'
+        )
     )
     return fig
 
@@ -262,8 +363,11 @@ LEFT JOIN (
                 name=mapping['continent'], # Use mapped continent name for legend
                 colorscale=mapping['scale'],
                 showscale=False, # Hide individual trace color scales
-                hoverinfo='location+name+z',
-                hoverlabel=dict(bgcolor='white'),
+                hovertemplate='<b>%{location}</b><br>' +
+                             'Continent: ' + mapping['continent'] + '<br>' +
+                             'Athletes: %{z:,}<br>' +
+                             '<extra></extra>',
+                hoverlabel=dict(bgcolor='white', font_size=12),
                 marker=dict(line=dict(color='lightgray', width=0.5))
             ))
 
@@ -285,6 +389,7 @@ LEFT JOIN (
 
     # Update the layout for light theme
     fig.update_layout(
+        title="Olympic Athlete Participation by Country and Continent",
         font=DEFAULT_FONT,
         title_font=TITLE_FONT,
         legend=dict(
@@ -295,7 +400,8 @@ LEFT JOIN (
             x=1,
             bgcolor="#fff",
             bordercolor="#eee",
-            borderwidth=1
+            borderwidth=1,
+            title="Continent"
         ),
         margin=dict(l=40, r=20, t=60, b=40),
         paper_bgcolor="#fff",
@@ -326,15 +432,57 @@ def create_gender_participation_trend():
     """
     data = execute_query(query)
     
+    # Map gender codes to full names
+    gender_mapping = {'M': 'Male', 'F': 'Female'}
+    data_mapped = []
+    for row in data:
+        data_mapped.append({
+            'year': row['year'],
+            'gender': gender_mapping.get(row['gender'], row['gender']),
+            'athlete_count': row['athlete_count']
+        })
+    
     fig = px.line(
-        data,
+        data_mapped,
         x='year',
         y='athlete_count',
         color='gender',
         title='Gender Participation Evolution Over Time',
-        labels={'year': 'Olympic Year', 'athlete_count': 'Number of Athletes', 'gender': 'Gender'},
-        color_discrete_map={'M': OLYMPIC_COLORS['blue'], 'F': OLYMPIC_COLORS['red']}
+        labels={
+            'year': 'Olympic Year', 
+            'athlete_count': 'Number of Athletes', 
+            'gender': 'Gender'
+        },
+        color_discrete_map={'Male': OLYMPIC_COLORS['blue'], 'Female': OLYMPIC_COLORS['red']}
     )
+    
+    # Update traces for better styling and tooltips
+    fig.update_traces(
+        line_width=3,
+        hovertemplate='<b>%{fullData.name}</b><br>' +
+                     'Olympic Year: %{x}<br>' +
+                     'Athletes: %{y:,}<br>' +
+                     '<extra></extra>'
+    )
+    
+    # Update axes
+    fig.update_xaxes(
+        title_text="Olympic Year",
+        title_font=dict(size=14, color='#222'),
+        tickfont=dict(size=12, color='#222'),
+        showgrid=True,
+        gridcolor='#f0f0f0'
+    )
+    
+    fig.update_yaxes(
+        title_text="Number of Athletes",
+        title_font=dict(size=14, color='#222'),
+        tickfont=dict(size=12, color='#222'),
+        showgrid=True,
+        gridcolor='#f0f0f0',
+        tickformat=',d'  # Format numbers with commas
+    )
+    
     fig.update_layout(
         font=DEFAULT_FONT,
         title_font=TITLE_FONT,
@@ -346,7 +494,8 @@ def create_gender_participation_trend():
             x=1,
             bgcolor="#fff",
             bordercolor="#eee",
-            borderwidth=1
+            borderwidth=1,
+            title="Gender"
         ),
         margin=dict(l=40, r=20, t=60, b=40),
         paper_bgcolor="#fff",
@@ -453,23 +602,26 @@ def get_continent_metrics():
         ('Americas', 'red'),
         ('Asia', 'yellow'),
         ('Africa', 'black'),
-        ('Oceania', 'cyan'),
+        ('Oceania', 'blue'),
     ]
+    # Updated accessible colors with better contrast ratios
     tactical_colors = {
-        'green':  '#4CAF50',
-        'red':    '#F44336',
-        'yellow': '#FFC107',
-        'black':  '#000000',
-        'cyan':   '#00BCD4',
+        'green':  '#059669',  # Emerald green (colorblind safe)
+        'red':    '#DC2626',  # High contrast red
+        'yellow': '#F59E0B',  # Amber/Orange (better than pure yellow)
+        'black':  '#1F2937',  # Dark gray (better readability)
+        'blue':   '#2563EB',  # High contrast blue
     }
     metrics = []
     for continent, color_key in main_continents:
+        # Improved text contrast logic
+        text_color = '#FFFFFF' if color_key in ['black', 'green', 'red', 'blue'] else '#1F2937'
         metrics.append({
             'continent': continent,
             'athletes': athletes_dict.get(continent, 0),
             'medals': medals_dict.get(continent, 0),
             'color': tactical_colors[color_key],
-            'text_color': '#222' if color_key in ['yellow', 'green'] else '#fff'
+            'text_color': text_color
         })
     metrics = sorted(metrics, key=lambda x: x['athletes'], reverse=True)
     return metrics
@@ -495,6 +647,7 @@ def get_athlete_participation_table():
 
 def get_analytical_dashboard():
     return {
+        'top_kpi_cards': create_top_kpi_cards(),
         'summary_cards': create_analytical_summary_cards(),
         'gender_distribution': create_gender_distribution(),
         'participation_trend': create_participation_trend(),

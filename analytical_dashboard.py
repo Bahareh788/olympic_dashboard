@@ -74,6 +74,97 @@ def create_gender_distribution():
     )
     return fig
 
+def create_filtered_gender_distribution(year=None, sport=None, country=None):
+    """
+    Create gender distribution chart with optional filters
+    """
+    base_query = """
+    SELECT a.gender, COUNT(DISTINCT a.athleteid) as count
+    FROM athlete a
+    JOIN participation p ON a.athleteid = p.athleteid
+    JOIN team t ON p.teamid = t.teamid
+    JOIN country c ON t.noc = c.noc
+    JOIN olympicgames og ON p.gamesid = og.gamesid
+    JOIN event e ON p.eventid = e.eventid
+    JOIN sport s ON e.sportid = s.sportid
+    WHERE 1=1
+    """
+    
+    conditions = []
+    
+    if year and year != 'All':
+        conditions.append(f"og.year = {year}")
+    
+    if sport:
+        conditions.append(f"s.sportname = '{sport.replace(chr(39), chr(39)+chr(39))}'")
+    
+    if country:
+        conditions.append(f"c.countryname = '{country.replace(chr(39), chr(39)+chr(39))}'")
+    
+    if conditions:
+        base_query += " AND " + " AND ".join(conditions)
+    
+    base_query += " GROUP BY a.gender"
+    
+    try:
+        data = execute_query(base_query)
+        if not data:
+            return create_gender_distribution()  # Fallback to unfiltered
+            
+        # Map gender codes to full names
+        gender_mapping = {'M': 'Male', 'F': 'Female'}
+        data_mapped = []
+        for row in data:
+            data_mapped.append({
+                'gender': gender_mapping.get(row['gender'], row['gender']),
+                'count': row['count']
+            })
+        
+        fig = px.pie(
+            data_mapped,
+            values='count',
+            names='gender',
+            title=f'Athletes by Gender{" (Filtered)" if any([year and year != "All", sport, country]) else ""}',
+            labels={'gender': 'Gender', 'count': 'Number of Athletes'},
+            color='gender',
+            color_discrete_map={'Male': OLYMPIC_COLORS['blue'], 'Female': OLYMPIC_COLORS['red']}
+        )
+        
+        # Update traces for better tooltips
+        fig.update_traces(
+            textposition='inside',
+            textinfo='percent+label',
+            hovertemplate='<b>%{label}</b><br>' +
+                         'Athletes: %{value:,}<br>' +
+                         'Percentage: %{percent}<br>' +
+                         '<extra></extra>'
+        )
+        
+        fig.update_layout(
+            font=DEFAULT_FONT,
+            title_font=TITLE_FONT,
+            legend=dict(
+                orientation="h",
+                yanchor="bottom",
+                y=1.02,
+                xanchor="right",
+                x=1,
+                bgcolor="#fff",
+                bordercolor="#eee",
+                borderwidth=1,
+                title="Gender"
+            ),
+            margin=dict(l=40, r=20, t=60, b=40),
+            paper_bgcolor="#fff",
+            plot_bgcolor="#fff",
+            height=300
+        )
+        return fig
+        
+    except Exception as e:
+        print(f"Error in filtered gender distribution: {e}")
+        return create_gender_distribution()
+
 def create_participation_trend():
     query = """
     SELECT og.year as year, COUNT(DISTINCT p.athleteid) as athlete_count
@@ -141,6 +232,105 @@ def create_participation_trend():
         height=300
     )
     return fig
+
+def create_filtered_participation_trend(gender=None, sport=None, country=None):
+    """
+    Create participation trend chart with optional filters
+    """
+    base_query = """
+    SELECT og.year as year, COUNT(DISTINCT p.athleteid) as athlete_count
+    FROM olympicgames og
+    JOIN participation p ON og.gamesid = p.gamesid
+    JOIN athlete a ON p.athleteid = a.athleteid
+    JOIN team t ON p.teamid = t.teamid
+    JOIN country c ON t.noc = c.noc
+    JOIN event e ON p.eventid = e.eventid
+    JOIN sport s ON e.sportid = s.sportid
+    WHERE 1=1
+    """
+    
+    conditions = []
+    
+    if gender:
+        conditions.append(f"a.gender = '{gender}'")
+    
+    if sport:
+        conditions.append(f"s.sportname = '{sport.replace(chr(39), chr(39)+chr(39))}'")
+    
+    if country:
+        conditions.append(f"c.countryname = '{country.replace(chr(39), chr(39)+chr(39))}'")
+    
+    if conditions:
+        base_query += " AND " + " AND ".join(conditions)
+    
+    base_query += " GROUP BY og.year ORDER BY og.year"
+    
+    try:
+        data = execute_query(base_query)
+        if not data:
+            return create_participation_trend()  # Fallback
+            
+        fig = px.line(
+            data,
+            x='year',
+            y='athlete_count',
+            title=f'Athlete Participation Over Time{" (Filtered)" if any([gender, sport, country]) else ""}',
+            labels={
+                'year': 'Olympic Year', 
+                'athlete_count': 'Number of Athletes'
+            }
+        )
+        
+        # Update traces for better styling and tooltips
+        fig.update_traces(
+            line_color=OLYMPIC_COLORS['blue'],
+            line_width=3,
+            hovertemplate='<b>Olympic Year: %{x}</b><br>' +
+                         'Total Athletes: %{y:,}<br>' +
+                         '<extra></extra>'
+        )
+        
+        # Update axes
+        fig.update_xaxes(
+            title_text="Olympic Year",
+            title_font=dict(size=14, color='#222'),
+            tickfont=dict(size=12, color='#222'),
+            showgrid=True,
+            gridcolor='#f0f0f0'
+        )
+        
+        fig.update_yaxes(
+            title_text="Number of Athletes",
+            title_font=dict(size=14, color='#222'),
+            tickfont=dict(size=12, color='#222'),
+            showgrid=True,
+            gridcolor='#f0f0f0',
+            tickformat=',d'  # Format numbers with commas
+        )
+        
+        fig.update_layout(
+            font=DEFAULT_FONT,
+            title_font=TITLE_FONT,
+            legend=dict(
+                orientation="h",
+                yanchor="bottom",
+                y=1.02,
+                xanchor="right",
+                x=1,
+                bgcolor="#fff",
+                bordercolor="#eee",
+                borderwidth=1
+            ),
+            margin=dict(l=40, r=20, t=60, b=40),
+            paper_bgcolor="#fff",
+            plot_bgcolor="#fff",
+            height=300
+        )
+        return fig
+        
+    except Exception as e:
+        print(f"Error in filtered participation trend: {e}")
+        return create_participation_trend()
 
 def create_top_events():
     query = """
@@ -218,6 +408,116 @@ def create_top_events():
         showlegend=False  # Hide colorbar legend for cleaner look
     )
     return fig
+
+def create_filtered_top_events(year=None, gender=None, country=None):
+    """
+    Create top events chart with optional filters
+    """
+    base_query = """
+    SELECT s.sportname as name, COUNT(DISTINCT p.athleteid) as athlete_count
+    FROM sport s
+    JOIN event e ON s.sportid = e.sportid
+    JOIN participation p ON e.eventid = p.eventid
+    JOIN athlete a ON p.athleteid = a.athleteid
+    JOIN team t ON p.teamid = t.teamid
+    JOIN country c ON t.noc = c.noc
+    JOIN olympicgames og ON p.gamesid = og.gamesid
+    WHERE 1=1
+    """
+    
+    conditions = []
+    
+    if year and year != 'All':
+        conditions.append(f"og.year = {year}")
+    
+    if gender:
+        conditions.append(f"a.gender = '{gender}'")
+    
+    if country:
+        conditions.append(f"c.countryname = '{country.replace(chr(39), chr(39)+chr(39))}'")
+    
+    if conditions:
+        base_query += " AND " + " AND ".join(conditions)
+    
+    base_query += """
+    GROUP BY s.sportname
+    ORDER BY athlete_count DESC
+    LIMIT 5
+    """
+    
+    try:
+        data = execute_query(base_query)
+        if not data:
+            return create_top_events()  # Fallback
+            
+        fig = px.bar(
+            data,
+            y='name',
+            x='athlete_count',
+            orientation='h',
+            title=f'Top 5 Sports by Athletes{" (Filtered)" if any([year and year != "All", gender, country]) else ""}',
+            labels={
+                'name': 'Sport', 
+                'athlete_count': 'Number of Athletes'
+            },
+            color='athlete_count',
+            color_continuous_scale=[
+                '#EFF6FF',      # Light blue
+                '#3B82F6',      # Medium blue  
+                '#1D4ED8',      # Darker blue
+                '#1E40AF',      # Even darker blue
+                '#1E3A8A'       # Darkest blue
+            ]
+        )
+        
+        # Update traces for better tooltips
+        fig.update_traces(
+            hovertemplate='<b>%{y}</b><br>' +
+                         'Athletes: %{x:,}<br>' +
+                         '<extra></extra>'
+        )
+        
+        # Update axes
+        fig.update_xaxes(
+            title_text="Number of Athletes",
+            title_font=dict(size=14, color='#222'),
+            tickfont=dict(size=12, color='#222'),
+            showgrid=True,
+            gridcolor='#f0f0f0',
+            tickformat=',d'  # Format numbers with commas
+        )
+        
+        fig.update_yaxes(
+            title_text="Sport",
+            title_font=dict(size=14, color='#222'),
+            tickfont=dict(size=12, color='#222'),
+            showgrid=False
+        )
+        
+        fig.update_layout(
+            font=DEFAULT_FONT,
+            title_font=TITLE_FONT,
+            legend=dict(
+                orientation="h",
+                yanchor="bottom",
+                y=1.02,
+                xanchor="right",
+                x=1,
+                bgcolor="#fff",
+                bordercolor="#eee",
+                borderwidth=1
+            ),
+            margin=dict(l=40, r=20, t=60, b=40),
+            paper_bgcolor="#fff",
+            plot_bgcolor="#fff",
+            height=300,
+            showlegend=False  # Hide colorbar legend for cleaner look
+        )
+        return fig
+        
+    except Exception as e:
+        print(f"Error in filtered top events: {e}")
+        return create_top_events()
 
 def create_sport_distribution():
     query = """

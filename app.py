@@ -1,8 +1,8 @@
 import dash
 from dash import html, dcc, Input, Output, State, dash_table
 import dash_bootstrap_components as dbc
-from analytical_dashboard import get_analytical_dashboard
-from tactical_dashboard import get_tactical_dashboard
+from analytical_dashboard import get_analytical_dashboard, create_filtered_gender_distribution, create_filtered_participation_trend, create_filtered_top_events
+from tactical_dashboard import get_tactical_dashboard, get_filtered_noc_medal_table, create_filtered_medal_by_country_gender, create_filtered_top_sports
 from flask_sqlalchemy import SQLAlchemy
 from flask import Flask
 from db_utils import execute_query
@@ -515,8 +515,7 @@ sidebar = html.Div(
                            style={'color': '#00274D', 'fontSize': '1rem', 'marginBottom': '5px'}),
                     dcc.Dropdown(
                         id='athlete-table-year',
-                        options=[{'label': str(i), 'value': i} for i in range(1896, 2021, 2)] + 
-                               [{'label': 'All', 'value': 'All'}],
+                        options=[{'label': 'All', 'value': 'All'}] + [{'label': str(year), 'value': year} for year in unique_years],
                         value='All',
                         clearable=False,
                         style={'marginBottom': '15px', 'borderRadius': '10px'}
@@ -574,11 +573,26 @@ sidebar = html.Div(
 # --- Analytical Athlete Participation Table ---
 athlete_participation_data = analyical_figures['athlete_participation_table']
 
-# Extract unique filter values
-unique_years = sorted({row['year'] for row in athlete_participation_data})
-unique_genders = sorted({row['gender'] for row in athlete_participation_data})
-unique_sports = sorted({row['sport'] for row in athlete_participation_data})
-unique_countries = sorted({row['country'] for row in athlete_participation_data})
+# Extract unique filter values with error handling
+try:
+    unique_years = sorted(list({row['year'] for row in athlete_participation_data if row.get('year')}))
+    unique_genders = sorted(list({row['gender'] for row in athlete_participation_data if row.get('gender')}))
+    unique_sports = sorted(list({row['sport'] for row in athlete_participation_data if row.get('sport')}))
+    unique_countries = sorted(list({row['country'] for row in athlete_participation_data if row.get('country')}))
+    
+    print(f"Filter options loaded:")
+    print(f"Years: {len(unique_years)} options")
+    print(f"Genders: {unique_genders}")
+    print(f"Sports: {len(unique_sports)} options") 
+    print(f"Countries: {len(unique_countries)} options")
+    
+except Exception as e:
+    print(f"Error extracting filter values: {e}")
+    # Fallback values
+    unique_years = list(range(1896, 2021, 4))
+    unique_genders = ['M', 'F']
+    unique_sports = ['Athletics', 'Swimming', 'Gymnastics']
+    unique_countries = ['USA', 'GER', 'FRA']
 
 olympic_palette = ['#0085C3', '#F4C300', '#000000', '#009F3D', '#DF0024']
 
@@ -813,16 +827,90 @@ analyical_athlete_table_layout = html.Div([
     ]
 )
 def update_athlete_participation_table(year, gender, sport, country):
-    filtered = athlete_participation_data
+    # Start with the full dataset
+    filtered = athlete_participation_data.copy()
+    
+    # Apply year filter
     if year and year != 'All':
         filtered = [row for row in filtered if row['year'] == year]
+    
+    # Apply gender filter  
     if gender:
         filtered = [row for row in filtered if row['gender'] == gender]
+    
+    # Apply sport filter
     if sport:
         filtered = [row for row in filtered if row['sport'] == sport]
+    
+    # Apply country filter
     if country:
         filtered = [row for row in filtered if row['country'] == country]
+    
+    # Debug print to check filtering
+    print(f"Filters applied - Year: {year}, Gender: {gender}, Sport: {sport}, Country: {country}")
+    print(f"Filtered results count: {len(filtered)}")
+    
     return filtered
+
+# Comprehensive callback for all analytical dashboard charts
+@app.callback(
+    [
+        Output('gender-distribution-chart', 'figure'),
+        Output('participation-trend-chart', 'figure'),
+        Output('top-events-chart', 'figure'),
+    ],
+    [
+        Input('athlete-table-year', 'value'),
+        Input('athlete-table-gender', 'value'),
+        Input('athlete-table-sport', 'value'),
+        Input('athlete-table-country', 'value'),
+    ]
+)
+def update_analytical_charts(year, gender, sport, country):
+    # Update gender distribution (exclude gender filter to avoid empty results)
+    gender_dist_fig = create_filtered_gender_distribution(
+        year=year, 
+        sport=sport, 
+        country=country
+    )
+    
+    # Update participation trend (exclude year filter since it's the x-axis)
+    participation_trend_fig = create_filtered_participation_trend(
+        gender=gender, 
+        sport=sport, 
+        country=country
+    )
+    
+    # Update top events
+    top_events_fig = create_filtered_top_events(
+        year=year, 
+        gender=gender, 
+        country=country
+    )
+    
+    print(f"Updated analytical charts with filters - Year: {year}, Gender: {gender}, Sport: {sport}, Country: {country}")
+    
+    return gender_dist_fig, participation_trend_fig, top_events_fig
+
+# Callback for tactical dashboard NOC medal table
+@app.callback(
+    Output('noc-medal-table', 'data'),
+    [
+        Input('athlete-table-year', 'value'),
+        Input('athlete-table-gender', 'value'),
+        Input('athlete-table-sport', 'value'),
+        Input('athlete-table-country', 'value'),
+    ]
+)
+def update_noc_medal_table(year, gender, sport, country):
+    # Get filtered NOC medal data
+    filtered_data = get_filtered_noc_medal_table(year, gender, sport, country)
+    
+    # Debug print to check filtering
+    print(f"NOC Table Filters applied - Year: {year}, Gender: {gender}, Sport: {sport}, Country: {country}")
+    print(f"NOC Table filtered results count: {len(filtered_data)}")
+    
+    return filtered_data
 
 def extract_title_text(fig, prefix):
     title = getattr(getattr(fig.layout, 'title', None), 'text', None)
@@ -925,6 +1013,7 @@ deep_dive_table = html.Div([
     
     # Enhanced DataTable with medal-specific styling
     dash_table.DataTable(
+        id='noc-medal-table',
         columns=[
             {
                 "name": "Team/NOC", 
@@ -1116,6 +1205,38 @@ deep_dive_table = html.Div([
     "marginTop": "2rem",
     "marginBottom": "2rem"
 })
+
+# Comprehensive callback for tactical dashboard charts
+@app.callback(
+    [
+        Output('medal-by-country-gender-chart', 'figure'),
+        Output('tactical-top-sports-chart', 'figure'),
+    ],
+    [
+        Input('athlete-table-year', 'value'),
+        Input('athlete-table-gender', 'value'),
+        Input('athlete-table-sport', 'value'),
+        Input('athlete-table-country', 'value'),
+    ]
+)
+def update_tactical_charts(year, gender, sport, country):
+    # Update medal by country gender (exclude gender filter to show comparison)
+    medal_country_gender_fig = create_filtered_medal_by_country_gender(
+        year=year, 
+        sport=sport, 
+        country=country
+    )
+    
+    # Update top sports
+    top_sports_fig = create_filtered_top_sports(
+        year=year, 
+        gender=gender, 
+        country=country
+    )
+    
+    print(f"Updated tactical charts with filters - Year: {year}, Gender: {gender}, Sport: {sport}, Country: {country}")
+    
+    return medal_country_gender_fig, top_sports_fig
 
 # Move this block up, before analyical_content_layout and tactical_content_layout definitions:
 dashboard_header = dbc.Row([
@@ -1376,6 +1497,7 @@ analyical_content_layout = html.Div([
         dbc.Row([
             dbc.Col([
                 dcc.Graph(
+                    id='gender-distribution-chart',  # Added ID for callback
                     figure=analyical_figures['gender_distribution'],
                     style={
                         "height": "440px",
@@ -1390,6 +1512,7 @@ analyical_content_layout = html.Div([
             ], width=4, style={"minWidth": 0}),  # Smaller pie chart
             dbc.Col([
                 dcc.Graph(
+                    id='participation-trend-chart',  # Added ID for callback
                     figure=analyical_figures['gender_participation_trend'],
                     style={
                         "height": "440px",
@@ -1415,6 +1538,7 @@ analyical_content_layout = html.Div([
         dbc.Row([
             dbc.Col([
                 dcc.Graph(
+                    id='sport-distribution-chart',  # Added ID for callback
                     figure=analyical_figures['sport_distribution'],
                     style={
                         "height": "440px",
@@ -1429,6 +1553,7 @@ analyical_content_layout = html.Div([
             ], width={"size": 6, "sm": 12, "md": 6, "lg": 6}, style={"minWidth": 0}),
             dbc.Col([
                 dcc.Graph(
+                    id='top-events-chart',  # Added ID for callback
                     figure=analyical_figures['top_events'],
                     style={
                         "height": "440px",
@@ -1461,6 +1586,7 @@ tactical_content_layout = html.Div([
         # Medals by Country and Gender container
         html.Div([
             dcc.Graph(
+                id='medal-by-country-gender-chart',  # Added ID for callback
                 figure=tactical_figures['medal_by_country_gender'],
                 config={"displayModeBar": False},
                 style={
@@ -1507,6 +1633,7 @@ tactical_content_layout = html.Div([
     dbc.Row([
         dbc.Col([
             dcc.Graph(
+                id='tactical-top-sports-chart',  # Added ID for callback
                 figure=tactical_figures['top_sports'],
                 config={"displayModeBar": False},
                 style={

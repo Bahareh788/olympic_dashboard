@@ -628,7 +628,7 @@ def get_continent_metrics():
 
 def get_athlete_participation_table():
     query = '''
-        SELECT 
+        SELECT DISTINCT
             a.fullname AS athlete_name,
             c.countryname AS country,
             og.year AS year,
@@ -641,6 +641,7 @@ def get_athlete_participation_table():
         JOIN olympicgames og ON p.gamesid = og.gamesid
         JOIN event e ON p.eventid = e.eventid
         JOIN sport s ON e.sportid = s.sportid
+        ORDER BY a.fullname, og.year, s.sportname
     '''
     data = execute_query(query)
     return data

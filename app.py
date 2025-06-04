@@ -583,61 +583,225 @@ unique_countries = sorted({row['country'] for row in athlete_participation_data}
 olympic_palette = ['#0085C3', '#F4C300', '#000000', '#009F3D', '#DF0024']
 
 analyical_athlete_table_layout = html.Div([
-    html.H4("Athlete Participation Table", style={
-        "marginTop": "2rem",
-        "marginBottom": "1rem",
-        "fontWeight": "bold",
-        "fontFamily": "Montserrat, sans-serif",
-        "fontSize": "16px",
-        "color": "#222"
+    # Modern section header with Olympic styling
+    html.Div([
+        html.Div([
+            html.H3("Athlete Participation Deep Dive", style={
+                "fontSize": "1.5rem",
+                "fontWeight": "700",
+                "color": "#1F2937",
+                "marginBottom": "0.3rem",
+                "fontFamily": "Inter, Montserrat, sans-serif",
+                "display": "inline-block"
+            })
+        ], style={"display": "flex", "alignItems": "center", "marginBottom": "0.5rem"})
+    ], style={
+        "marginBottom": "1.5rem",
+        "paddingBottom": "1rem",
+        "borderBottom": "2px solid #E5E7EB"
     }),
+    
+    # Enhanced DataTable with modern styling
     dash_table.DataTable(
         id='athlete-participation-table',
         columns=[
-            {"name": "Athlete Name", "id": "athlete_name"},
-            {"name": "Country", "id": "country"},
-            {"name": "Year", "id": "year", "type": "numeric"},
-            {"name": "Sport", "id": "sport"},
-            {"name": "Gender", "id": "gender"},
+            {
+                "name": "Athlete Name", 
+                "id": "athlete_name",
+                "type": "text",
+                "presentation": "markdown"
+            },
+            {
+                "name": "Country", 
+                "id": "country",
+                "type": "text"
+            },
+            {
+                "name": "Year", 
+                "id": "year", 
+                "type": "numeric",
+                "format": {"specifier": "d"}
+            },
+            {
+                "name": "Sport", 
+                "id": "sport",
+                "type": "text"
+            },
+            {
+                "name": "Gender", 
+                "id": "gender",
+                "type": "text"
+            }
         ],
         data=athlete_participation_data,
-        page_size=15,
-        filter_action="native",
+        
+        # Enhanced functionality
+        page_size=20,
+        page_action="native",
         sort_action="native",
         sort_mode="multi",
-        row_selectable="single",
+        row_selectable="multi",
+        selected_rows=[],
+        
+        # Fixed rows for better UX
+        fixed_rows={"headers": True, "data": 0},
+        
+        # Modern styling for the table container
         style_table={
-            "maxHeight": "400px",
+            "height": "500px",
             "overflowY": "auto",
+            "overflowX": "auto",
             "minWidth": "100%",
-            "background": "#fff",
-            "borderRadius": "14px",
-            "boxShadow": "0 2px 12px rgba(0,0,0,0.10)",
-            "padding": "1.5rem 1.5rem 1rem 1.5rem"
+            "background": "#FFFFFF",
+            "borderRadius": "4px",  # Sharp corners matching dashboard
+            "border": "1px solid #D1D5DB",
+            "boxShadow": "0 2px 8px rgba(0,0,0,0.15)"
         },
+        
+        # Enhanced cell styling
         style_cell={
-            "padding": "0.7rem",
-            "fontSize": "1.1rem",
+            "padding": "1rem 0.75rem",
+            "fontSize": "0.9rem",
             "textAlign": "left",
-            "fontFamily": "Montserrat, Roboto, sans-serif",
-            "background": "#fff"
+            "fontFamily": "Inter, Montserrat, sans-serif",
+            "fontWeight": "400",
+            "backgroundColor": "#FFFFFF",
+            "color": "#1F2937",
+            "border": "1px solid #F3F4F6",
+            "whiteSpace": "normal",
+            "height": "auto",
+            "minWidth": "120px",
+            "maxWidth": "200px",
+            "textOverflow": "ellipsis"
         },
+        
+        # Professional header styling
         style_header={
-            "backgroundColor": "#f8f9fa",
-            "fontWeight": "bold",
-            "fontFamily": "Montserrat, Roboto, sans-serif",
-            "fontSize": "1.1rem",
-            "color": "#00274D"
+            "backgroundColor": "#F8FAFC",
+            "color": "#1F2937",
+            "fontWeight": "600",
+            "fontSize": "0.95rem",
+            "fontFamily": "Inter, Montserrat, sans-serif",
+            "textAlign": "center",
+            "padding": "1rem 0.75rem",
+            "border": "1px solid #E5E7EB",
+            "borderBottom": "2px solid #2563EB",  # Olympic blue accent
+            "textTransform": "uppercase",
+            "letterSpacing": "0.5px"
         },
+        
+        # Enhanced conditional styling
         style_data_conditional=[
-            {"if": {"row_index": "odd"}, "backgroundColor": "#F8FAFC"},  # Light gray for better contrast
-            {"if": {"state": "selected"}, "backgroundColor": "#2563EB", "color": "#FFFFFF"},  # Accessible blue
+            # Alternating row colors
+            {
+                "if": {"row_index": "odd"},
+                "backgroundColor": "#F9FAFB"
+            },
+            # Hover effect
+            {
+                "if": {"state": "active"},
+                "backgroundColor": "#EFF6FF",
+                "border": "1px solid #2563EB"
+            },
+            # Selected rows
+            {
+                "if": {"state": "selected"},
+                "backgroundColor": "#2563EB",
+                "color": "#FFFFFF",
+                "fontWeight": "500"
+            },
+            # Gender-based styling
+            {
+                "if": {
+                    "filter_query": "{gender} = M",
+                    "column_id": "gender"
+                },
+                "backgroundColor": "#EBF8FF",
+                "color": "#2563EB",
+                "fontWeight": "600"
+            },
+            {
+                "if": {
+                    "filter_query": "{gender} = F", 
+                    "column_id": "gender"
+                },
+                "backgroundColor": "#FEF2F2",
+                "color": "#DC2626",
+                "fontWeight": "600"
+            },
+            # Year-based highlighting for recent Olympics
+            {
+                "if": {
+                    "filter_query": "{year} >= 2000",
+                    "column_id": "year"
+                },
+                "backgroundColor": "#F0FDF4",
+                "color": "#059669",
+                "fontWeight": "600"
+            }
         ],
-        page_action="native",
-        fixed_rows={"headers": True},
-        style_as_list_view=True,
+        
+        # Column-specific styling
+        style_cell_conditional=[
+            {
+                "if": {"column_id": "athlete_name"},
+                "textAlign": "left",
+                "fontWeight": "500",
+                "minWidth": "180px",
+                "maxWidth": "250px"
+            },
+            {
+                "if": {"column_id": "country"},
+                "textAlign": "center",
+                "minWidth": "120px",
+                "maxWidth": "150px"
+            },
+            {
+                "if": {"column_id": "year"},
+                "textAlign": "center",
+                "fontWeight": "600",
+                "minWidth": "80px",
+                "maxWidth": "100px"
+            },
+            {
+                "if": {"column_id": "sport"},
+                "textAlign": "left",
+                "minWidth": "140px",
+                "maxWidth": "180px"
+            },
+            {
+                "if": {"column_id": "gender"},
+                "textAlign": "center",
+                "fontWeight": "600",
+                "minWidth": "80px",
+                "maxWidth": "100px"
+            }
+        ],
+        
+        # Pagination styling
+        style_as_list_view=False,  # Use grid view for better appearance
+        
+        # Tooltip configuration
+        tooltip_data=[
+            {
+                column: {
+                    'value': f"**{row[column]}**" if column == 'athlete_name' 
+                    else f"🏃‍♂️ Athlete: **{row['athlete_name']}**\n🌍 Country: **{row['country']}**\n📅 Year: **{row['year']}**\n🏅 Sport: **{row['sport']}**\n⚧ Gender: **{row['gender']}**",
+                    'type': 'markdown'
+                } for column in row.keys()
+            } for row in athlete_participation_data[:100]  # Limit tooltips for performance
+        ],
+        tooltip_duration=None
     )
-], style={"background": "#fff", "borderRadius": "14px", "boxShadow": "0 2px 12px rgba(0,0,0,0.10)", "padding": "1.5rem 1.5rem 1rem 1.5rem", "marginTop": "2rem", "marginBottom": "2rem"})
+], style={
+    "background": "#FFFFFF",
+    "borderRadius": "4px",  # Sharp corners
+    "boxShadow": "0 2px 8px rgba(0,0,0,0.15)",
+    "border": "1px solid #D1D5DB",
+    "padding": "2rem",
+    "marginTop": "2rem",
+    "marginBottom": "2rem"
+})
 
 @app.callback(
     Output('athlete-participation-table', 'data'),
@@ -741,62 +905,217 @@ tactical_summary_cards_row = html.Div([
 # Deep dive table for tactical dashboard
 noc_medal_table = tactical_figures['noc_medal_table']
 deep_dive_table = html.Div([
-    html.H4("All NOC by Medals", style={
-        "marginTop": "2rem",
-        "marginBottom": "1rem",
-        "fontWeight": "bold",
-        "fontFamily": "Montserrat, Roboto, sans-serif",
-        "fontSize": "16px",
-        "color": "#222"
-    }),
+    # Modern section header with Olympic styling
     html.Div([
-        dash_table.DataTable(
-            columns=[
-                {"name": "Team/NOC", "id": "team_noc"},
-                {"name": "Gold", "id": "gold", "type": "numeric"},
-                {"name": "Silver", "id": "silver", "type": "numeric"},
-                {"name": "Bronze", "id": "bronze", "type": "numeric"},
-            ],
-            data=noc_medal_table,
-            sort_action="native",
-            style_table={
-                "maxHeight": "400px",
-                "overflowY": "auto",
-                "minWidth": "100%",
-                "background": "#fff",
-                "borderRadius": "14px",
-                "boxShadow": "0 2px 12px rgba(0,0,0,0.10)",
-                "padding": "1.5rem 1.5rem 1rem 1.5rem"
-            },
-            style_cell={
-                "padding": "0.7rem",
-                "fontSize": "1.1rem",
-                "textAlign": "left",
-                "fontFamily": "Montserrat, sans-serif",
-                "background": "#fff"
-            },
-            style_header={
-                "backgroundColor": "#f8f9fa",
-                "fontWeight": "bold",
-                "fontFamily": "Montserrat, sans-serif",
-                "fontSize": "1.1rem",
-                "color": "#00274D"
-            },
-            style_data_conditional=[
-                {"if": {"column_id": "gold"}, "color": "#B45309", "fontWeight": "bold"},      # Accessible gold
-                {"if": {"column_id": "silver"}, "color": "#6B7280", "fontWeight": "bold"},   # Accessible silver
-                {"if": {"column_id": "bronze"}, "color": "#92400E", "fontWeight": "bold"},   # Accessible bronze
-            ],
-            page_action="none",
-            fixed_rows={"headers": True},
-        )
+        html.Div([
+            html.H3("Olympic Medal Standings by NOC", style={
+                "fontSize": "1.5rem",
+                "fontWeight": "700",
+                "color": "#1F2937",
+                "marginBottom": "0.3rem",
+                "fontFamily": "Inter, Montserrat, sans-serif",
+                "display": "inline-block"
+            })
+        ], style={"display": "flex", "alignItems": "center", "marginBottom": "0.5rem"})
     ], style={
-        "background": "#fff",
-        "borderRadius": "14px",
-        "boxShadow": "0 2px 12px rgba(0,0,0,0.10)",
-        "padding": "1.5rem 1.5rem 1rem 1.5rem"
-    })
-], style={"marginTop": "2rem", "marginBottom": "2rem"})
+        "marginBottom": "1.5rem",
+        "paddingBottom": "1rem",
+        "borderBottom": "2px solid #E5E7EB"
+    }),
+    
+    # Enhanced DataTable with medal-specific styling
+    dash_table.DataTable(
+        columns=[
+            {
+                "name": "Team/NOC", 
+                "id": "team_noc",
+                "type": "text"
+            },
+            {
+                "name": "Gold", 
+                "id": "gold", 
+                "type": "numeric",
+                "format": {"specifier": ",d"}
+            },
+            {
+                "name": "Silver", 
+                "id": "silver", 
+                "type": "numeric",
+                "format": {"specifier": ",d"}
+            },
+            {
+                "name": "Bronze", 
+                "id": "bronze", 
+                "type": "numeric",
+                "format": {"specifier": ",d"}
+            }
+        ],
+        data=noc_medal_table,
+        
+        # Enhanced functionality
+        page_size=25,
+        page_action="native",
+        sort_action="native",
+        sort_mode="multi",
+        row_selectable="multi",
+        selected_rows=[],
+        
+        # Fixed rows for better UX
+        fixed_rows={"headers": True, "data": 0},
+        
+        # Modern styling for the table container
+        style_table={
+            "height": "600px",
+            "overflowY": "auto",
+            "overflowX": "auto",
+            "minWidth": "100%",
+            "background": "#FFFFFF",
+            "borderRadius": "4px",  # Sharp corners matching dashboard
+            "border": "1px solid #D1D5DB",
+            "boxShadow": "0 2px 8px rgba(0,0,0,0.15)"
+        },
+        
+        # Enhanced cell styling
+        style_cell={
+            "padding": "1rem 0.75rem",
+            "fontSize": "0.9rem",
+            "textAlign": "left",
+            "fontFamily": "Inter, Montserrat, sans-serif",
+            "fontWeight": "400",
+            "backgroundColor": "#FFFFFF",
+            "color": "#1F2937",
+            "border": "1px solid #F3F4F6",
+            "whiteSpace": "normal",
+            "height": "auto",
+            "minWidth": "120px",
+            "textOverflow": "ellipsis"
+        },
+        
+        # Professional header styling
+        style_header={
+            "backgroundColor": "#F8FAFC",
+            "color": "#1F2937",
+            "fontWeight": "600",
+            "fontSize": "0.95rem",
+            "fontFamily": "Inter, Montserrat, sans-serif",
+            "textAlign": "center",
+            "padding": "1rem 0.75rem",
+            "border": "1px solid #E5E7EB",
+            "borderBottom": "2px solid #F59E0B",  # Olympic gold accent
+            "textTransform": "uppercase",
+            "letterSpacing": "0.5px"
+        },
+        
+        # Enhanced conditional styling with medal colors
+        style_data_conditional=[
+            # Alternating row colors
+            {
+                "if": {"row_index": "odd"},
+                "backgroundColor": "#F9FAFB"
+            },
+            # Hover effect
+            {
+                "if": {"state": "active"},
+                "backgroundColor": "#FFFBEB",
+                "border": "1px solid #F59E0B"
+            },
+            # Selected rows
+            {
+                "if": {"state": "selected"},
+                "backgroundColor": "#F59E0B",
+                "color": "#FFFFFF",
+                "fontWeight": "500"
+            },
+            # Gold medal column styling
+            {
+                "if": {"column_id": "gold"},
+                "backgroundColor": "#FFFBEB",
+                "color": "#D97706",
+                "fontWeight": "700",
+                "textAlign": "center"
+            },
+            # Silver medal column styling
+            {
+                "if": {"column_id": "silver"},
+                "backgroundColor": "#F8FAFC",
+                "color": "#6B7280",
+                "fontWeight": "600",
+                "textAlign": "center"
+            },
+            # Bronze medal column styling
+            {
+                "if": {"column_id": "bronze"},
+                "backgroundColor": "#FEF7F0",
+                "color": "#C2410C",
+                "fontWeight": "600",
+                "textAlign": "center"
+            },
+            # Highlight high-performing countries
+            {
+                "if": {
+                    "filter_query": "{gold} > 10"
+                },
+                "backgroundColor": "#FEF3C7",
+                "fontWeight": "600"
+            }
+        ],
+        
+        # Column-specific styling
+        style_cell_conditional=[
+            {
+                "if": {"column_id": "team_noc"},
+                "textAlign": "left",
+                "fontWeight": "500",
+                "minWidth": "200px",
+                "maxWidth": "300px"
+            },
+            {
+                "if": {"column_id": "gold"},
+                "textAlign": "center",
+                "fontWeight": "700",
+                "minWidth": "100px",
+                "maxWidth": "120px"
+            },
+            {
+                "if": {"column_id": "silver"},
+                "textAlign": "center",
+                "fontWeight": "600",
+                "minWidth": "100px",
+                "maxWidth": "120px"
+            },
+            {
+                "if": {"column_id": "bronze"},
+                "textAlign": "center",
+                "fontWeight": "600",
+                "minWidth": "100px",
+                "maxWidth": "120px"
+            }
+        ],
+        
+        # Pagination styling
+        style_as_list_view=False,  # Use grid view for better appearance
+        
+        # Tooltip configuration for medals
+        tooltip_data=[
+            {
+                column: {
+                    'value': f"**{row[column]}**" if column == 'team_noc' 
+                    else f"🏆 **{row['team_noc']}** Medal Count\n🥇 Gold: **{row['gold']}**\n🥈 Silver: **{row['silver']}**\n🥉 Bronze: **{row['bronze']}**\n📊 Total: **{row['gold'] + row['silver'] + row['bronze']}**",
+                    'type': 'markdown'
+                } for column in row.keys()
+            } for row in noc_medal_table[:100]  # Limit tooltips for performance
+        ],
+        tooltip_duration=None
+    )
+], style={
+    "background": "#FFFFFF",
+    "borderRadius": "4px",  # Sharp corners
+    "boxShadow": "0 2px 8px rgba(0,0,0,0.15)",
+    "border": "1px solid #D1D5DB",
+    "padding": "2rem",
+    "marginTop": "2rem",
+    "marginBottom": "2rem"
+})
 
 # Move this block up, before analyical_content_layout and tactical_content_layout definitions:
 dashboard_header = dbc.Row([
@@ -867,9 +1186,9 @@ analyical_content_layout = html.Div([
                     })
                 ], style={
                     "background": "white",
-                    "borderRadius": "14px",
-                    "boxShadow": "0 4px 15px rgba(0,0,0,0.12)",
-                    "border": f"3px solid #2563EB",
+                    "borderRadius": "4px",  # Sharp corners
+                    "boxShadow": "0 2px 8px rgba(0,0,0,0.15)",
+                    "border": f"2px solid #2563EB",
                     "transition": "transform 0.2s ease, box-shadow 0.2s ease",
                     "height": "140px",
                     "display": "flex",
@@ -909,9 +1228,9 @@ analyical_content_layout = html.Div([
                     })
                 ], style={
                     "background": "white",
-                    "borderRadius": "14px",
-                    "boxShadow": "0 4px 15px rgba(0,0,0,0.12)",
-                    "border": f"3px solid #DC2626",
+                    "borderRadius": "4px",  # Sharp corners
+                    "boxShadow": "0 2px 8px rgba(0,0,0,0.15)",
+                    "border": f"2px solid #DC2626",
                     "transition": "transform 0.2s ease, box-shadow 0.2s ease",
                     "height": "140px",
                     "display": "flex",
@@ -945,9 +1264,9 @@ analyical_content_layout = html.Div([
                     })
                 ], style={
                     "background": "white",
-                    "borderRadius": "14px",
-                    "boxShadow": "0 4px 15px rgba(0,0,0,0.12)",
-                    "border": f"3px solid #059669",
+                    "borderRadius": "4px",  # Sharp corners
+                    "boxShadow": "0 2px 8px rgba(0,0,0,0.15)",
+                    "border": f"2px solid #059669",
                     "transition": "transform 0.2s ease, box-shadow 0.2s ease",
                     "height": "140px",
                     "display": "flex",
@@ -981,9 +1300,9 @@ analyical_content_layout = html.Div([
                     })
                 ], style={
                     "background": "white",
-                    "borderRadius": "14px",
-                    "boxShadow": "0 4px 15px rgba(0,0,0,0.12)",
-                    "border": f"3px solid #F59E0B",
+                    "borderRadius": "4px",  # Sharp corners
+                    "boxShadow": "0 2px 8px rgba(0,0,0,0.15)",
+                    "border": f"2px solid #F59E0B",
                     "transition": "transform 0.2s ease, box-shadow 0.2s ease",
                     "height": "140px",
                     "display": "flex",
@@ -1010,9 +1329,10 @@ analyical_content_layout = html.Div([
                         "height": "100%",
                         "minHeight": "500px",
                         "background": "#fff",
-                        "borderRadius": "14px",
+                        "borderRadius": "4px",  # Sharp corners
                         "padding": "1rem",
-                        "boxShadow": "0 2px 12px rgba(0,0,0,0.10)"
+                        "boxShadow": "0 2px 8px rgba(0,0,0,0.15)",
+                        "border": "1px solid #D1D5DB"
                     }
                 )
             ], style={
@@ -1061,12 +1381,13 @@ analyical_content_layout = html.Div([
                         "height": "440px",
                         "minHeight": "340px",
                         "background": "#fff",
-                        "borderRadius": "14px",
+                        "borderRadius": "4px",  # Sharp corners
                         "padding": "1rem",
-                        "boxShadow": "0 2px 12px rgba(0,0,0,0.10)"
+                        "boxShadow": "0 2px 8px rgba(0,0,0,0.15)",
+                        "border": "1px solid #D1D5DB"
                     }
                 )
-            ], width={"size": 6, "sm": 12, "md": 6, "lg": 6}, style={"minWidth": 0}),
+            ], width=4, style={"minWidth": 0}),  # Smaller pie chart
             dbc.Col([
                 dcc.Graph(
                     figure=analyical_figures['gender_participation_trend'],
@@ -1074,12 +1395,13 @@ analyical_content_layout = html.Div([
                         "height": "440px",
                         "minHeight": "340px",
                         "background": "#fff",
-                        "borderRadius": "14px",
+                        "borderRadius": "4px",  # Sharp corners
                         "padding": "1rem",
-                        "boxShadow": "0 2px 12px rgba(0,0,0,0.10)"
+                        "boxShadow": "0 2px 8px rgba(0,0,0,0.15)",
+                        "border": "1px solid #D1D5DB"
                     }
                 )
-            ], width={"size": 6, "sm": 12, "md": 6, "lg": 6}, style={"minWidth": 0})
+            ], width=8, style={"minWidth": 0})  # Larger line chart
         ], className="mb-4")
     ], style={"marginBottom": "3rem"}),
     
@@ -1098,9 +1420,10 @@ analyical_content_layout = html.Div([
                         "height": "440px",
                         "minHeight": "340px",
                         "background": "#fff",
-                        "borderRadius": "14px",
+                        "borderRadius": "4px",  # Sharp corners
                         "padding": "1rem",
-                        "boxShadow": "0 2px 12px rgba(0,0,0,0.10)"
+                        "boxShadow": "0 2px 8px rgba(0,0,0,0.15)",
+                        "border": "1px solid #D1D5DB"
                     }
                 )
             ], width={"size": 6, "sm": 12, "md": 6, "lg": 6}, style={"minWidth": 0}),
@@ -1111,9 +1434,10 @@ analyical_content_layout = html.Div([
                         "height": "440px",
                         "minHeight": "340px",
                         "background": "#fff",
-                        "borderRadius": "14px",
+                        "borderRadius": "4px",  # Sharp corners
                         "padding": "1rem",
-                        "boxShadow": "0 2px 12px rgba(0,0,0,0.10)"
+                        "boxShadow": "0 2px 8px rgba(0,0,0,0.15)",
+                        "border": "1px solid #D1D5DB"
                     }
                 )
             ], width={"size": 6, "sm": 12, "md": 6, "lg": 6}, style={"minWidth": 0})

@@ -15,8 +15,8 @@ OLYMPIC_COLORS = {
     'bronze': '#CD7F32'
 }
 
-DEFAULT_FONT = dict(family='Montserrat, Roboto, sans-serif', size=13, color='#222')
-TITLE_FONT = dict(family='Montserrat, Roboto, sans-serif', size=16, color='#222')
+DEFAULT_FONT = dict(family='Inter, Montserrat, sans-serif', size=12, color='#1F2937')
+TITLE_FONT = dict(family='Inter, Montserrat, sans-serif', size=15, color='#1F2937', weight=600)
 
 def create_medal_by_country_gender():
     query = """
@@ -117,6 +117,8 @@ def create_medalist_age_distribution():
         ),
         xaxis=dict(
             title='Age (years)',
+            title_font=dict(size=13, color='#1F2937', family='Inter, Montserrat, sans-serif'),
+            tickfont=dict(size=11, color='#1F2937', family='Inter, Montserrat, sans-serif'),
             showgrid=True,
             gridcolor='rgba(0,0,0,0.1)',
             zeroline=True,
@@ -129,6 +131,8 @@ def create_medalist_age_distribution():
         ),
         yaxis=dict(
             title='Number of Medals',
+            title_font=dict(size=13, color='#1F2937', family='Inter, Montserrat, sans-serif'),
+            tickfont=dict(size=11, color='#1F2937', family='Inter, Montserrat, sans-serif'),
             showgrid=True,
             gridcolor='rgba(0,0,0,0.1)',
             zeroline=True,
@@ -216,7 +220,7 @@ def create_gold_medal_teams():
         color_discrete_sequence=[OLYMPIC_COLORS['gold'], OLYMPIC_COLORS['silver'], OLYMPIC_COLORS['bronze'], OLYMPIC_COLORS['blue'], OLYMPIC_COLORS['yellow'], OLYMPIC_COLORS['black'], OLYMPIC_COLORS['green'], OLYMPIC_COLORS['red']],
         hover_data=['gold_count']
     )
-    fig.update_traces(textinfo='label', textposition='outside', textfont_size=11, marker=dict(line=dict(color='#fff', width=1)), pull=[0.02]*len(data))
+    fig.update_traces(textinfo='label', textposition='outside', textfont_size=10, marker=dict(line=dict(color='#fff', width=1)), pull=[0.02]*len(data))
     fig.update_layout(
         font=DEFAULT_FONT,
         title_font=TITLE_FONT,

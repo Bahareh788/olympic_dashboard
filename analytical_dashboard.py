@@ -13,8 +13,8 @@ OLYMPIC_COLORS = {
     'red': '#DC2626'        # High contrast red (colorblind safe)
 }
 
-DEFAULT_FONT = dict(family='Montserrat, Roboto, sans-serif', size=13, color='#222')
-TITLE_FONT = dict(family='Montserrat, Roboto, sans-serif', size=16, color='#222')
+DEFAULT_FONT = dict(family='Inter, Montserrat, sans-serif', size=12, color='#1F2937')
+TITLE_FONT = dict(family='Inter, Montserrat, sans-serif', size=15, color='#1F2937', weight=600)
 
 def create_gender_distribution():
     query = """
@@ -198,16 +198,16 @@ def create_participation_trend():
     # Update axes
     fig.update_xaxes(
         title_text="Olympic Year",
-        title_font=dict(size=14, color='#222'),
-        tickfont=dict(size=12, color='#222'),
+        title_font=dict(size=13, color='#1F2937', family='Inter, Montserrat, sans-serif'),
+        tickfont=dict(size=11, color='#1F2937', family='Inter, Montserrat, sans-serif'),
         showgrid=True,
         gridcolor='#f0f0f0'
     )
     
     fig.update_yaxes(
         title_text="Number of Athletes",
-        title_font=dict(size=14, color='#222'),
-        tickfont=dict(size=12, color='#222'),
+        title_font=dict(size=13, color='#1F2937', family='Inter, Montserrat, sans-serif'),
+        tickfont=dict(size=11, color='#1F2937', family='Inter, Montserrat, sans-serif'),
         showgrid=True,
         gridcolor='#f0f0f0',
         tickformat=',d'  # Format numbers with commas
@@ -293,16 +293,16 @@ def create_filtered_participation_trend(gender=None, sport=None, country=None):
         # Update axes
         fig.update_xaxes(
             title_text="Olympic Year",
-            title_font=dict(size=14, color='#222'),
-            tickfont=dict(size=12, color='#222'),
+            title_font=dict(size=13, color='#1F2937', family='Inter, Montserrat, sans-serif'),
+            tickfont=dict(size=11, color='#1F2937', family='Inter, Montserrat, sans-serif'),
             showgrid=True,
             gridcolor='#f0f0f0'
         )
         
         fig.update_yaxes(
             title_text="Number of Athletes",
-            title_font=dict(size=14, color='#222'),
-            tickfont=dict(size=12, color='#222'),
+            title_font=dict(size=13, color='#1F2937', family='Inter, Montserrat, sans-serif'),
+            tickfont=dict(size=11, color='#1F2937', family='Inter, Montserrat, sans-serif'),
             showgrid=True,
             gridcolor='#f0f0f0',
             tickformat=',d'  # Format numbers with commas
@@ -374,8 +374,8 @@ def create_top_events():
     # Update axes
     fig.update_xaxes(
         title_text="Number of Athletes",
-        title_font=dict(size=14, color='#222'),
-        tickfont=dict(size=12, color='#222'),
+        title_font=dict(size=13, color='#1F2937', family='Inter, Montserrat, sans-serif'),
+        tickfont=dict(size=11, color='#1F2937', family='Inter, Montserrat, sans-serif'),
         showgrid=True,
         gridcolor='#f0f0f0',
         tickformat=',d'  # Format numbers with commas
@@ -383,8 +383,8 @@ def create_top_events():
     
     fig.update_yaxes(
         title_text="Sport",
-        title_font=dict(size=14, color='#222'),
-        tickfont=dict(size=12, color='#222'),
+        title_font=dict(size=13, color='#1F2937', family='Inter, Montserrat, sans-serif'),
+        tickfont=dict(size=11, color='#1F2937', family='Inter, Montserrat, sans-serif'),
         showgrid=False
     )
     
@@ -480,8 +480,8 @@ def create_filtered_top_events(year=None, gender=None, country=None):
         # Update axes
         fig.update_xaxes(
             title_text="Number of Athletes",
-            title_font=dict(size=14, color='#222'),
-            tickfont=dict(size=12, color='#222'),
+            title_font=dict(size=13, color='#1F2937', family='Inter, Montserrat, sans-serif'),
+            tickfont=dict(size=11, color='#1F2937', family='Inter, Montserrat, sans-serif'),
             showgrid=True,
             gridcolor='#f0f0f0',
             tickformat=',d'  # Format numbers with commas
@@ -489,8 +489,8 @@ def create_filtered_top_events(year=None, gender=None, country=None):
         
         fig.update_yaxes(
             title_text="Sport",
-            title_font=dict(size=14, color='#222'),
-            tickfont=dict(size=12, color='#222'),
+            title_font=dict(size=13, color='#1F2937', family='Inter, Montserrat, sans-serif'),
+            tickfont=dict(size=11, color='#1F2937', family='Inter, Montserrat, sans-serif'),
             showgrid=False
         )
         
@@ -548,7 +548,7 @@ def create_sport_distribution():
                      'Percentage: %{percentParent}<br>' +
                      '<extra></extra>',
         textinfo="label+value",
-        textfont_size=12
+        textfont_size=10
     )
     
     fig.update_layout(
@@ -570,8 +570,8 @@ def create_sport_distribution():
         height=300,
         coloraxis_colorbar=dict(
             title="Number of Events",
-            title_font=dict(size=12, color='#222'),
-            tickfont=dict(size=10, color='#222'),
+            title_font=dict(size=12, color='#1F2937', family='Inter, Montserrat, sans-serif'),
+            tickfont=dict(size=10, color='#1F2937', family='Inter, Montserrat, sans-serif'),
             tickformat=',d'
         )
     )
@@ -667,7 +667,7 @@ LEFT JOIN (
                              'Continent: ' + mapping['continent'] + '<br>' +
                              'Athletes: %{z:,}<br>' +
                              '<extra></extra>',
-                hoverlabel=dict(bgcolor='white', font_size=12),
+                hoverlabel=dict(bgcolor='white', font_size=11),
                 marker=dict(line=dict(color='lightgray', width=0.5))
             ))
 
@@ -768,16 +768,16 @@ def create_gender_participation_trend():
     # Update axes
     fig.update_xaxes(
         title_text="Olympic Year",
-        title_font=dict(size=14, color='#222'),
-        tickfont=dict(size=12, color='#222'),
+        title_font=dict(size=13, color='#1F2937', family='Inter, Montserrat, sans-serif'),
+        tickfont=dict(size=11, color='#1F2937', family='Inter, Montserrat, sans-serif'),
         showgrid=True,
         gridcolor='#f0f0f0'
     )
     
     fig.update_yaxes(
         title_text="Number of Athletes",
-        title_font=dict(size=14, color='#222'),
-        tickfont=dict(size=12, color='#222'),
+        title_font=dict(size=13, color='#1F2937', family='Inter, Montserrat, sans-serif'),
+        tickfont=dict(size=11, color='#1F2937', family='Inter, Montserrat, sans-serif'),
         showgrid=True,
         gridcolor='#f0f0f0',
         tickformat=',d'  # Format numbers with commas
@@ -945,6 +945,126 @@ def get_athlete_participation_table():
     '''
     data = execute_query(query)
     return data
+
+def create_filtered_gender_participation_trend(year=None, sport=None, country=None, gender=None):
+    """
+    Create gender participation trend chart with optional filters
+    This maintains the gender breakdown showing both male and female lines, unless a specific gender is filtered
+    """
+    base_query = """
+    SELECT
+        og.year as year,
+        a.gender as gender,
+        COUNT(DISTINCT p.athleteid) as athlete_count
+    FROM olympicgames og
+    JOIN participation p ON og.gamesid = p.gamesid
+    JOIN athlete a ON p.athleteid = a.athleteid
+    JOIN team t ON p.teamid = t.teamid
+    JOIN country c ON t.noc = c.noc
+    JOIN event e ON p.eventid = e.eventid
+    JOIN sport s ON e.sportid = s.sportid
+    WHERE 1=1
+    """
+    
+    conditions = []
+    
+    # Note: We don't filter by year since year is the x-axis
+    # If gender is specified, filter by that gender, otherwise show both
+    
+    if gender:
+        conditions.append(f"a.gender = '{gender}'")
+    
+    if sport:
+        conditions.append(f"s.sportname = '{sport.replace(chr(39), chr(39)+chr(39))}'")
+    
+    if country:
+        conditions.append(f"c.countryname = '{country.replace(chr(39), chr(39)+chr(39))}'")
+    
+    if conditions:
+        base_query += " AND " + " AND ".join(conditions)
+    
+    base_query += " GROUP BY og.year, a.gender ORDER BY og.year, a.gender"
+    
+    try:
+        data = execute_query(base_query)
+        if not data:
+            return create_gender_participation_trend()  # Fallback
+            
+        # Map gender codes to full names
+        gender_mapping = {'M': 'Male', 'F': 'Female'}
+        data_mapped = []
+        for row in data:
+            data_mapped.append({
+                'year': row['year'],
+                'gender': gender_mapping.get(row['gender'], row['gender']),
+                'athlete_count': row['athlete_count']
+            })
+        
+        fig = px.line(
+            data_mapped,
+            x='year',
+            y='athlete_count',
+            color='gender',
+            title=f'Gender Participation Over Time{" (Filtered)" if any([gender, sport, country]) else ""}',
+            labels={
+                'year': 'Olympic Year', 
+                'athlete_count': 'Number of Athletes', 
+                'gender': 'Gender'
+            },
+            color_discrete_map={'Male': OLYMPIC_COLORS['blue'], 'Female': OLYMPIC_COLORS['red']}
+        )
+        
+        # Update traces for better styling and tooltips
+        fig.update_traces(
+            line_width=3,
+            hovertemplate='<b>%{fullData.name}</b><br>' +
+                         'Olympic Year: %{x}<br>' +
+                         'Athletes: %{y:,}<br>' +
+                         '<extra></extra>'
+        )
+        
+        # Update axes
+        fig.update_xaxes(
+            title_text="Olympic Year",
+            title_font=dict(size=13, color='#1F2937', family='Inter, Montserrat, sans-serif'),
+            tickfont=dict(size=11, color='#1F2937', family='Inter, Montserrat, sans-serif'),
+            showgrid=True,
+            gridcolor='#f0f0f0'
+        )
+        
+        fig.update_yaxes(
+            title_text="Number of Athletes",
+            title_font=dict(size=13, color='#1F2937', family='Inter, Montserrat, sans-serif'),
+            tickfont=dict(size=11, color='#1F2937', family='Inter, Montserrat, sans-serif'),
+            showgrid=True,
+            gridcolor='#f0f0f0',
+            tickformat=',d'  # Format numbers with commas
+        )
+        
+        fig.update_layout(
+            font=DEFAULT_FONT,
+            title_font=TITLE_FONT,
+            legend=dict(
+                orientation="h",
+                yanchor="bottom",
+                y=1.02,
+                xanchor="right",
+                x=1,
+                bgcolor="#fff",
+                bordercolor="#eee",
+                borderwidth=1,
+                title="Gender"
+            ),
+            margin=dict(l=40, r=20, t=60, b=40),
+            paper_bgcolor="#fff",
+            plot_bgcolor="#fff",
+            height=300
+        )
+        return fig
+        
+    except Exception as e:
+        print(f"Error in filtered gender participation trend: {e}")
+        return create_gender_participation_trend()
 
 def get_analytical_dashboard():
     return {

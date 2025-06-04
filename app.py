@@ -1,7 +1,7 @@
 import dash
 from dash import html, dcc, Input, Output, State, dash_table
 import dash_bootstrap_components as dbc
-from analytical_dashboard import get_analytical_dashboard, create_filtered_gender_distribution, create_filtered_participation_trend, create_filtered_top_events
+from analytical_dashboard import get_analytical_dashboard, create_filtered_gender_distribution, create_filtered_participation_trend, create_filtered_top_events, create_filtered_gender_participation_trend
 from tactical_dashboard import get_tactical_dashboard, get_filtered_noc_medal_table, create_filtered_medal_by_country_gender, create_filtered_top_sports
 from flask_sqlalchemy import SQLAlchemy
 from flask import Flask
@@ -329,7 +329,7 @@ def make_continent_metric_card(continent, athletes, medals, color, text_color):
         html.Div([
             html.Div([
                 html.I(className=icon_class, style={
-                    "fontSize": "2.2rem", 
+                    "fontSize": "1.6rem", 
                     "color": "#FFFFFF",
                     "display": "flex",
                     "alignItems": "center",
@@ -341,10 +341,10 @@ def make_continent_metric_card(continent, athletes, medals, color, text_color):
                 "display": "flex",
                 "alignItems": "center", 
                 "justifyContent": "center",
-                "width": "64px",
-                "height": "64px",
+                "width": "48px",
+                "height": "48px",
                 "background": "rgba(255, 255, 255, 0.2)",
-                "borderRadius": "16px",
+                "borderRadius": "12px",
                 "backdropFilter": "blur(10px)",
                 "border": "1px solid rgba(255, 255, 255, 0.3)"
             }, className="glass-icon")
@@ -352,18 +352,18 @@ def make_continent_metric_card(continent, athletes, medals, color, text_color):
             "display": "flex",
             "alignItems": "center",
             "justifyContent": "center",
-            "padding": "1.5rem 1rem"
+            "padding": "1rem 0.75rem"
         }),
         
         # Content section
         html.Div([
             # Continent title
             html.Div(continent, style={
-                "fontSize": "1.1rem",
+                "fontSize": "0.95rem",
                 "fontWeight": "600",
                 "color": "#FFFFFF",
-                "marginBottom": "0.5rem",
-                "letterSpacing": "0.5px",
+                "marginBottom": "0.3rem",
+                "letterSpacing": "0.3px",
                 "textTransform": "uppercase",
                 "fontFamily": "Montserrat, sans-serif"
             }, className="continent-title"),
@@ -371,36 +371,36 @@ def make_continent_metric_card(continent, athletes, medals, color, text_color):
             # Athletes count with better typography
             html.Div([
                 html.Span(f"{athletes:,}", style={
-                    "fontSize": "2rem",
+                    "fontSize": "1.5rem",
                     "fontWeight": "700",
                     "color": "#FFFFFF",
                     "lineHeight": "1.2",
                     "fontFamily": "Montserrat, sans-serif"
                 }),
                 html.Span(" Athletes", style={
-                    "fontSize": "0.9rem",
+                    "fontSize": "0.75rem",
                     "color": "rgba(255, 255, 255, 0.8)",
-                    "marginLeft": "0.5rem",
+                    "marginLeft": "0.4rem",
                     "fontWeight": "500"
                 })
-            ], style={"marginBottom": "0.3rem"}, className="athlete-count"),
+            ], style={"marginBottom": "0.2rem"}, className="athlete-count"),
             
             # Medals with enhanced styling
             html.Div([
                 html.I(className="fas fa-medal", style={
                     "color": "rgba(255, 255, 255, 0.9)",
-                    "marginRight": "0.5rem",
-                    "fontSize": "0.9rem"
+                    "marginRight": "0.4rem",
+                    "fontSize": "0.75rem"
                 }),
                 html.Span(f"{medals:,} Medals", style={
-                    "fontSize": "1rem",
+                    "fontSize": "0.85rem",
                     "color": "rgba(255, 255, 255, 0.9)",
                     "fontWeight": "500"
                 })
             ])
         ], style={
             "flex": "1",
-            "padding": "1.5rem 1.5rem 1.5rem 0",
+            "padding": "1rem 1rem 1rem 0",
             "display": "flex",
             "flexDirection": "column",
             "justifyContent": "center"
@@ -411,10 +411,10 @@ def make_continent_metric_card(continent, athletes, medals, color, text_color):
             "position": "absolute",
             "top": "0",
             "right": "0",
-            "width": "80px",
-            "height": "80px",
+            "width": "60px",
+            "height": "60px",
             "background": "rgba(255, 255, 255, 0.1)",
-            "borderRadius": "0 16px 0 100%",
+            "borderRadius": "0 12px 0 100%",
             "pointerEvents": "none"
         }),
         
@@ -424,7 +424,7 @@ def make_continent_metric_card(continent, athletes, medals, color, text_color):
             "bottom": "0",
             "left": "0",
             "right": "0",
-            "height": "3px",
+            "height": "2px",
             "background": "rgba(255, 255, 255, 0.3)"
         })
         
@@ -433,13 +433,13 @@ def make_continent_metric_card(continent, athletes, medals, color, text_color):
         "display": "flex",
         "alignItems": "center",
         "width": "100%",
-        "minWidth": "320px",
-        "maxWidth": "420px",
-        "height": "110px",
+        "minWidth": "280px",
+        "maxWidth": "350px",
+        "height": "85px",
         "background": background_gradient,
-        "borderRadius": "16px",
-        "boxShadow": "0 8px 25px rgba(0, 0, 0, 0.15), 0 4px 10px rgba(0, 0, 0, 0.1)",
-        "marginBottom": "1.2rem",
+        "borderRadius": "12px",
+        "boxShadow": "0 6px 20px rgba(0, 0, 0, 0.12), 0 3px 8px rgba(0, 0, 0, 0.08)",
+        "marginBottom": "0.8rem",
         "overflow": "hidden",
         "transition": "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
         "cursor": "pointer",
@@ -662,7 +662,7 @@ analyical_athlete_table_layout = html.Div([
         
         # Modern styling for the table container
         style_table={
-            "height": "500px",
+            "height": "350px",
             "overflowY": "auto",
             "overflowX": "auto",
             "minWidth": "100%",
@@ -875,8 +875,8 @@ def update_analytical_charts(year, gender, sport, country):
     )
     
     # Update participation trend (exclude year filter since it's the x-axis)
-    participation_trend_fig = create_filtered_participation_trend(
-        gender=gender, 
+    participation_trend_fig = create_filtered_gender_participation_trend(
+        gender=gender,
         sport=sport, 
         country=country
     )
@@ -1550,7 +1550,7 @@ analyical_content_layout = html.Div([
                         "border": "1px solid #D1D5DB"
                     }
                 )
-            ], width={"size": 6, "sm": 12, "md": 6, "lg": 6}, style={"minWidth": 0}),
+            ], width={"size": 7, "sm": 12, "md": 7, "lg": 7}, style={"minWidth": 0}),
             dbc.Col([
                 dcc.Graph(
                     id='top-events-chart',  # Added ID for callback
@@ -1565,7 +1565,7 @@ analyical_content_layout = html.Div([
                         "border": "1px solid #D1D5DB"
                     }
                 )
-            ], width={"size": 6, "sm": 12, "md": 6, "lg": 6}, style={"minWidth": 0})
+            ], width={"size": 5, "sm": 12, "md": 5, "lg": 5}, style={"minWidth": 0})
         ], className="mb-4"),
         # Athlete Participation Table
         analyical_athlete_table_layout

@@ -1,0 +1,243 @@
+# Olympic Games Analytics Dashboard - Database Schema Documentation
+
+## Overview
+This document outlines the complete database schema for the Olympic Games Analytics Dashboard, including both core Olympic data tables and operational monitoring tables.
+
+## Database Configuration
+- Database Name: Olympicdb
+- Encoding: UTF-8
+- Default Collation: en_US.UTF-8
+
+## Core Olympic Data Tables
+
+### 1. Olympic Games Table
+```sql
+CREATE TABLE olympicgames (
+    gamesid SERIAL PRIMARY KEY,
+    year INTEGER NOT NULL,
+    season VARCHAR(10) NOT NULL CHECK (season IN ('Summer', 'Winter')),
+    city VARCHAR(100) NOT NULL
+);
+```
+
+### 2. Country Table
+```sql
+CREATE TABLE country (
+    countryid SERIAL PRIMARY KEY,
+    noc CHAR(3) UNIQUE NOT NULL,
+    countryname VARCHAR(100) NOT NULL
+);
+```
+
+### 3. Team Table
+```sql
+CREATE TABLE team (
+    teamid SERIAL PRIMARY KEY,
+    noc CHAR(3) NOT NULL REFERENCES country(noc),
+    team_name VARCHAR(100)
+);
+```
+
+### 4. Athlete Table
+```sql
+CREATE TABLE athlete (
+    athleteid SERIAL PRIMARY KEY,
+    teamid INTEGER REFERENCES team(teamid),
+    athlete_name VARCHAR(200) NOT NULL,
+    gender CHAR(1) CHECK (gender IN ('M', 'F')),
+    birth_date DATE,
+    height DECIMAL(5,2),
+    weight DECIMAL(5,2)
+);
+```
+
+### 5. Sport Table
+```sql
+CREATE TABLE sport (
+    sportid SERIAL PRIMARY KEY,
+    sportname VARCHAR(100) NOT NULL UNIQUE
+);
+```
+
+### 6. Event Table
+```sql
+CREATE TABLE event (
+    eventid SERIAL PRIMARY KEY,
+    sportid INTEGER REFERENCES sport(sportid),
+    eventname VARCHAR(200) NOT NULL,
+    gender CHAR(1) CHECK (gender IN ('M', 'F', 'X'))
+);
+```
+
+### 7. Medal Table
+```sql
+CREATE TABLE medal (
+    medalid SERIAL PRIMARY KEY,
+    medaltype VARCHAR(10) CHECK (medaltype IN ('Gold', 'Silver', 'Bronze'))
+);
+```
+
+### 8. Participation Table
+```sql
+CREATE TABLE participation (
+    participationid SERIAL PRIMARY KEY,
+    athleteid INTEGER REFERENCES athlete(athleteid),
+    eventid INTEGER REFERENCES event(eventid),
+    gamesid INTEGER REFERENCES olympicgames(gamesid),
+    medalid INTEGER REFERENCES medal(medalid),
+    bmi DECIMAL(4,2),
+    UNIQUE (athleteid, eventid, gamesid)
+);
+```
+
+## Operational Dashboard Tables
+
+### 1. Venues Table
+```sql
+CREATE TABLE operational_venues (
+    venue_id SERIAL PRIMARY KEY,
+    venue_name VARCHAR(100) NOT NULL,
+    capacity INTEGER NOT NULL,
+    current_occupancy INTEGER NOT NULL,
+    status VARCHAR(20) DEFAULT 'Operational' CHECK (status IN ('Operational', 'Maintenance', 'Preparing', 'Closed')),
+    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX idx_venues_status ON operational_venues(status);
+```
+
+### 2. Staff Deployment Table
+```sql
+CREATE TABLE operational_staff (
+    staff_id SERIAL PRIMARY KEY,
+    department VARCHAR(50) NOT NULL,
+    active_count INTEGER NOT NULL,
+    total_assigned INTEGER NOT NULL,
+    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+### 3. Transportation Data Table
+```sql
+CREATE TABLE operational_transport (
+    transport_id SERIAL PRIMARY KEY,
+    time_slot VARCHAR(10) NOT NULL,
+    passenger_count INTEGER NOT NULL,
+    on_time_percentage DECIMAL(5,2) NOT NULL,
+    date_recorded DATE DEFAULT CURRENT_DATE
+);
+
+CREATE INDEX idx_transport_time ON operational_transport(time_slot);
+```
+
+### 4. Event Schedule Performance Table
+```sql
+CREATE TABLE operational_schedule (
+    schedule_id SERIAL PRIMARY KEY,
+    day_of_week VARCHAR(10) NOT NULL,
+    on_time_events INTEGER NOT NULL,
+    minor_delays INTEGER NOT NULL,
+    major_delays INTEGER NOT NULL,
+    week_number INTEGER DEFAULT 1
+);
+
+CREATE INDEX idx_schedule_day ON operational_schedule(day_of_week);
+```
+
+### 5. Resource Utilization Table
+```sql
+CREATE TABLE operational_resources (
+    resource_id SERIAL PRIMARY KEY,
+    resource_type VARCHAR(50) NOT NULL,
+    utilization_percentage DECIMAL(5,2) NOT NULL,
+    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+### 6. System Status Table
+```sql
+CREATE TABLE operational_status (
+    status_id SERIAL PRIMARY KEY,
+    metric_name VARCHAR(50) NOT NULL,
+    metric_value VARCHAR(100) NOT NULL,
+    status_level VARCHAR(20) DEFAULT 'Normal' CHECK (status_level IN ('Normal', 'Warning', 'Critical', 'Low')),
+    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX idx_status_updated ON operational_status(last_updated);
+```
+
+### 7. Priority Alerts Table
+```sql
+CREATE TABLE operational_alerts (
+    alert_id SERIAL PRIMARY KEY,
+    venue_name VARCHAR(100) NOT NULL,
+    alert_type VARCHAR(50) NOT NULL,
+    description TEXT NOT NULL,
+    priority_level VARCHAR(20) NOT NULL CHECK (priority_level IN ('Low', 'Medium', 'High', 'Critical')),
+    status VARCHAR(20) DEFAULT 'Active' CHECK (status IN ('Active', 'Resolved', 'Monitoring')),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    resolved_at TIMESTAMP NULL
+);
+
+CREATE INDEX idx_alerts_priority ON operational_alerts(priority_level, status);
+```
+
+### 8. Operational Intelligence Table
+```sql
+CREATE TABLE operational_intelligence (
+    intelligence_id SERIAL PRIMARY KEY,
+    insight_type VARCHAR(50) NOT NULL,
+    title VARCHAR(100) NOT NULL,
+    description TEXT NOT NULL,
+    recommendation TEXT NOT NULL,
+    priority VARCHAR(20) NOT NULL CHECK (priority IN ('Low', 'Medium', 'High')),
+    time_frame VARCHAR(50) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+## Views
+
+### Operational Dashboard Summary View
+```sql
+CREATE OR REPLACE VIEW operational_dashboard_summary AS
+SELECT 
+    (SELECT COUNT(*) FROM operational_venues WHERE status = 'Operational') as operational_venues,
+    (SELECT COUNT(*) FROM operational_venues WHERE status = 'Maintenance') as maintenance_venues,
+    (SELECT COUNT(*) FROM operational_venues WHERE status = 'Preparing') as preparing_venues,
+    (SELECT SUM(active_count) FROM operational_staff) as total_active_staff,
+    (SELECT COUNT(*) FROM operational_alerts WHERE status = 'Active') as active_alerts,
+    (SELECT AVG(utilization_percentage) FROM operational_resources) as avg_resource_utilization;
+```
+
+## Indexes
+The following indexes are created for performance optimization:
+- operational_venues(status)
+- operational_alerts(priority_level, status)
+- operational_transport(time_slot)
+- operational_schedule(day_of_week)
+- operational_status(last_updated)
+
+## Data Relationships
+1. athlete -> team (Many-to-One)
+2. team -> country (Many-to-One)
+3. event -> sport (Many-to-One)
+4. participation -> athlete (Many-to-One)
+5. participation -> event (Many-to-One)
+6. participation -> olympicgames (Many-to-One)
+7. participation -> medal (Many-to-One)
+
+## Notes
+1. All ID fields use SERIAL for automatic increment
+2. Timestamps are automatically set using DEFAULT CURRENT_TIMESTAMP
+3. Status fields have CHECK constraints to ensure valid values
+4. Foreign key constraints maintain referential integrity
+5. Unique constraints prevent duplicate entries
+6. Indexes optimize common query patterns
+
+## Database Maintenance
+- Regular VACUUM ANALYZE recommended
+- Monitor index usage
+- Archive old operational data periodically
+- Backup database daily 

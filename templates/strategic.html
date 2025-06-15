@@ -10,7 +10,7 @@
             <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <h1 class="display-6 fw-bold mb-1" style="color: #0085C3;">
-                        <i class="fa-solid fa-chess me-2"></i>Strategic Dashboard
+                        <i class="fa-solid fa-chart-line me-2"></i>Strategic Dashboard
                     </h1>
                     <p class="text-muted mb-0">Long-term Olympic performance analysis and planning</p>
                 </div>
@@ -143,7 +143,7 @@
                     <small class="text-subtitle">How efficiently do countries convert athletes to medals?</small>
                 </div>
                 <div class="card-body d-flex align-items-center justify-content-center">
-                    <div class="chart-container" style="width: 100%; height: 400px;">
+                    <div class="chart-container" style="height: 350px;">
                         <canvas id="efficiencyBenchmarkChart"></canvas>
                     </div>
                 </div>
@@ -157,10 +157,10 @@
                     <h5 class="card-title text-light-contrast mb-0">
                         Strategic Insights
                     </h5>
-                    <small class="text-subtitle">AI-powered recommendations - Click bubbles to analyze countries</small>
+                    <small class="text-subtitle">AI-powered recommendations</small>
                 </div>
-                <div class="card-body">
-                    <div id="strategicInsights" class="insights-container">
+                <div class="card-body" style="height: calc(350px - 73px);">
+                    <div id="strategicInsights" class="insights-container h-100">
                         <div class="text-center mb-3" id="insightCountryDisplay">
                             <div class="badge fs-6 px-3 py-2" style="background: linear-gradient(90deg, #0085C3 0%, #00A651 100%);">
                                 <span id="selectedCountryName">Click a bubble to view insights</span>
@@ -171,28 +171,28 @@
                             <div class="insight-header">
                                 <strong>Efficiency</strong>
                             </div>
-                            <p class="insight-text small mb-2" id="efficiencyInsight">Click any bubble to view efficiency analysis.</p>
+                            <p class="insight-text small mb-2" id="efficiencyInsight">Click to view medal efficiency analysis and ranking.</p>
                         </div>
                         
                         <div class="insight-item mb-3">
                             <div class="insight-header">
                                 <strong>Medal Potential</strong>
                             </div>
-                            <p class="insight-text small mb-2" id="medalInsight">Click to see medal projections.</p>
+                            <p class="insight-text small mb-2" id="medalInsight">Click to see medal projections and opportunities.</p>
                         </div>
                         
                         <div class="insight-item mb-3">
                             <div class="insight-header">
                                 <strong>Growth Strategy</strong>
                             </div>
-                            <p class="insight-text small mb-2" id="growthInsight">Click to view portfolio recommendations.</p>
+                            <p class="insight-text small mb-2" id="growthInsight">Click to get sport portfolio recommendations.</p>
                         </div>
                         
                         <div class="insight-item">
                             <div class="insight-header">
                                 <strong>Resource Focus</strong>
                             </div>
-                            <p class="insight-text small" id="resourceInsight">Click to see resource allocation strategy.</p>
+                            <p class="insight-text small" id="resourceInsight">Click to view resource allocation strategy.</p>
                         </div>
                     </div>
                 </div>
@@ -202,46 +202,40 @@
 
     <!-- Strategic Story Row 2: Sport Portfolio Analysis -->
     <div class="row mb-4">
-        <!-- Sport-Specific Medal Opportunity Analysis - Horizontal Bar Chart -->
-        <div class="col-lg-7">
+        <!-- Global Sport Opportunity Matrix -->
+        <div class="col-lg-5">
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-header bg-transparent border-0 py-3">
                     <h5 class="card-title text-light-contrast mb-0">
-                        <i class="fa-solid fa-medal me-2"></i>Global Sport Opportunity Matrix
+                        <i class="fa-solid fa-medal me-2"></i>Medal ROI by Sport
                     </h5>
                     <small class="text-subtitle">Which sports offer the best medal ROI opportunities globally?</small>
                 </div>
                 <div class="card-body">
-                    <div class="chart-container">
-                        <canvas id="sportOpportunityChart" width="400" height="300"></canvas>
+                    <div class="chart-container" style="height: 300px;">
+                        <canvas id="sportOpportunityChart"></canvas>
                     </div>
-                    <div class="sport-insights mt-3">
-                        <div class="row">
-                            <div class="col-md-4">
-                                <div class="opportunity-metric text-center">
-                                    <div class="metric-icon">
-                                        <i class="fas fa-star text-warning fa-2x"></i>
-                                    </div>
-                                    <div class="metric-value text-success fw-bold" id="topOpportunitySport">-</div>
-                                    <div class="metric-label small">Highest Opportunity</div>
+                    <div class="sport-insights mt-2">
+                        <div class="row g-2">
+                            <div class="col-4">
+                                <div class="insight-card bg-light rounded p-2 text-center">
+                                    <i class="fas fa-star text-warning"></i>
+                                    <div class="small fw-bold mt-1">Swimming</div>
+                                    <div class="text-muted" style="font-size: 0.7rem;">Highest Opportunity</div>
                                 </div>
                             </div>
-                            <div class="col-md-4">
-                                <div class="opportunity-metric text-center">
-                                    <div class="metric-icon">
-                                        <i class="fas fa-chart-line text-info fa-2x"></i>
-                                    </div>
-                                    <div class="metric-value text-primary fw-bold" id="emergingSport">-</div>
-                                    <div class="metric-label small">Emerging Potential</div>
+                            <div class="col-4">
+                                <div class="insight-card bg-light rounded p-2 text-center">
+                                    <i class="fas fa-chart-line text-info"></i>
+                                    <div class="small fw-bold mt-1">Rowing</div>
+                                    <div class="text-muted" style="font-size: 0.7rem;">Emerging Potential</div>
                                 </div>
                             </div>
-                            <div class="col-md-4">
-                                <div class="opportunity-metric text-center">
-                                    <div class="metric-icon">
-                                        <i class="fas fa-exclamation-triangle text-danger fa-2x"></i>
-                                    </div>
-                                    <div class="metric-value text-warning fw-bold" id="underperformingSport">-</div>
-                                    <div class="metric-label small">Needs Attention</div>
+                            <div class="col-4">
+                                <div class="insight-card bg-light rounded p-2 text-center">
+                                    <i class="fas fa-exclamation-triangle text-danger"></i>
+                                    <div class="small fw-bold mt-1">Boxing</div>
+                                    <div class="text-muted" style="font-size: 0.7rem;">Needs Attention</div>
                                 </div>
                             </div>
                         </div>
@@ -250,54 +244,40 @@
             </div>
         </div>
 
-        <!-- Historical Performance Trend - Multi-Line Chart -->
-        <div class="col-lg-5">
+        <!-- Global Performance Trends -->
+        <div class="col-lg-7">
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-header bg-transparent border-0 py-3">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h5 class="card-title text-light-contrast mb-0">
-                                <i class="fa-solid fa-chart-line me-2"></i>Global Performance Trends
-                            </h5>
-                            <small class="text-subtitle">How top Olympic nations are performing over time</small>
-                        </div>
-                    </div>
+                    <h5 class="card-title text-light-contrast mb-0">
+                        <i class="fa-solid fa-chart-line me-2"></i>Medal Trends by Country
+                    </h5>
+                    <small class="text-subtitle">How top Olympic nations are performing over time</small>
                 </div>
                 <div class="card-body">
                     <div class="chart-container">
                         <canvas id="performanceTrendChart" width="400" height="300"></canvas>
                     </div>
-                    <div class="global-insights mt-3">
-                        <div class="row">
-                            <div class="col-md-4">
-                                <div class="trend-stat text-center">
-                                    <div class="stat-value h4 mb-0 text-success" id="risingNationsCount">3</div>
-                                    <div class="stat-label small text-muted">Rising Nations</div>
+                    <div class="sport-insights mt-2">
+                        <div class="row g-2">
+                            <div class="col-4">
+                                <div class="insight-card bg-light rounded p-2 text-center">
+                                    <i class="fas fa-arrow-trend-up text-success"></i>
+                                    <div class="small fw-bold mt-1">7</div>
+                                    <div class="text-muted" style="font-size: 0.7rem;">Rising Nations</div>
                                 </div>
                             </div>
-                            <div class="col-md-4">
-                                <div class="trend-stat text-center">
-                                    <div class="stat-value h4 mb-0 text-warning" id="stableNationsCount">5</div>
-                                    <div class="stat-label small text-muted">Stable Powers</div>
+                            <div class="col-4">
+                                <div class="insight-card bg-light rounded p-2 text-center">
+                                    <i class="fas fa-equals text-warning"></i>
+                                    <div class="small fw-bold mt-1">1</div>
+                                    <div class="text-muted" style="font-size: 0.7rem;">Stable Powers</div>
                                 </div>
                             </div>
-                            <div class="col-md-4">
-                                <div class="trend-stat text-center">
-                                    <div class="stat-value h4 mb-0 text-danger" id="decliningNationsCount">2</div>
-                                    <div class="stat-label small text-muted">Declining Nations</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row mt-3">
-                            <div class="col-12">
-                                <div class="insight-card p-3 rounded" style="background: rgba(0, 133, 195, 0.1); border-left: 4px solid #0085C3;">
-                                    <h6 class="mb-2">
-                                        <i class="fas fa-globe text-info me-2"></i>
-                                        Global Olympic Landscape
-                                    </h6>
-                                    <p class="mb-0 small" id="globalTrendInsight">
-                                        Analyzing performance trends across top Olympic nations to identify strategic opportunities.
-                                    </p>
+                            <div class="col-4">
+                                <div class="insight-card bg-light rounded p-2 text-center">
+                                    <i class="fas fa-arrow-trend-down text-danger"></i>
+                                    <div class="small fw-bold mt-1">0</div>
+                                    <div class="text-muted" style="font-size: 0.7rem;">Declining Nations</div>
                                 </div>
                             </div>
                         </div>
@@ -316,7 +296,7 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <h5 class="card-title text-light-contrast mb-0">
-                                <i class="fa-solid fa-trophy me-2"></i>Medal Efficiency Leaders
+                                <i class="fa-solid fa-trophy me-2"></i>Top Countries by Medal Efficiency
                             </h5>
                             <small class="text-subtitle">Countries achieving the most medals per athlete</small>
                         </div>
@@ -330,39 +310,26 @@
                         <div class="row">
                             <div class="col-md-3">
                                 <div class="efficiency-stat text-center">
-                                    <div class="stat-value h4 mb-0 text-success" id="topEfficiencyRate">0.85</div>
-                                    <div class="stat-label small text-muted">Best Efficiency</div>
+                                    <div class="stat-value fw-bold mb-0 text-success" style="font-size: 0.95rem;" id="topEfficiencyRate">0.85</div>
+                                    <div class="stat-label text-muted" style="font-size: 0.75rem;">Best Efficiency</div>
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="efficiency-stat text-center">
-                                    <div class="stat-value h4 mb-0 text-info" id="avgEfficiencyRate">0.32</div>
-                                    <div class="stat-label small text-muted">Average Rate</div>
+                                    <div class="stat-value fw-bold mb-0 text-info" style="font-size: 0.95rem;" id="avgEfficiencyRate">0.32</div>
+                                    <div class="stat-label text-muted" style="font-size: 0.75rem;">Average Rate</div>
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="efficiency-stat text-center">
-                                    <div class="stat-value h4 mb-0 text-warning" id="topEfficiencyCountry">Norway</div>
-                                    <div class="stat-label small text-muted">Efficiency Leader</div>
+                                    <div class="stat-value fw-bold mb-0 text-warning" style="font-size: 0.95rem;" id="topEfficiencyCountry">Norway</div>
+                                    <div class="stat-label text-muted" style="font-size: 0.75rem;">Efficiency Leader</div>
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="efficiency-stat text-center">
-                                    <div class="stat-value h4 mb-0 text-primary" id="totalAnalyzedCountries">25</div>
-                                    <div class="stat-label small text-muted">Countries</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row mt-3">
-                            <div class="col-12">
-                                <div class="insight-card p-3 rounded" style="background: rgba(0, 133, 195, 0.1); border-left: 4px solid #0085C3;">
-                                    <h6 class="mb-2">
-                                        <i class="fas fa-chart-bar text-info me-2"></i>
-                                        Efficiency Benchmarking
-                                    </h6>
-                                    <p class="mb-0 small" id="efficiencyBenchmarkInsight">
-                                        Comparing medal efficiency rates to identify which countries maximize their athlete investments for strategic learning opportunities.
-                                    </p>
+                                    <div class="stat-value fw-bold mb-0 text-primary" style="font-size: 0.95rem;" id="totalAnalyzedCountries">25</div>
+                                    <div class="stat-label text-muted" style="font-size: 0.75rem;">Countries</div>
                                 </div>
                             </div>
                         </div>
@@ -376,7 +343,7 @@
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-header bg-transparent border-0 py-3">
                     <h5 class="card-title text-light-contrast mb-0">
-                        <i class="fa-solid fa-shield-halved me-2"></i>Sport Portfolio Risk Assessment
+                        <i class="fa-solid fa-shield-halved me-2"></i>Risk vs Reward by Sport
                     </h5>
                     <small class="text-subtitle">Investment risk vs. medal potential by sport category</small>
                 </div>
@@ -388,39 +355,26 @@
                         <div class="row">
                             <div class="col-md-3">
                                 <div class="portfolio-stat text-center">
-                                    <div class="stat-value h4 mb-0 text-success" id="lowRiskSports">8</div>
-                                    <div class="stat-label small text-muted">Low Risk</div>
+                                    <div class="stat-value fw-bold mb-0 text-success" style="font-size: 0.95rem;" id="lowRiskSports">8</div>
+                                    <div class="stat-label text-muted" style="font-size: 0.75rem;">Low Risk</div>
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="portfolio-stat text-center">
-                                    <div class="stat-value h4 mb-0 text-warning" id="mediumRiskSports">12</div>
-                                    <div class="stat-label small text-muted">Medium Risk</div>
+                                    <div class="stat-value fw-bold mb-0 text-warning" style="font-size: 0.95rem;" id="mediumRiskSports">12</div>
+                                    <div class="stat-label text-muted" style="font-size: 0.75rem;">Medium Risk</div>
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="portfolio-stat text-center">
-                                    <div class="stat-value h4 mb-0 text-danger" id="highRiskSports">5</div>
-                                    <div class="stat-label small text-muted">High Risk</div>
+                                    <div class="stat-value fw-bold mb-0 text-danger" style="font-size: 0.95rem;" id="highRiskSports">5</div>
+                                    <div class="stat-label text-muted" style="font-size: 0.75rem;">High Risk</div>
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="portfolio-stat text-center">
-                                    <div class="stat-value h4 mb-0 text-info" id="bestROISport">Swimming</div>
-                                    <div class="stat-label small text-muted">Best ROI</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row mt-3">
-                            <div class="col-12">
-                                <div class="insight-card p-3 rounded" style="background: rgba(238, 51, 78, 0.1); border-left: 4px solid #EE334E;">
-                                    <h6 class="mb-2">
-                                        <i class="fas fa-exclamation-triangle text-danger me-2"></i>
-                                        Portfolio Risk Analysis
-                                    </h6>
-                                    <p class="mb-0 small" id="portfolioRiskInsight">
-                                        Analyzing investment distribution across sports to identify over-concentration risks and diversification opportunities.
-                                    </p>
+                                    <div class="stat-value fw-bold mb-0 text-info" style="font-size: 0.95rem;" id="bestROISport">Swimming</div>
+                                    <div class="stat-label text-muted" style="font-size: 0.75rem;">Best ROI</div>
                                 </div>
                             </div>
                         </div>
@@ -440,16 +394,16 @@
                             <thead class="table-dark">
                                 <tr>
                                     <th class="text-white fw-bold">Strategic Focus Area</th>
-                                    <th class="text-white fw-bold">Current Position</th>
-                                    <th class="text-white fw-bold">Benchmark</th>
-                                    <th class="text-white fw-bold">Opportunity Size</th>
-                                    <th class="text-white fw-bold">Priority Level</th>
-                                    <th class="text-white fw-bold">Recommended Action</th>
+                                    <th class="text-white fw-bold">Current Status</th>
+                                    <th class="text-white fw-bold">Industry Benchmark</th>
+                                    <th class="text-white fw-bold">Impact Level</th>
+                                    <th class="text-white fw-bold">Action Priority</th>
+                                    <th class="text-white fw-bold">Suggested Action</th>
                                 </tr>
                             </thead>
                             <tbody id="strategicSummaryTable">
                                 <tr>
-                                    <td class="text-dark fw-semibold"><i class="fas fa-star text-warning me-2"></i>Top Opportunity Pursuit</td>
+                                    <td class="text-dark fw-semibold">Top Opportunity Pursuit</td>
                                     <td><span id="topOpportunityStatus" class="fw-bold text-dark">Swimming Focus</span></td>
                                     <td><span id="topOpportunityBenchmark" class="text-dark">32.5% Global ROI</span></td>
                                     <td><span class="text-success fw-bold">High Impact</span></td>
@@ -457,7 +411,7 @@
                                     <td><span class="text-dark">Increase investment in swimming programs by 25%</span></td>
                                 </tr>
                                 <tr>
-                                    <td class="text-dark fw-semibold"><i class="fas fa-exclamation-triangle text-danger me-2"></i>Risk Mitigation</td>
+                                    <td class="text-dark fw-semibold">Risk Mitigation</td>
                                     <td><span id="riskMitigationStatus" class="fw-bold text-dark">Athletics Decline</span></td>
                                     <td><span id="riskMitigationBenchmark" class="text-dark">High Competition</span></td>
                                     <td><span class="text-warning fw-bold">Medium Impact</span></td>
@@ -465,7 +419,7 @@
                                     <td><span class="text-dark">Diversify into niche athletics events with lower competition</span></td>
                                 </tr>
                                 <tr>
-                                    <td class="text-dark fw-semibold"><i class="fas fa-gem text-info me-2"></i>Hidden Gem Development</td>
+                                    <td class="text-dark fw-semibold">Hidden Gem Development</td>
                                     <td><span id="hiddenGemStatus" class="fw-bold text-dark">Rowing Potential</span></td>
                                     <td><span id="hiddenGemBenchmark" class="text-dark">22.7% ROI, Low Competition</span></td>
                                     <td><span class="text-success fw-bold">High Impact</span></td>
@@ -473,7 +427,7 @@
                                     <td><span class="text-dark">Establish rowing development program in next 2 years</span></td>
                                 </tr>
                                 <tr>
-                                    <td class="text-dark fw-semibold"><i class="fas fa-bolt text-success me-2"></i>Quick Win Execution</td>
+                                    <td class="text-dark fw-semibold">Quick Win Execution</td>
                                     <td><span id="quickWinStatus" class="fw-bold text-dark">Shooting Expansion</span></td>
                                     <td><span id="quickWinBenchmark" class="text-dark">21.3% ROI, Low Competition</span></td>
                                     <td><span class="text-info fw-bold">Medium Impact</span></td>
@@ -1033,42 +987,65 @@
 
 /* Strategic Summary Table Styling */
 .strategic-summary-table {
-    background: rgba(255, 255, 255, 0.02);
-    border-radius: 10px;
+    background: #fff;
+    border-radius: 8px;
     overflow: hidden;
+    margin-bottom: 1rem;
 }
 
 .strategic-summary-table thead th {
-    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    background: #1e3c72;
     color: white;
     border: none;
     font-weight: 600;
-    padding: 15px 12px;
+    padding: 0.75rem 1rem;
     font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .strategic-summary-table tbody tr {
-    background: rgba(255, 255, 255, 0.03);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    transition: all 0.3s ease;
+    border-bottom: 1px solid #edf2f7;
+    transition: all 0.2s ease;
 }
 
 .strategic-summary-table tbody tr:hover {
-    background: rgba(255, 255, 255, 0.08);
-    transform: translateY(-1px);
+    background: #f8fafc;
 }
 
 .strategic-summary-table td {
-    padding: 12px;
+    padding: 0.875rem 1rem;
     vertical-align: middle;
     border: none;
-    color: #e0e0e0;
+    color: #444;
+    font-size: 0.85rem;
 }
 
 .strategic-summary-table .badge {
     font-size: 0.75rem;
-    padding: 4px 8px;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-weight: 500;
 }
+
+.strategic-summary-table .impact-label {
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.strategic-summary-table .icon {
+    font-size: 1rem;
+    margin-right: 0.5rem;
+    vertical-align: middle;
+}
+
+/* Priority and Impact Colors */
+.priority-1 { background: #00A651; color: white; }
+.priority-2 { background: #FFB81C; color: white; }
+.priority-3 { background: #0085C3; color: white; }
+
+.high-impact { color: #00A651; }
+.medium-impact { color: #FFB81C; }
 
 .action-priority-high {
     background: rgba(220, 53, 69, 0.1);
@@ -2473,7 +2450,7 @@ function updateEfficiencyBenchmarkInsights(efficiencyData) {
     // Update stats
     $('#topEfficiencyRate').text(topEfficiency.efficiency.toFixed(2));
     $('#avgEfficiencyRate').text(avgEfficiency.toFixed(2));
-    $('#topEfficiencyCountry').text(topEfficiency.country);
+    $('#topEfficiencyCountry').text(topEfficiency.country === "Union of Soviet Socialist Republics" ? "USSR" : topEfficiency.country);
     $('#totalAnalyzedCountries').text(totalCountries);
     
     // Analyze efficiency tiers
@@ -2489,17 +2466,20 @@ function updateEfficiencyBenchmarkInsights(efficiencyData) {
     
     if (efficiencyGap > 0.3) {
         insight = `🏆 <strong>Clear Leaders:</strong> ${topTierNames} dominate efficiency rankings. `;
-        insight += `${topEfficiency.country} achieves ${topEfficiency.efficiency.toFixed(2)} medals per athlete - `;
+        const displayCountry = topEfficiency.country === "Union of Soviet Socialist Republics" ? "USSR" : topEfficiency.country;
+    insight += `${displayCountry} achieves ${topEfficiency.efficiency.toFixed(2)} medals per athlete - `;
         insight += `${((efficiencyGap / avgEfficiency) * 100).toFixed(0)}% above average. `;
         insight += `Study their athlete selection and training methods for strategic insights.`;
     } else if (efficiencyGap > 0.15) {
         insight = `📈 <strong>Competitive Efficiency:</strong> ${topTierNames} lead with strong efficiency rates. `;
-        insight += `${topEfficiency.country}'s ${topEfficiency.efficiency.toFixed(2)} rate shows `;
+        const displayCountry = topEfficiency.country === "Union of Soviet Socialist Republics" ? "USSR" : topEfficiency.country;
+    insight += `${displayCountry}'s ${topEfficiency.efficiency.toFixed(2)} rate shows `;
         insight += `${((efficiencyGap / avgEfficiency) * 100).toFixed(0)}% improvement over average. `;
         insight += `Multiple pathways exist for NOCs to achieve similar results.`;
     } else {
         insight = `⚖️ <strong>Balanced Field:</strong> Efficiency rates are relatively close across top performers. `;
-        insight += `${topEfficiency.country} leads at ${topEfficiency.efficiency.toFixed(2)}, just `;
+        const displayCountry = topEfficiency.country === "Union of Soviet Socialist Republics" ? "USSR" : topEfficiency.country;
+    insight += `${displayCountry} leads at ${topEfficiency.efficiency.toFixed(2)}, just `;
         insight += `${((efficiencyGap / avgEfficiency) * 100).toFixed(0)}% above average. `;
         insight += `Small improvements in athlete quality can yield significant ranking gains.`;
     }
@@ -2538,7 +2518,7 @@ function createGlobalGapAnalysisChart(data) {
     charts.competitiveBenchmark = new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: efficiencyData.map(c => c.country),
+            labels: efficiencyData.map(c => c.country === "Union of Soviet Socialist Republics" ? "USSR" : c.country),
             datasets: [{
                 label: 'Medal Efficiency',
                 data: efficiencyData.map(c => c.efficiency),
@@ -2558,7 +2538,9 @@ function createGlobalGapAnalysisChart(data) {
                     callbacks: {
                         label: function(context) {
                             const dataPoint = efficiencyData[context.dataIndex];
+                            const displayName = dataPoint.country === "Union of Soviet Socialist Republics" ? "USSR" : dataPoint.country;
                             return [
+                                `${displayName}`,
                                 `Efficiency: ${dataPoint.efficiency.toFixed(3)} medals/athlete`,
                                 `Total Medals: ${dataPoint.medals}`,
                                 `Est. Athletes: ${dataPoint.athletes}`
@@ -2965,7 +2947,7 @@ function updateEfficiencyInsights(data, country) {
     const countryData = data.medal_efficiency.find(c => c.countryname === country);
     const rank = data.medal_efficiency.findIndex(c => c.countryname === country) + 1;
     
-    $('#topEfficiencyCountry').text(topCountry?.countryname || 'N/A');
+    $('#topEfficiencyCountry').text(topCountry?.countryname === "Union of Soviet Socialist Republics" ? "USSR" : (topCountry?.countryname || 'N/A'));
     $('#yourEfficiencyRank').text(rank > 0 ? `#${rank}` : 'N/A');
     
     if (countryData && rank <= 10) {

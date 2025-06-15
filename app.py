@@ -15,9 +15,7 @@ db = SQLAlchemy(app)
 def execute_query(query, params=None):
     """Execute query and return results"""
     try:
-        print(f"DEBUG: Executing query: {query}")
         if params:
-            print(f"DEBUG: With params: {params}")
             result = db.session.execute(text(query), params)
         else:
             result = db.session.execute(text(query))
@@ -30,13 +28,10 @@ def execute_query(query, params=None):
                 row_dict[column] = row[i]
             rows.append(row_dict)
         
-        print(f"DEBUG: Query returned {len(rows)} rows")
+        db.session.commit()  # Commit successful transaction
         return rows
     except Exception as e:
-        print(f"DEBUG: Query execution error: {e}")
-        print(f"DEBUG: Query was: {query}")
-        if params:
-            print(f"DEBUG: Params were: {params}")
+        db.session.rollback()  # Rollback failed transaction
         return []
 
 @app.route('/')
@@ -65,32 +60,24 @@ def operational_dashboard():
 
 @app.route('/analytical')
 def analytical_dashboard():
-    """Analytical Dashboard - Deep analysis"""
+    """Demographics & Physiology Dashboard - Athlete characteristics and population analysis"""
     return render_template('analytical.html')
 
 @app.route('/api/filters')
 def get_filters():
     """Get filter options for dropdowns"""
     try:
-        print("DEBUG: Starting filters endpoint")
-        
         # Get years
-        print("DEBUG: Fetching years...")
         years_query = "SELECT DISTINCT year FROM olympicgames ORDER BY year DESC"
         years = execute_query(years_query)
-        print(f"DEBUG: Found {len(years)} years")
         
         # Get countries
-        print("DEBUG: Fetching countries...")
         countries_query = "SELECT DISTINCT countryname FROM country ORDER BY countryname"
         countries = execute_query(countries_query)
-        print(f"DEBUG: Found {len(countries)} countries")
         
         # Get sports
-        print("DEBUG: Fetching sports...")
         sports_query = "SELECT DISTINCT sportname FROM sport ORDER BY sportname"
         sports = execute_query(sports_query)
-        print(f"DEBUG: Found {len(sports)} sports")
         
         result = {
             'years': [row['year'] for row in years],
@@ -99,13 +86,9 @@ def get_filters():
             'genders': ['Male', 'Female', 'Mixed']
         }
         
-        print(f"DEBUG: Returning filters: years={len(result['years'])}, countries={len(result['countries'])}, sports={len(result['sports'])}")
         return jsonify(result)
         
     except Exception as e:
-        print(f"DEBUG: Error in filters endpoint: {str(e)}")
-        import traceback
-        traceback.print_exc()
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/strategic-data')
@@ -485,9 +468,6 @@ def operational_data():
         })
         
     except Exception as e:
-        print(f"DEBUG: Error in operational endpoint: {str(e)}")
-        import traceback
-        traceback.print_exc()
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/operational-kpis')
@@ -545,67 +525,228 @@ def operational_kpis():
 
 @app.route('/api/analytical-data')
 def analytical_data():
-    """Analytical dashboard data"""
+    """Demographics & Physiology dashboard data - Simplified version"""
     year = request.args.get('year')
+    sport = request.args.get('sport')
     gender = request.args.get('gender')
     
     try:
-        # Gender distribution
+        # Basic Gender Distribution
         gender_query = """
-        SELECT a.gender, COUNT(DISTINCT a.athleteid) as count
+        SELECT a.gender, COUNT(DISTINCT a.athleteid) as participant_count
         FROM athlete a
         JOIN participation p ON a.athleteid = p.athleteid
-        JOIN olympicgames og ON p.gamesid = og.gamesid
-        WHERE 1=1
+        GROUP BY a.gender
         """
+        gender_data = execute_query(gender_query)
         
-        params = {}
-        if year:
-            gender_query += " AND og.year = :year"
-            params['year'] = year
-        if gender and gender != 'Mixed':
-            gender_query += " AND a.gender = :gender"
-            params['gender'] = gender
-            
-        gender_query += " GROUP BY a.gender"
-        
-        gender_data = execute_query(gender_query, params)
-        
-        # Age analysis
-        age_query = """
+        # Summary Statistics
+        summary_query = """
         SELECT 
-            CASE 
-                WHEN p.age < 20 THEN 'Under 20'
-                WHEN p.age BETWEEN 20 AND 25 THEN '20-25'
-                WHEN p.age BETWEEN 26 AND 30 THEN '26-30'
-                WHEN p.age BETWEEN 31 AND 35 THEN '31-35'
-                ELSE 'Over 35'
-            END as age_group,
-            COUNT(DISTINCT a.athleteid) as count
+            COUNT(DISTINCT a.athleteid) as total_athletes,
+            AVG(p.age) as overall_avg_age,
+            AVG(p.height) as overall_avg_height,
+            AVG(p.weight) as overall_avg_weight,
+            AVG(CASE WHEN p.bmi > 0 AND p.bmi < 50 THEN p.bmi END) as overall_avg_bmi,
+            COUNT(CASE WHEN a.gender = 'Male' THEN 1 END) as total_male,
+            COUNT(CASE WHEN a.gender = 'Female' THEN 1 END) as total_female,
+            COUNT(DISTINCT c.countryname) as countries_represented,
+            COUNT(DISTINCT s.sportname) as sports_count
+        FROM athlete a
+        JOIN participation p ON a.athleteid = p.athleteid
+        JOIN team t ON a.teamid = t.teamid
+        JOIN country c ON t.noc = c.noc
+        JOIN event e ON p.eventid = e.eventid
+        JOIN sport s ON e.sportid = s.sportid
+        """
+        summary_data = execute_query(summary_query)
+        summary = summary_data[0] if summary_data else {}
+        
+        # Sports Physiology Data
+        sports_query = """
+        SELECT s.sportname, 
+               COUNT(DISTINCT a.athleteid) as athlete_count,
+               AVG(p.age) as avg_age, 
+               AVG(p.height) as avg_height, 
+               AVG(p.weight) as avg_weight,
+               AVG(CASE WHEN p.bmi > 0 AND p.bmi < 50 THEN p.bmi END) as avg_bmi
+        FROM athlete a
+        JOIN participation p ON a.athleteid = p.athleteid
+        JOIN event e ON p.eventid = e.eventid
+        JOIN sport s ON e.sportid = s.sportid
+        WHERE p.age IS NOT NULL AND p.height > 0 AND p.weight > 0
+        GROUP BY s.sportname
+        HAVING COUNT(DISTINCT a.athleteid) >= 5
+        ORDER BY athlete_count DESC
+        LIMIT 15
+        """
+        physiology_data = execute_query(sports_query)
+        
+        # Add age categories to sports data
+        for sport in physiology_data:
+            if sport.get('avg_age'):
+                avg_age = float(sport['avg_age'])
+                if avg_age < 23:
+                    sport['age_category'] = 'Young Sport'
+                elif avg_age <= 27:
+                    sport['age_category'] = 'Prime Age Sport'
+                else:
+                    sport['age_category'] = 'Mature Sport'
+        
+        # Regional Demographics
+        regional_query = """
+        SELECT c.countryname, 
+               COUNT(DISTINCT a.athleteid) as athlete_count,
+               AVG(p.age) as avg_age,
+               AVG(p.height) as avg_height,
+               AVG(p.weight) as avg_weight,
+               COUNT(CASE WHEN a.gender = 'Male' THEN 1 END) as male_count,
+               COUNT(CASE WHEN a.gender = 'Female' THEN 1 END) as female_count
+        FROM athlete a
+        JOIN participation p ON a.athleteid = p.athleteid
+        JOIN team t ON a.teamid = t.teamid
+        JOIN country c ON t.noc = c.noc
+        GROUP BY c.countryname
+        HAVING COUNT(DISTINCT a.athleteid) >= 10
+        ORDER BY athlete_count DESC
+        LIMIT 20
+        """
+        regional_data = execute_query(regional_query)
+        
+        # BMI Distribution
+        bmi_query = """
+        WITH bmi_ranges AS (
+            SELECT 
+                bmi,
+                CASE 
+                    WHEN bmi < 18.5 THEN 'Underweight'
+                    WHEN bmi BETWEEN 18.5 AND 24.9 THEN 'Normal'
+                    WHEN bmi BETWEEN 25 AND 29.9 THEN 'Overweight'
+                    ELSE 'Obese'
+                END as bmi_category
+            FROM participation
+            WHERE bmi > 0 AND bmi < 50  -- Reasonable BMI range
+        )
+        SELECT 
+            bmi_category,
+            COUNT(*) as athlete_count,
+            ROUND(AVG(bmi)::numeric, 2) as avg_bmi
+        FROM bmi_ranges
+        GROUP BY bmi_category
+        ORDER BY 
+            CASE bmi_category
+                WHEN 'Underweight' THEN 1
+                WHEN 'Normal' THEN 2
+                WHEN 'Overweight' THEN 3
+                ELSE 4
+            END
+        """
+        bmi_distribution_data = execute_query(bmi_query)
+        
+        # Height Performance
+        height_performance_query = """
+        WITH height_categories AS (
+            SELECT 
+                height,
+                medalid,
+                CASE 
+                    WHEN height < 165 THEN 'Short'
+                    WHEN height BETWEEN 165 AND 175 THEN 'Average'
+                    WHEN height BETWEEN 175 AND 185 THEN 'Tall'
+                    ELSE 'Very Tall'
+                END as height_category
+            FROM participation
+            WHERE height BETWEEN 140 AND 220
+        )
+        SELECT 
+            height_category,
+            COUNT(*) as athlete_count,
+            COUNT(CASE WHEN medalid > 0 THEN 1 END) as medal_count,
+            ROUND(AVG(height)::numeric, 2) as avg_height,
+            ROUND(COUNT(CASE WHEN medalid > 0 THEN 1 END)::numeric / 
+                  NULLIF(COUNT(*), 0) * 100, 2) as medal_percentage
+        FROM height_categories
+        GROUP BY height_category
+        ORDER BY 
+            CASE height_category
+                WHEN 'Short' THEN 1
+                WHEN 'Average' THEN 2
+                WHEN 'Tall' THEN 3
+                ELSE 4
+            END
+        """
+        performance_correlation_data = execute_query(height_performance_query)
+        
+        # Body Type Medal Analysis
+        body_type_query = """
+        WITH body_types AS (
+            SELECT 
+                p.bmi,
+                p.medalid,
+                m.medaltype,
+                CASE 
+                    WHEN p.bmi < 20 THEN 'Lean'
+                    WHEN p.bmi BETWEEN 20 AND 25 THEN 'Athletic'
+                    WHEN p.bmi BETWEEN 25 AND 30 THEN 'Muscular'
+                    ELSE 'Heavy'
+                END as body_type
+            FROM participation p
+            LEFT JOIN medal m ON p.medalid = m.medalid
+            WHERE p.bmi > 0 AND p.bmi < 50  -- Reasonable BMI range
+        )
+        SELECT 
+            body_type,
+            COUNT(*) as athlete_count,
+            COUNT(CASE WHEN medalid > 0 THEN 1 END) as total_medals,
+            COUNT(CASE WHEN medaltype = 'Gold' THEN 1 END) as gold_medals,
+            COUNT(CASE WHEN medaltype = 'Silver' THEN 1 END) as silver_medals,
+            COUNT(CASE WHEN medaltype = 'Bronze' THEN 1 END) as bronze_medals,
+            ROUND(AVG(bmi)::numeric, 2) as avg_bmi,
+            ROUND(COUNT(CASE WHEN medalid > 0 THEN 1 END)::numeric / 
+                  NULLIF(COUNT(*), 0) * 100, 2) as medal_percentage
+        FROM body_types
+        GROUP BY body_type
+        ORDER BY 
+            CASE body_type
+                WHEN 'Lean' THEN 1
+                WHEN 'Athletic' THEN 2
+                WHEN 'Muscular' THEN 3
+                ELSE 4
+            END
+        """
+        body_type_medals_data = execute_query(body_type_query)
+        
+        # Age Evolution Over Time
+        age_evolution_query = """
+        SELECT og.year,
+               AVG(p.age) as avg_age,
+               MIN(p.age) as min_age,
+               MAX(p.age) as max_age,
+               COUNT(DISTINCT a.athleteid) as athlete_count
         FROM athlete a
         JOIN participation p ON a.athleteid = p.athleteid
         JOIN olympicgames og ON p.gamesid = og.gamesid
         WHERE p.age IS NOT NULL
+        GROUP BY og.year
+        ORDER BY og.year
         """
+        age_evolution_data = execute_query(age_evolution_query)
         
-        age_params = {}
-        if year:
-            age_query += " AND og.year = :year"
-            age_params['year'] = year
-        if gender and gender != 'Mixed':
-            age_query += " AND a.gender = :gender"
-            age_params['gender'] = gender
-            
-        age_query += " GROUP BY age_group ORDER BY age_group"
+        result = {
+            'age_by_sport': physiology_data,
+            'physiology_by_sport': physiology_data,
+            'bmi_distribution': bmi_distribution_data,
+            'regional_demographics': regional_data,
+            'performance_by_height': performance_correlation_data,
+            'age_evolution': age_evolution_data,
+            'body_type_medals': body_type_medals_data,
+            'summary': summary
+        }
         
-        age_data = execute_query(age_query, age_params)
+        return jsonify(result)
         
-        return jsonify({
-            'gender': gender_data,
-            'age': age_data
-        })
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000) 
+    app.run(host='0.0.0.0', port=5000) 

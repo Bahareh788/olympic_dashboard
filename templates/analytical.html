@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Demographics & Physiology Dashboard - Olympic Data{% endblock %}
+{% block title %}Analytical Dashboard - Olympic Analytics{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
@@ -9,17 +9,19 @@
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <h1 class="display-6 text-danger fw-bold mb-1">
-                        <i class="fa-solid fa-user-group me-2"></i>Analytical Dashboard
+                    <h1 class="display-6 fw-bold mb-1" style="color: #EE334E;">
+                        <i class="fa-solid fa-chart-bar me-2"></i>Analytical Dashboard
                     </h1>
-                    <p class="text-muted mb-0">Comprehensive analysis of athlete characteristics and population demographics</p>
+                    <p class="text-muted mb-0">Detailed Olympic demographics and performance metrics</p>
                 </div>
                 <div class="d-flex gap-2">
-                    <button class="btn btn-outline-danger" onclick="exportDemographicData()">
-                        <i class="fa-solid fa-download me-1"></i>Export Data
+                    <button class="btn btn-light d-flex align-items-center gap-2 dashboard-btn" style="border: 1px solid #EE334E; color: #EE334E;" onclick="exportAnalyticalData()">
+                        <i class="fa-solid fa-download"></i>
+                        Export Data
                     </button>
-                    <button class="btn btn-danger" onclick="refreshDashboard()">
-                        <i class="fa-solid fa-sync-alt me-1"></i>Refresh
+                    <button class="btn d-flex align-items-center gap-2 dashboard-btn" style="background-color: #EE334E; color: white;" onclick="refreshAnalyticalDashboard()">
+                        <i class="fa-solid fa-sync-alt"></i>
+                        Refresh
                     </button>
                 </div>
             </div>
@@ -71,12 +73,9 @@
                 <div class="card-body text-white">
                     <div class="d-flex justify-content-between align-items-start">
                         <div>
-                            <h6 class="card-title text-white-50 mb-1">👥 Total Athletes</h6>
+                            <h6 class="card-title text-white-50 mb-1">Total Athletes</h6>
                             <h3 class="mb-1 fw-bold" id="totalAthletesCard">-</h3>
                             <small class="text-white-75">Analyzed in dataset</small>
-                        </div>
-                        <div class="bg-white bg-opacity-20 rounded p-2">
-                            <i class="fa-solid fa-users fa-2x text-white"></i>
                         </div>
                     </div>
                 </div>
@@ -87,12 +86,9 @@
                 <div class="card-body text-white">
                     <div class="d-flex justify-content-between align-items-start">
                         <div>
-                            <h6 class="card-title text-white-50 mb-1">📊 Avg Age</h6>
+                            <h6 class="card-title text-white-50 mb-1">Avg Age</h6>
                             <h3 class="mb-1 fw-bold" id="avgAgeCard">-</h3>
                             <small class="text-white-75">Years old</small>
-                        </div>
-                        <div class="bg-white bg-opacity-20 rounded p-2">
-                            <i class="fa-solid fa-birthday-cake fa-2x text-white"></i>
                         </div>
                     </div>
                 </div>
@@ -103,12 +99,9 @@
                 <div class="card-body text-white">
                     <div class="d-flex justify-content-between align-items-start">
                         <div>
-                            <h6 class="card-title text-white-50 mb-1">⚖️ Avg BMI</h6>
+                            <h6 class="card-title text-white-50 mb-1">Avg BMI</h6>
                             <h3 class="mb-1 fw-bold" id="avgBmiCard">-</h3>
                             <small class="text-white-75">Body Mass Index</small>
-                        </div>
-                        <div class="bg-white bg-opacity-20 rounded p-2">
-                            <i class="fa-solid fa-weight-scale fa-2x text-white"></i>
                         </div>
                     </div>
                 </div>
@@ -119,12 +112,9 @@
                 <div class="card-body text-white">
                     <div class="d-flex justify-content-between align-items-start">
                         <div>
-                            <h6 class="card-title text-white-50 mb-1">🌍 Countries</h6>
+                            <h6 class="card-title text-white-50 mb-1">Countries</h6>
                             <h3 class="mb-1 fw-bold" id="countriesCard">-</h3>
                             <small class="text-white-75">Represented</small>
-                        </div>
-                        <div class="bg-white bg-opacity-20 rounded p-2">
-                            <i class="fa-solid fa-globe fa-2x text-white"></i>
                         </div>
                     </div>
                 </div>

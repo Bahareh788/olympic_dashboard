@@ -9,17 +9,19 @@
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <h1 class="display-6 text-olympic-blue fw-bold mb-1">
-                        <i class="fa-solid fa-chart-line me-2"></i>Strategic Dashboard
+                    <h1 class="display-6 fw-bold mb-1" style="color: #0085C3;">
+                        <i class="fa-solid fa-chess me-2"></i>Strategic Dashboard
                     </h1>
-                    <p class="text-muted mb-0">High-level Olympic insights and strategic analytics</p>
+                    <p class="text-muted mb-0">Long-term Olympic performance analysis and planning</p>
                 </div>
                 <div class="d-flex gap-2">
-                    <button class="btn btn-outline-olympic-blue" onclick="exportData()">
-                        <i class="fa-solid fa-download me-1"></i>Export Data
+                    <button class="btn btn-light d-flex align-items-center gap-2 dashboard-btn" style="border: 1px solid #0085C3; color: #0085C3;" onclick="exportStrategicData()">
+                        <i class="fa-solid fa-download"></i>
+                        Export Data
                     </button>
-                    <button class="btn btn-olympic-blue" onclick="refreshDashboard()">
-                        <i class="fa-solid fa-sync-alt me-1"></i>Refresh
+                    <button class="btn d-flex align-items-center gap-2 dashboard-btn" style="background-color: #0085C3; color: white;" onclick="refreshStrategicDashboard()">
+                        <i class="fa-solid fa-sync-alt"></i>
+                        Refresh
                     </button>
                 </div>
             </div>
@@ -68,16 +70,12 @@
                 <div class="card-body text-white">
                     <div class="d-flex justify-content-between align-items-start">
                         <div>
-                            <h6 class="card-title text-white-50 mb-1">🎯 Top Opportunity</h6>
+                            <h6 class="card-title text-white-50 mb-1">Top Opportunity</h6>
                             <h3 class="mb-1 fw-bold" id="topOpportunityCard">Swimming</h3>
                             <small class="text-white-75" id="topOpportunityDesc">85% medal probability</small>
                             <div class="kpi-trend mt-1">
-                                <i class="fas fa-star text-warning"></i>
                                 <span class="small">Focus investment here</span>
                             </div>
-                        </div>
-                        <div class="bg-white bg-opacity-20 rounded p-2">
-                            <i class="fa-solid fa-bullseye fa-2x text-white"></i>
                         </div>
                     </div>
                 </div>
@@ -88,16 +86,12 @@
                 <div class="card-body text-white">
                     <div class="d-flex justify-content-between align-items-start">
                         <div>
-                            <h6 class="card-title text-white-50 mb-1">⚠️ Biggest Risk</h6>
+                            <h6 class="card-title text-white-50 mb-1">Biggest Risk</h6>
                             <h3 class="mb-1 fw-bold" id="biggestRiskCard">Athletics</h3>
                             <small class="text-white-75" id="biggestRiskDesc">Declining performance</small>
                             <div class="kpi-trend mt-1">
-                                <i class="fas fa-exclamation-triangle text-danger"></i>
                                 <span class="small">Needs immediate attention</span>
                             </div>
-                        </div>
-                        <div class="bg-white bg-opacity-20 rounded p-2">
-                            <i class="fa-solid fa-triangle-exclamation fa-2x text-white"></i>
                         </div>
                     </div>
                 </div>
@@ -108,16 +102,12 @@
                 <div class="card-body text-white">
                     <div class="d-flex justify-content-between align-items-start">
                         <div>
-                            <h6 class="card-title text-white-50 mb-1">🚀 Hidden Gem</h6>
+                            <h6 class="card-title text-white-50 mb-1">Hidden Gem</h6>
                             <h3 class="mb-1 fw-bold" id="hiddenGemCard">Cycling</h3>
                             <small class="text-white-75" id="hiddenGemDesc">Emerging potential</small>
                             <div class="kpi-trend mt-1">
-                                <i class="fas fa-rocket text-success"></i>
                                 <span class="small">Invest for future growth</span>
                             </div>
-                        </div>
-                        <div class="bg-white bg-opacity-20 rounded p-2">
-                            <i class="fa-solid fa-gem fa-2x text-white"></i>
                         </div>
                     </div>
                 </div>
@@ -128,16 +118,12 @@
                 <div class="card-body text-white">
                     <div class="d-flex justify-content-between align-items-start">
                         <div>
-                            <h6 class="card-title text-white-50 mb-1">💡 Quick Win</h6>
+                            <h6 class="card-title text-white-50 mb-1">Quick Win</h6>
                             <h3 class="mb-1 fw-bold" id="quickWinCard">Gymnastics</h3>
                             <small class="text-white-75" id="quickWinDesc">Low competition, high medals</small>
                             <div class="kpi-trend mt-1">
-                                <i class="fas fa-zap text-warning"></i>
                                 <span class="small">Easy medal opportunity</span>
                             </div>
-                        </div>
-                        <div class="bg-white bg-opacity-20 rounded p-2">
-                            <i class="fa-solid fa-lightbulb fa-2x text-white"></i>
                         </div>
                     </div>
                 </div>

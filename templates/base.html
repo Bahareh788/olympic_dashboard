@@ -166,6 +166,20 @@
             box-shadow: 0 15px 40px rgba(0,0,0,0.25);
         }
 
+        /* Standardized Dashboard Button Styles */
+        .dashboard-btn {
+            min-width: 135px;
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .dashboard-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
         .strategic-card {
             background: linear-gradient(135deg, #0085C3 0%, #2BB1E4 50%, #00A651 100%);
         }
@@ -530,6 +544,26 @@
             .olympic-highlights-section hr {
                 margin: 1rem 0;
             }
+        }
+
+        /* Custom container padding */
+        .container-fluid {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+
+        @media (min-width: 1200px) {
+            .container-fluid {
+                padding-left: 1.5rem;
+                padding-right: 1.5rem;
+            }
+        }
+
+        /* Existing styles */
+        body {
+            min-height: 100vh;
+            background: #f8f9fa;
+            font-family: 'Inter', sans-serif;
         }
     </style>
 </head>

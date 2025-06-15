@@ -3,6 +3,35 @@
 {% block title %}Analytical Dashboard - Olympic Analytics{% endblock %}
 
 {% block content %}
+<!-- Add custom styles for sharp corners and white text -->
+<style>
+    .card {
+        border-radius: 0 !important;
+    }
+    .card-header {
+        border-radius: 0 !important;
+    }
+    .btn {
+        border-radius: 0 !important;
+    }
+    .form-select {
+        border-radius: 0 !important;
+    }
+    .badge {
+        border-radius: 0 !important;
+    }
+    .chart-container canvas {
+        border-radius: 0 !important;
+    }
+    /* Add white text styles for chart titles */
+    .card-header .card-title {
+        color: white !important;
+    }
+    .card-header .text-muted {
+        color: rgba(255, 255, 255, 0.8) !important;
+    }
+</style>
+
 <div class="container-fluid">
     <!-- Dashboard Header -->
     <div class="row mb-4">

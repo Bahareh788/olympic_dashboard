@@ -10,6 +10,8 @@ app = Flask(__name__)
 # Database configuration
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:Bahardb1234@localhost:5432/Olympicdb'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['DEBUG'] = True  # Enable debug mode
+app.config['TEMPLATES_AUTO_RELOAD'] = True  # Enable template auto-reload
 db = SQLAlchemy(app)
 
 def execute_query(query, params=None):

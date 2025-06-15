@@ -151,57 +151,7 @@
         </div>
     </div>
 
-    <!-- Row 1: Gender Evolution & Age Distribution -->
-    <div class="row mb-4">
-        <div class="col-lg-8">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-header bg-transparent border-0 py-3">
-                    <h5 class="card-title text-danger mb-0">
-                        <i class="fa-solid fa-chart-line me-2"></i>Gender Participation Evolution
-                    </h5>
-                    <small class="text-muted">Historical trends in male and female participation over time</small>
-                </div>
-                <div class="card-body">
-                    <div class="chart-container">
-                        <canvas id="genderEvolutionChart" width="400" height="300"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-4">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-header bg-transparent border-0 py-3">
-                    <h5 class="card-title text-danger mb-0">
-                        <i class="fa-solid fa-chart-pie me-2"></i>Gender Parity Status
-                    </h5>
-                    <small class="text-muted">Current gender distribution</small>
-                </div>
-                <div class="card-body">
-                    <div class="chart-container">
-                        <canvas id="genderDistributionChart" width="400" height="300"></canvas>
-                    </div>
-                    <div class="mt-3 text-center">
-                        <div class="row">
-                            <div class="col-6">
-                                <div class="badge bg-primary fs-6 px-3 py-2">
-                                    <i class="fas fa-male me-1"></i>
-                                    Male: <span id="malePercentage">-</span>%
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="badge bg-danger fs-6 px-3 py-2">
-                                    <i class="fas fa-female me-1"></i>
-                                    Female: <span id="femalePercentage">-</span>%
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Row 2: Physical Attributes & BMI Distribution -->
+    <!-- Row 1: Physical Attributes & BMI Distribution -->
     <div class="row mb-4">
         <div class="col-lg-8">
             <div class="card border-0 shadow-sm h-100">
@@ -235,7 +185,7 @@
         </div>
     </div>
 
-    <!-- Row 3: Age Analysis & Regional Demographics -->
+    <!-- Row 2: Age Analysis & Regional Demographics -->
     <div class="row mb-4">
         <div class="col-lg-6">
             <div class="card border-0 shadow-sm h-100">
@@ -269,7 +219,7 @@
         </div>
     </div>
 
-    <!-- Row 4: Performance Correlations -->
+    <!-- Row 3: Performance Correlations -->
     <div class="row mb-4">
         <div class="col-lg-6">
             <div class="card border-0 shadow-sm h-100">
@@ -303,84 +253,236 @@
         </div>
     </div>
 
-    <!-- Insights Summary -->
+    <!-- Elite Athletes Analysis Table -->
     <div class="row mb-4">
         <div class="col-12">
             <div class="card border-0 shadow-sm">
-                <div class="card-header bg-transparent border-0 py-3">
-                    <h5 class="card-title text-danger mb-0">
-                        <i class="fa-solid fa-lightbulb me-2"></i>Key Demographics & Physiology Insights
-                    </h5>
-                    <small class="text-muted">Summary of major findings from the demographic and physiological analysis</small>
-                </div>
-                <div class="card-body">
-                    <div class="row g-4">
-                        <div class="col-md-4">
-                            <div class="insight-card p-4 rounded-3 h-100" style="background: linear-gradient(135deg, rgba(220, 53, 69, 0.1) 0%, rgba(220, 53, 69, 0.05) 100%); border: 1px solid rgba(220, 53, 69, 0.2);">
-                                <div class="d-flex align-items-center mb-3">
-                                    <div class="insight-icon me-3" style="width: 48px; height: 48px; background: rgba(220, 53, 69, 0.2); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
-                                        <i class="fas fa-venus-mars" style="color: #dc3545; font-size: 1.5rem;"></i>
-                                    </div>
-                                    <div>
-                                        <h6 class="mb-1 fw-bold text-danger">Gender Evolution</h6>
-                                        <span class="badge" style="background: rgba(220, 53, 69, 0.3); color: #dc3545;">Demographic Trend</span>
-                                    </div>
-                                </div>
-                                <div class="insight-content">
-                                    <p class="small mb-2" id="genderInsight">Female participation has increased significantly, approaching gender parity in modern Olympics.</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="insight-card p-4 rounded-3 h-100" style="background: linear-gradient(135deg, rgba(253, 126, 20, 0.1) 0%, rgba(253, 126, 20, 0.05) 100%); border: 1px solid rgba(253, 126, 20, 0.2);">
-                                <div class="d-flex align-items-center mb-3">
-                                    <div class="insight-icon me-3" style="width: 48px; height: 48px; background: rgba(253, 126, 20, 0.2); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
-                                        <i class="fas fa-weight" style="color: #fd7e14; font-size: 1.5rem;"></i>
-                                    </div>
-                                    <div>
-                                        <h6 class="mb-1 fw-bold text-warning">Physical Attributes</h6>
-                                        <span class="badge" style="background: rgba(253, 126, 20, 0.3); color: #fd7e14;">Physiology</span>
-                                    </div>
-                                </div>
-                                <div class="insight-content">
-                                    <p class="small mb-2" id="physiologyInsight">Different sports show distinct physical profiles with height and weight optimized for performance.</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="insight-card p-4 rounded-3 h-100" style="background: linear-gradient(135deg, rgba(25, 135, 84, 0.1) 0%, rgba(25, 135, 84, 0.05) 100%); border: 1px solid rgba(25, 135, 84, 0.2);">
-                                <div class="d-flex align-items-center mb-3">
-                                    <div class="insight-icon me-3" style="width: 48px; height: 48px; background: rgba(25, 135, 84, 0.2); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
-                                        <i class="fas fa-birthday-cake" style="color: #198754; font-size: 1.5rem;"></i>
-                                    </div>
-                                    <div>
-                                        <h6 class="mb-1 fw-bold text-success">Age Patterns</h6>
-                                        <span class="badge" style="background: rgba(25, 135, 84, 0.3); color: #198754;">Life Cycle</span>
-                                    </div>
-                                </div>
-                                <div class="insight-content">
-                                    <p class="small mb-2" id="ageInsight">Peak performance age varies significantly by sport, with endurance sports favoring older athletes.</p>
-                                </div>
-                            </div>
-                        </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th colspan="6" class="border-0 bg-white pt-4 pb-2">
+                                        <div class="d-flex justify-content-between align-items-center px-3">
+                                            <div>
+                                                <h5 class="mb-0 text-danger">
+                                                    <i class="fa-solid fa-medal me-2"></i> Athlete Deep Dive Analysis
+                                                </h5>
+                                                <small class="text-muted">Physical and demographic characteristics of top performers</small>
+                                            </div>
+                                            <div>
+                                                <button class="btn btn-sm btn-outline-danger">
+                                                    <i class="fas fa-download me-1"></i>Export Data
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <th class="border-0 text-white px-3" style="background-color: #EE334E;">Athlete</th>
+                                    <th class="border-0 text-white px-3" style="background-color: #EE334E;">Sport</th>
+                                    <th class="border-0 text-white px-3" style="background-color: #EE334E;">Physical Profile</th>
+                                    <th class="border-0 text-white px-3" style="background-color: #EE334E;">Demographics</th>
+                                    <th class="border-0 text-white px-3" style="background-color: #EE334E;">Performance Stats</th>
+                                    <th class="border-0 text-white px-3" style="background-color: #EE334E;">Career Peak</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Swimming Profile -->
+                                <tr>
+                                    <td class="px-3">
+                                        <div class="d-flex align-items-center">
+                                            <div class="athlete-icon me-2" style="background-color: rgba(238, 51, 78, 0.1); width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fas fa-swimmer text-danger"></i>
+                                            </div>
+                                            <div>
+                                                <strong>Michael Phelps</strong>
+                                                <div class="small text-muted">USA</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-3">
+                                        <div>Swimming</div>
+                                        <div class="small text-muted">Multiple Events</div>
+                                    </td>
+                                    <td class="px-3">
+                                        <div>Height: 193 cm</div>
+                                        <div>Weight: 88 kg</div>
+                                        <div class="small text-muted">BMI: 23.6</div>
+                                    </td>
+                                    <td class="px-3">
+                                        <div>Age Range: 15-31</div>
+                                        <div>Peak: 23-27</div>
+                                        <div class="small text-muted">5 Olympics</div>
+                                    </td>
+                                    <td class="px-3">
+                                        <div class="d-flex align-items-center">
+                                            <div class="me-2">
+                                                <span class="badge bg-warning">28 🥇</span>
+                                                <span class="badge bg-secondary">3 🥈</span>
+                                                <span class="badge" style="background-color: #CD7F32;">2 🥉</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-3">
+                                        <div>2008 Beijing</div>
+                                        <div class="small text-success">8 Gold Medals</div>
+                                    </td>
+                                </tr>
+
+                                <!-- Gymnastics Profile -->
+                                <tr>
+                                    <td class="px-3">
+                                        <div class="d-flex align-items-center">
+                                            <div class="athlete-icon me-2" style="background-color: rgba(238, 51, 78, 0.1); width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fas fa-running text-danger"></i>
+                                            </div>
+                                            <div>
+                                                <strong>Simone Biles</strong>
+                                                <div class="small text-muted">USA</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-3">
+                                        <div>Gymnastics</div>
+                                        <div class="small text-muted">Artistic</div>
+                                    </td>
+                                    <td class="px-3">
+                                        <div>Height: 142 cm</div>
+                                        <div>Weight: 47 kg</div>
+                                        <div class="small text-muted">BMI: 23.3</div>
+                                    </td>
+                                    <td class="px-3">
+                                        <div>Age Range: 19-24</div>
+                                        <div>Peak: 19-22</div>
+                                        <div class="small text-muted">2 Olympics</div>
+                                    </td>
+                                    <td class="px-3">
+                                        <div class="d-flex align-items-center">
+                                            <div class="me-2">
+                                                <span class="badge bg-warning">7 🥇</span>
+                                                <span class="badge bg-secondary">1 🥈</span>
+                                                <span class="badge" style="background-color: #CD7F32;">1 🥉</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-3">
+                                        <div>2016 Rio</div>
+                                        <div class="small text-success">4 Gold Medals</div>
+                                    </td>
+                                </tr>
+
+                                <!-- Athletics Profile -->
+                                <tr>
+                                    <td class="px-3">
+                                        <div class="d-flex align-items-center">
+                                            <div class="athlete-icon me-2" style="background-color: rgba(238, 51, 78, 0.1); width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fas fa-bolt text-danger"></i>
+                                            </div>
+                                            <div>
+                                                <strong>Usain Bolt</strong>
+                                                <div class="small text-muted">Jamaica</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-3">
+                                        <div>Athletics</div>
+                                        <div class="small text-muted">Sprints</div>
+                                    </td>
+                                    <td class="px-3">
+                                        <div>Height: 195 cm</div>
+                                        <div>Weight: 94 kg</div>
+                                        <div class="small text-muted">BMI: 24.7</div>
+                                    </td>
+                                    <td class="px-3">
+                                        <div>Age Range: 21-30</div>
+                                        <div>Peak: 23-27</div>
+                                        <div class="small text-muted">3 Olympics</div>
+                                    </td>
+                                    <td class="px-3">
+                                        <div class="d-flex align-items-center">
+                                            <div class="me-2">
+                                                <span class="badge bg-warning">8 🥇</span>
+                                                <span class="badge bg-secondary">0 🥈</span>
+                                                <span class="badge" style="background-color: #CD7F32;">0 🥉</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-3">
+                                        <div>2008-2016</div>
+                                        <div class="small text-success">Triple-Triple</div>
+                                    </td>
+                                </tr>
+
+                                <!-- Tennis Profile -->
+                                <tr>
+                                    <td class="px-3">
+                                        <div class="d-flex align-items-center">
+                                            <div class="athlete-icon me-2" style="background-color: rgba(238, 51, 78, 0.1); width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fas fa-table-tennis text-danger"></i>
+                                            </div>
+                                            <div>
+                                                <strong>Serena Williams</strong>
+                                                <div class="small text-muted">USA</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-3">
+                                        <div>Tennis</div>
+                                        <div class="small text-muted">Singles/Doubles</div>
+                                    </td>
+                                    <td class="px-3">
+                                        <div>Height: 175 cm</div>
+                                        <div>Weight: 72 kg</div>
+                                        <div class="small text-muted">BMI: 23.5</div>
+                                    </td>
+                                    <td class="px-3">
+                                        <div>Age Range: 19-34</div>
+                                        <div>Peak: 28-32</div>
+                                        <div class="small text-muted">4 Olympics</div>
+                                    </td>
+                                    <td class="px-3">
+                                        <div class="d-flex align-items-center">
+                                            <div class="me-2">
+                                                <span class="badge bg-warning">4 🥇</span>
+                                                <span class="badge bg-secondary">0 🥈</span>
+                                                <span class="badge" style="background-color: #CD7F32;">0 🥉</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-3">
+                                        <div>2012 London</div>
+                                        <div class="small text-success">Singles & Doubles</div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- Loading Overlay -->
-<div id="loadingOverlay" class="loading-overlay">
-    <div class="loading-spinner">
-        <div class="olympic-rings">
-            <div class="ring ring-blue"></div>
-            <div class="ring ring-yellow"></div>
-            <div class="ring ring-black"></div>
-            <div class="ring ring-green"></div>
-            <div class="ring ring-red"></div>
+    <style>
+    .table > :not(caption) > * > * {
+        padding: 1rem 0.5rem;
+    }
+    .table tbody tr:last-child td {
+        border-bottom: 0;
+    }
+    </style>
+
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-spinner">
+            <div class="olympic-rings">
+                <div class="ring ring-blue"></div>
+                <div class="ring ring-yellow"></div>
+                <div class="ring ring-black"></div>
+                <div class="ring ring-green"></div>
+                <div class="ring ring-red"></div>
+            </div>
+            <p class="mt-3 text-danger fw-semibold">Loading Analytical Data...</p>
         </div>
-        <p class="mt-3 text-danger fw-semibold">Loading Demographics Data...</p>
     </div>
 </div>
 
@@ -619,6 +721,22 @@ function loadFallbackData() {
     updateInsights();
 }
 
+// Initialize all charts
+function initializeAllCharts() {
+    console.log('Initializing all charts with data:', demographicsData);
+    
+    // Update KPIs first
+    updateKPIs();
+    
+    // Initialize all charts
+    initializePhysiologyChart();
+    initializeBMIDistributionChart();
+    initializeAgeSportChart();
+    initializeRegionalChart();
+    initializeHeightPerformanceChart();
+    initializeBodyTypeMedalsChart();
+}
+
 // Update KPI cards
 function updateKPIs() {
     const summary = demographicsData.summary || {};
@@ -651,284 +769,9 @@ function updateKPIs() {
     // Update countries
     document.getElementById('countriesCard').textContent = 
         safeInteger(summary.countries_represented);
-    
-    // Update gender percentages
-    const totalMale = safeNumber(summary.total_male);
-    const totalFemale = safeNumber(summary.total_female);
-    const total = totalMale + totalFemale;
-    
-    if (total > 0) {
-        document.getElementById('malePercentage').textContent = 
-            Math.round((totalMale / total) * 100);
-        document.getElementById('femalePercentage').textContent = 
-            Math.round((totalFemale / total) * 100);
-    } else {
-        document.getElementById('malePercentage').textContent = '-';
-        document.getElementById('femalePercentage').textContent = '-';
-    }
 }
 
-// Initialize all charts
-function initializeAllCharts() {
-    console.log('Initializing all charts with data:', demographicsData);
-    
-    // Initialize gender charts first so data flows properly
-    initializeGenderEvolutionChart();
-    initializeGenderDistributionChart();
-    
-    // Update KPIs after gender charts are initialized
-    updateKPIs();
-    
-    // Initialize other charts
-    initializePhysiologyChart();
-    initializeBMIDistributionChart();
-    initializeAgeSportChart();
-    initializeRegionalChart();
-    initializeHeightPerformanceChart();
-    initializeBodyTypeMedalsChart();
-}
-
-// 1. Gender Evolution Chart
-function initializeGenderEvolutionChart() {
-    const ctx = document.getElementById('genderEvolutionChart').getContext('2d');
-    let data = demographicsData.gender_evolution || [];
-    
-            console.log('Raw gender evolution data from backend:', data);
-        console.log('Data length:', data.length);
-        console.log('Data type:', typeof data);
-        
-        // Check if this looks like real data vs fallback data
-        if (data && data.length > 0) {
-            const firstEntry = data[0];
-            const isLikelyFallback = (
-                (firstEntry.year === 1996 && firstEntry.participant_count === 3200) ||
-                (firstEntry.year === 1996 && firstEntry.participant_count === 1800)
-            );
-            
-            if (isLikelyFallback) {
-                console.log('🚨 WARNING: You are seeing FALLBACK data, not your real database data!');
-                console.log('📊 This means the database queries failed and sample data is being displayed.');
-            } else {
-                console.log('✅ SUCCESS: You are seeing REAL data from your database!');
-                console.log('📊 The insights are based on your actual Olympic dataset.');
-            }
-        }
-    
-    // Check if data is valid and has meaningful content
-    const hasValidData = data && data.length > 0 && data.some(item => 
-        item.participant_count && parseInt(item.participant_count) > 0
-    );
-    
-    console.log('Has valid data:', hasValidData);
-    
-    // If no valid data from backend, use fallback data (matching your database: 1996-2016)
-    if (!hasValidData) {
-        console.log('Using fallback gender evolution data (1996-2016)');
-        data = [
-            {year: 1996, gender: 'Male', participant_count: 3200},
-            {year: 1996, gender: 'Female', participant_count: 1800},
-            {year: 2000, gender: 'Male', participant_count: 3500},
-            {year: 2000, gender: 'Female', participant_count: 2100},
-            {year: 2004, gender: 'Male', participant_count: 3800},
-            {year: 2004, gender: 'Female', participant_count: 2400},
-            {year: 2008, gender: 'Male', participant_count: 4200},
-            {year: 2008, gender: 'Female', participant_count: 2800},
-            {year: 2012, gender: 'Male', participant_count: 4500},
-            {year: 2012, gender: 'Female', participant_count: 3200},
-            {year: 2016, gender: 'Male', participant_count: 4800},
-            {year: 2016, gender: 'Female', participant_count: 3600}
-        ];
-        
-        // Store the fallback data in the demographics object for other charts
-        demographicsData.gender_evolution = data;
-    }
-    
-    // Ensure numeric values and clean data
-    const cleanData = data.map(item => ({
-        year: parseInt(item.year) || 0,
-        gender: item.gender || 'Unknown',
-        participant_count: parseInt(item.participant_count) || 0
-    })).filter(d => d.year > 0 && d.participant_count > 0); // Filter out invalid data
-    
-    console.log('Gender evolution clean data:', cleanData);
-    
-    // Group data by gender
-    const maleData = cleanData.filter(d => d.gender === 'Male');
-    const femaleData = cleanData.filter(d => d.gender === 'Female');
-    
-    // Get unique years and sort them
-    const years = [...new Set(cleanData.map(d => d.year))].sort();
-    
-    console.log('Years for gender evolution:', years);
-    console.log('Male data points:', maleData.length);
-    console.log('Female data points:', femaleData.length);
-    
-    const maleDataPoints = years.map(year => {
-        const entry = maleData.find(d => d.year === year);
-        return entry ? entry.participant_count : 0;
-    });
-    
-    const femaleDataPoints = years.map(year => {
-        const entry = femaleData.find(d => d.year === year);
-        return entry ? entry.participant_count : 0;
-    });
-    
-    console.log('Male data points:', maleDataPoints);
-    console.log('Female data points:', femaleDataPoints);
-    
-    new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: years,
-            datasets: [{
-                label: 'Male Athletes',
-                data: maleDataPoints,
-                borderColor: '#0d6efd',
-                backgroundColor: 'rgba(13, 110, 253, 0.1)',
-                borderWidth: 3,
-                fill: false,
-                tension: 0.4,
-                pointRadius: 5,
-                pointHoverRadius: 7
-            }, {
-                label: 'Female Athletes',
-                data: femaleDataPoints,
-                borderColor: '#dc3545',
-                backgroundColor: 'rgba(220, 53, 69, 0.1)',
-                borderWidth: 3,
-                fill: false,
-                tension: 0.4,
-                pointRadius: 5,
-                pointHoverRadius: 7
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    display: true,
-                    position: 'top'
-                },
-                tooltip: {
-                    mode: 'index',
-                    intersect: false,
-                    callbacks: {
-                        label: function(context) {
-                            return `${context.dataset.label}: ${context.parsed.y.toLocaleString()} athletes`;
-                        }
-                    }
-                }
-            },
-            scales: {
-                x: {
-                    title: {
-                        display: true,
-                        text: 'Olympic Year',
-                        font: { weight: 'bold' }
-                    },
-                    grid: {
-                        display: true,
-                        color: 'rgba(0,0,0,0.1)'
-                    }
-                },
-                y: {
-                    title: {
-                        display: true,
-                        text: 'Number of Athletes',
-                        font: { weight: 'bold' }
-                    },
-                    beginAtZero: true,
-                    grid: {
-                        display: true,
-                        color: 'rgba(0,0,0,0.1)'
-                    },
-                    ticks: {
-                        callback: function(value) {
-                            return value.toLocaleString();
-                        }
-                    }
-                }
-            },
-            interaction: {
-                mode: 'nearest',
-                axis: 'x',
-                intersect: false
-            }
-        }
-    });
-}
-
-// 2. Gender Distribution Chart
-function initializeGenderDistributionChart() {
-    const ctx = document.getElementById('genderDistributionChart').getContext('2d');
-    const summary = demographicsData.summary || {};
-    
-    let maleCount = parseInt(summary.total_male) || 0;
-    let femaleCount = parseInt(summary.total_female) || 0;
-    
-    // If no data from summary, try to calculate from gender evolution data
-    if (maleCount === 0 && femaleCount === 0) {
-        const genderData = demographicsData.gender_evolution || [];
-        const latestYear = Math.max(...genderData.map(d => parseInt(d.year) || 0));
-        
-        if (latestYear > 0) {
-            const latestMale = genderData.find(d => parseInt(d.year) === latestYear && d.gender === 'Male');
-            const latestFemale = genderData.find(d => parseInt(d.year) === latestYear && d.gender === 'Female');
-            
-            maleCount = parseInt(latestMale?.participant_count) || 0;
-            femaleCount = parseInt(latestFemale?.participant_count) || 0;
-        }
-    }
-    
-    // Fallback data if still no data
-    if (maleCount === 0 && femaleCount === 0) {
-        maleCount = 5200;
-        femaleCount = 4000;
-    }
-    
-    console.log('Gender distribution data:', { maleCount, femaleCount });
-    
-    new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            labels: ['Male', 'Female'],
-            datasets: [{
-                data: [maleCount, femaleCount],
-                backgroundColor: ['#0d6efd', '#dc3545'],
-                borderWidth: 2,
-                borderColor: '#fff'
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    display: false
-                },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            const total = maleCount + femaleCount;
-                            const percentage = ((context.parsed / total) * 100).toFixed(1);
-                            return `${context.label}: ${context.parsed.toLocaleString()} (${percentage}%)`;
-                        }
-                    }
-                }
-            }
-        }
-    });
-    
-    // Update the summary data for KPI cards
-    if (!demographicsData.summary) {
-        demographicsData.summary = {};
-    }
-    demographicsData.summary.total_male = maleCount;
-    demographicsData.summary.total_female = femaleCount;
-}
-
-// 3. Physiology Chart
+// 1. Physiology Chart
 function initializePhysiologyChart() {
     const ctx = document.getElementById('physiologyChart').getContext('2d');
     const data = demographicsData.physiology_by_sport || [];
@@ -996,7 +839,7 @@ function initializePhysiologyChart() {
     });
 }
 
-// 4. BMI Distribution Chart
+// 2. BMI Distribution Chart
 function initializeBMIDistributionChart() {
     const ctx = document.getElementById('bmiDistributionChart').getContext('2d');
     const data = demographicsData.bmi_distribution || [];
@@ -1036,7 +879,7 @@ function initializeBMIDistributionChart() {
     });
 }
 
-// 5. Age by Sport Chart
+// 3. Age by Sport Chart
 function initializeAgeSportChart() {
     const ctx = document.getElementById('ageSportChart').getContext('2d');
     const data = demographicsData.age_by_sport || [];
@@ -1089,7 +932,7 @@ function initializeAgeSportChart() {
     });
 }
 
-// 6. Regional Chart
+// 4. Regional Chart
 function initializeRegionalChart() {
     const ctx = document.getElementById('regionalChart').getContext('2d');
     const data = demographicsData.regional_demographics || [];
@@ -1129,7 +972,7 @@ function initializeRegionalChart() {
     });
 }
 
-// 7. Height Performance Chart
+// 5. Height Performance Chart
 function initializeHeightPerformanceChart() {
     const ctx = document.getElementById('heightPerformanceChart').getContext('2d');
     const data = demographicsData.performance_by_height || [];
@@ -1172,7 +1015,7 @@ function initializeHeightPerformanceChart() {
     });
 }
 
-// 8. Body Type Medals Chart
+// 6. Body Type Medals Chart
 function initializeBodyTypeMedalsChart() {
     const ctx = document.getElementById('bodyTypeMedalsChart').getContext('2d');
     const data = demographicsData.body_type_medals || [];

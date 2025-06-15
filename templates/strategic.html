@@ -138,21 +138,13 @@
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-header bg-transparent border-0 py-3">
                     <h5 class="card-title text-light-contrast mb-0">
-                        <i class="fa-solid fa-bullseye me-2"></i>Medal Efficiency Benchmarking
+                        Medal Efficiency Benchmarking
                     </h5>
-                    <small class="text-subtitle">How efficiently do countries convert athletes to medals? <span class="text-warning">🖱️ Click bubbles to analyze!</span></small>
+                    <small class="text-subtitle">How efficiently do countries convert athletes to medals?</small>
                 </div>
-                <div class="card-body">
-                    <div class="chart-container">
-                        <canvas id="efficiencyBenchmarkChart" width="400" height="300"></canvas>
-                    </div>
-                    <div class="chart-insights mt-3">
-                        <div class="text-center">
-                            <div class="badge bg-info fs-6 px-3 py-2" id="selectedBubbleCountry">
-                                <i class="fas fa-mouse-pointer me-2"></i>
-                                Click any bubble to analyze that country
-                            </div>
-                        </div>
+                <div class="card-body d-flex align-items-center justify-content-center">
+                    <div class="chart-container" style="width: 100%; height: 400px;">
+                        <canvas id="efficiencyBenchmarkChart"></canvas>
                     </div>
                 </div>
             </div>
@@ -163,49 +155,44 @@
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-header bg-transparent border-0 py-3">
                     <h5 class="card-title text-light-contrast mb-0">
-                        <i class="fa-solid fa-lightbulb me-2"></i>Strategic Insights
+                        Strategic Insights
                     </h5>
                     <small class="text-subtitle">AI-powered recommendations - Click bubbles to analyze countries</small>
                 </div>
                 <div class="card-body">
                     <div id="strategicInsights" class="insights-container">
                         <div class="text-center mb-3" id="insightCountryDisplay">
-                            <div class="badge bg-primary fs-6 px-3 py-2">
-                                <i class="fas fa-flag me-2"></i>
-                                <span id="selectedCountryName">Select a country to view insights</span>
+                            <div class="badge fs-6 px-3 py-2" style="background: linear-gradient(90deg, #0085C3 0%, #00A651 100%);">
+                                <span id="selectedCountryName">Click a bubble to view insights</span>
                             </div>
                         </div>
                         
                         <div class="insight-item mb-3">
                             <div class="insight-header">
-                                <i class="fas fa-target text-success me-2"></i>
-                                <strong>Efficiency Opportunity</strong>
+                                <strong>Efficiency</strong>
                             </div>
-                            <p class="insight-text small mb-2" id="efficiencyInsight">Click any bubble in the chart to view detailed efficiency analysis and strategic recommendations for that country.</p>
+                            <p class="insight-text small mb-2" id="efficiencyInsight">Click any bubble to view efficiency analysis.</p>
                         </div>
                         
                         <div class="insight-item mb-3">
                             <div class="insight-header">
-                                <i class="fas fa-trophy text-warning me-2"></i>
                                 <strong>Medal Potential</strong>
                             </div>
-                            <p class="insight-text small mb-2" id="medalInsight">Medal projections and sport-specific opportunities will appear when you click a country bubble.</p>
+                            <p class="insight-text small mb-2" id="medalInsight">Click to see medal projections.</p>
                         </div>
                         
                         <div class="insight-item mb-3">
                             <div class="insight-header">
-                                <i class="fas fa-chart-line text-info me-2"></i>
                                 <strong>Growth Strategy</strong>
                             </div>
-                            <p class="insight-text small mb-2" id="growthInsight">Strategic growth recommendations will be customized based on the country you select from the chart.</p>
+                            <p class="insight-text small mb-2" id="growthInsight">Click to view portfolio recommendations.</p>
                         </div>
                         
                         <div class="insight-item">
                             <div class="insight-header">
-                                <i class="fas fa-users text-primary me-2"></i>
                                 <strong>Resource Focus</strong>
                             </div>
-                            <p class="insight-text small" id="resourceInsight">Resource allocation strategies will be tailored to the country's competitive landscape when you click its bubble.</p>
+                            <p class="insight-text small" id="resourceInsight">Click to see resource allocation strategy.</p>
                         </div>
                     </div>
                 </div>
@@ -875,16 +862,34 @@
 }
 
 .insight-item {
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 8px;
-    padding: 0.75rem;
-    border-left: 3px solid transparent;
-    transition: all 0.3s ease;
+    background: #fff;
+    border-radius: 4px;
+    padding: 12px;
+    margin-bottom: 12px;
+    border-left: 2px solid #ddd;
 }
 
+.insight-header {
+    margin-bottom: 8px;
+}
+
+.insight-text {
+    color: #666;
+    line-height: 1.4;
+}
+
+/* Remove all hover effects and animations */
 .insight-item:hover {
-    background: rgba(255, 255, 255, 0.1);
-    transform: translateX(3px);
+    transform: none;
+    background: #fff;
+}
+
+/* Remove colored borders */
+.insight-item:nth-child(1),
+.insight-item:nth-child(2),
+.insight-item:nth-child(3),
+.insight-item:nth-child(4) {
+    border-left-color: #ddd;
 }
 
 .insight-item:nth-child(1) { border-left-color: #00A651; }
@@ -3010,24 +3015,24 @@ function updateStrategicInsights(data, country) {
     // Update insights with dynamic, data-driven content
     $('#efficiencyInsight').html(
         efficiency > avgEfficiency 
-            ? `<strong>Above Average Performance:</strong> Your efficiency of ${(efficiency * 100).toFixed(1)}% is ${((efficiency/avgEfficiency - 1) * 100).toFixed(1)}% above the global average. You're ranked #${rank} globally. Focus on maintaining this competitive advantage through continued strategic athlete selection.`
-            : `<strong>Improvement Opportunity:</strong> Your efficiency of ${(efficiency * 100).toFixed(1)}% has a ${((avgEfficiency/efficiency - 1) * 100).toFixed(1)}% gap vs. the global average (${(avgEfficiency * 100).toFixed(1)}%). Ranked #${rank}, you could improve by optimizing athlete allocation to high-potential sports.`
+            ? `<strong>Efficiency:</strong> ${(efficiency * 100).toFixed(1)}% efficiency, ranked #${rank}. Maintain athlete selection strategy.`
+            : `<strong>Efficiency:</strong> ${(efficiency * 100).toFixed(1)}% efficiency, ranked #${rank}. Optimize athlete allocation.`
     );
     
     $('#medalInsight').html(
-        `<strong>Medal Projection:</strong> With your current efficiency of ${(efficiency * 100).toFixed(1)}%, sending 300 athletes could yield approximately <span class="text-warning fw-bold">${Math.round(300 * efficiency)} medals</span>. Your ${totalMedals} total medals across ${sportCount} sports shows ${totalMedals > avgEfficiency * 300 ? 'strong' : 'developing'} performance. Target sports with highest opportunity ratios for maximum impact.`
+        `<strong>Medal Potential:</strong> Projected ${Math.round(300 * efficiency)} medals with 300 athletes. Focus on ${Math.min(3, sportCount)} high-yield sports.`
     );
     
     $('#growthInsight').html(
         sportCount > 15 
-            ? `<strong>Portfolio Optimization:</strong> You compete in ${sportCount} sports, showing good diversification. Focus on deepening expertise in your strongest ${Math.min(8, Math.floor(sportCount * 0.6))} sports while maintaining presence in emerging opportunities.`
-            : `<strong>Diversification Strategy:</strong> You compete in ${sportCount} sports. Consider expanding to ${Math.min(20, sportCount + 5)} sports to increase medal opportunities, especially in emerging sports with lower global competition.`
+            ? `<strong>Portfolio:</strong> Strong presence in ${sportCount} sports. Focus on top ${Math.min(8, Math.floor(sportCount * 0.6))} performers.`
+            : `<strong>Portfolio:</strong> Active in ${sportCount} sports. Consider expanding to ${Math.min(20, sportCount + 5)} sports.`
     );
     
     $('#resourceInsight').html(
         efficiency > avgEfficiency 
-            ? `<strong>Resource Excellence:</strong> Your above-average efficiency suggests good resource allocation. Maintain 60% investment in proven medal sports, 25% in emerging opportunities, and 15% in strategic development areas.`
-            : `<strong>Resource Reallocation:</strong> To improve efficiency, consider reallocating resources: 70% to your highest-performing sports, 20% to emerging opportunities with medal potential, and 10% to experimental areas. Focus on quality over quantity.`
+            ? `<strong>Resources:</strong> Allocate 60% to proven sports, 25% emerging, 15% development.`
+            : `<strong>Resources:</strong> Shift 70% to top performers, 20% emerging, 10% experimental.`
     );
     
     // Update Strategic Summary Table
@@ -3199,19 +3204,19 @@ function showDefaultInsights() {
     $('#selectedCountryName').text('Click a bubble to view insights');
     
     $('#efficiencyInsight').html(
-        `<strong style="color: #0085C3;">Medal Efficiency Analysis:</strong> Click any bubble in the chart to view detailed efficiency analysis comparing performance to global averages, ranking position, and strategic recommendations for improvement.`
+        `<strong>Efficiency:</strong> Click to view medal efficiency analysis and ranking.`
     );
     
     $('#medalInsight').html(
-        `<strong style="color: #FFB81C;">Medal Potential Assessment:</strong> Click a country bubble to see medal projections based on current efficiency, historical performance analysis, and sport-specific opportunities.`
+        `<strong>Medal Potential:</strong> Click to see medal projections and opportunities.`
     );
     
     $('#growthInsight').html(
-        `<strong style="color: #00A651;">Strategic Growth Areas:</strong> Click a country bubble to receive customized growth recommendations based on current sport portfolio and competitive positioning.`
+        `<strong>Portfolio:</strong> Click to get sport portfolio recommendations.`
     );
     
     $('#resourceInsight').html(
-        `<strong style="color: #EE334E;">Resource Optimization:</strong> Click a country bubble to view tailored resource allocation strategies based on performance data and competitive landscape analysis.`
+        `<strong>Resources:</strong> Click to view resource allocation strategy.`
     );
 }
 
